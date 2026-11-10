@@ -5,6 +5,7 @@ import { printerApi, jenisApi } from '../../api/index.js';
 import { useFetch } from '../../hooks/useFetch.js';
 import { useToast } from '../../hooks/useToast.js';
 import Button from '../../components/ui/Button.jsx';
+import SectionHeader from '../../components/ui/SectionHeader.jsx';
 import { ConfirmDialog } from '../../components/ui/Modal.jsx';
 import {
   Badge,
@@ -14,6 +15,40 @@ import {
   TableSkeleton,
 } from '../../components/ui/Feedback.jsx';
 import PrinterFormModal from './PrinterFormModal.jsx';
+
+function KodeBahan({ item }) {
+  if (item.pakai_warna) return <Badge tone="accent">Pilih warna</Badge>;
+  return (
+    <span className="inline-flex items-center rounded-sm border border-line bg-paper px-1.5 py-0.5 font-mono text-[11px] font-medium text-ink">
+      {item.kode || '-'}
+    </span>
+  );
+}
+
+function Aksi({ item, onEdit, onDelete }) {
+  return (
+    <div className="flex items-center justify-end gap-1">
+      <Button
+        variant="ghost"
+        size="icon"
+        title="Edit printer"
+        aria-label={`Edit ${item.tipe}`}
+        onClick={() => onEdit(item)}
+      >
+        <Pencil className="h-4 w-4" aria-hidden="true" />
+      </Button>
+      <Button
+        variant="dangerGhost"
+        size="icon"
+        title="Hapus printer"
+        aria-label={`Hapus ${item.tipe}`}
+        onClick={() => onDelete(item)}
+      >
+        <Trash2 className="h-4 w-4" aria-hidden="true" />
+      </Button>
+    </div>
+  );
+}
 
 export default function PrinterTab() {
   const toast = useToast();
@@ -55,40 +90,54 @@ export default function PrinterTab() {
 
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-4 py-3">
-        <div>
-          <h2 className="text-sm font-semibold text-slate-800">Daftar Printer</h2>
-          <p className="mt-0.5 text-xs text-slate-500">
-            {printer.loading ? 'Memuat data...' : `${daftarPrinter.length} printer aktif`}
-            {jenisTerpilih ? ` pada jenis ${jenisTerpilih.nama}` : ''}
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <select
-            value={jenisFilter}
-            onChange={(event) => setJenisFilter(event.target.value)}
-            aria-label="Filter jenis printer"
-            className="h-10 min-w-40 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/15"
-          >
-            <option value="">Semua jenis</option>
-            {daftarJenis.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.nama}
-              </option>
-            ))}
-          </select>
-          <Button icon={Plus} onClick={bukaTambah} disabled={jenisKosong}>
-            Tambah Printer
-          </Button>
-        </div>
-      </div>
+      <SectionHeader
+        index="01"
+        title="Daftar printer"
+        description={
+          `${printer.loading ? 'Memuat data...' : `${daftarPrinter.length} printer aktif`}` +
+          (jenisTerpilih ? ` pada jenis ${jenisTerpilih.nama}` : '')
+        }
+        actions={
+          <>
+            <select
+              value={jenisFilter}
+              onChange={(event) => setJenisFilter(event.target.value)}
+              aria-label="Filter jenis printer"
+              className="h-10 min-w-40 rounded-md border border-line-strong bg-surface px-2 text-sm text-ink max-lg:h-11"
+            >
+              <option value="">Semua jenis</option>
+              {daftarJenis.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.nama}
+                </option>
+              ))}
+            </select>
+            <Button
+              variant="ghost"
+              size="icon"
+              icon={RotateCw}
+              title="Muat ulang"
+              aria-label="Muat ulang data printer"
+              onClick={() => {
+                jenis.reload();
+                printer.reload();
+              }}
+            />
+            <Button icon={Plus} onClick={bukaTambah} disabled={jenisKosong}>
+              Tambah Printer
+            </Button>
+          </>
+        }
+      />
 
       {jenisKosong && (
         <div className="px-4 pt-4">
           <InlineAlert tone="warning" title="Belum ada jenis printer">
             Tambahkan jenis printer terlebih dahulu di tab{' '}
-            <Link to="/master-data/jenis" className="font-semibold underline underline-offset-2">
+            <Link
+              to="/master-data/jenis"
+              className="font-semibold text-warn underline underline-offset-2"
+            >
               Jenis
             </Link>
             .
@@ -119,73 +168,67 @@ export default function PrinterTab() {
         />
       ) : (
         <>
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
+          <ul className="divide-y divide-line md:hidden">
+            {daftarPrinter.map((item) => (
+              <li key={item.tipe} className="flex items-start justify-between gap-3 px-4 py-3">
+                <div className="min-w-0">
+                  <p className="text-[13px] font-medium text-ink">{item.merek}</p>
+                  <p className="font-mono text-[11px] text-muted">{item.tipe}</p>
+                  <p className="mt-1 text-xs text-faint">{item.jenis_nama}</p>
+                  <div className="mt-1.5">
+                    <KodeBahan item={item} />
+                  </div>
+                </div>
+                <Aksi
+                  item={item}
+                  onEdit={(dataItem) => setModal({ open: true, item: dataItem })}
+                  onDelete={setHapus}
+                />
+              </li>
+            ))}
+          </ul>
+
+          <div className="hidden md:block">
+            <table className="w-full text-[13px]">
               <thead>
-                <tr className="border-b border-slate-200 bg-slate-50 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-                  <th className="px-4 py-3">Merek</th>
-                  <th className="px-4 py-3">Tipe</th>
-                  <th className="px-4 py-3">Jenis</th>
-                  <th className="px-4 py-3">Kode Bahan</th>
-                  <th className="px-4 py-3 text-right">Aksi</th>
+                <tr className="border-b border-line bg-paper text-left text-[11px] font-medium text-muted">
+                  <th scope="col" className="px-4 py-2.5">
+                    Merek
+                  </th>
+                  <th scope="col" className="px-4 py-2.5">
+                    Tipe
+                  </th>
+                  <th scope="col" className="px-4 py-2.5">
+                    Jenis
+                  </th>
+                  <th scope="col" className="px-4 py-2.5">
+                    Kode bahan
+                  </th>
+                  <th scope="col" className="px-4 py-2.5 text-right">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-line">
                 {daftarPrinter.map((item) => (
-                  <tr key={item.tipe} className="transition hover:bg-slate-50/80">
-                    <td className="px-4 py-3 font-medium text-slate-900">{item.merek}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-slate-700">{item.tipe}</td>
-                    <td className="px-4 py-3 text-slate-600">{item.jenis_nama}</td>
-                    <td className="px-4 py-3">
-                      {item.pakai_warna ? (
-                        <Badge tone="violet">Pilih warna</Badge>
-                      ) : (
-                        <span className="inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-2 py-1 font-mono text-xs font-semibold text-slate-700">
-                          {item.kode || '-'}
-                        </span>
-                      )}
+                  <tr key={item.tipe} className="transition-colors hover:bg-paper/70">
+                    <td className="px-4 py-2.5 font-medium text-ink">{item.merek}</td>
+                    <td className="px-4 py-2.5 font-mono text-xs text-muted">{item.tipe}</td>
+                    <td className="px-4 py-2.5 text-ink">{item.jenis_nama}</td>
+                    <td className="px-4 py-2.5">
+                      <KodeBahan item={item} />
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          title="Edit printer"
-                          aria-label={`Edit ${item.tipe}`}
-                          onClick={() => setModal({ open: true, item })}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          title="Hapus printer"
-                          aria-label={`Hapus ${item.tipe}`}
-                          className="text-rose-500 hover:bg-rose-50 hover:text-rose-700"
-                          onClick={() => setHapus(item)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
+                    <td className="px-2 py-2">
+                      <Aksi
+                        item={item}
+                        onEdit={(dataItem) => setModal({ open: true, item: dataItem })}
+                        onDelete={setHapus}
+                      />
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </div>
-
-          <div className="flex items-center justify-end gap-2 border-t border-slate-200 px-4 py-2.5">
-            <Button
-              variant="ghost"
-              size="sm"
-              icon={RotateCw}
-              onClick={() => {
-                jenis.reload();
-                printer.reload();
-              }}
-            >
-              Muat ulang
-            </Button>
           </div>
         </>
       )}

@@ -6,6 +6,7 @@ import JenisTab from '../features/jenis/JenisTab.jsx';
 import PrinterTab from '../features/printer/PrinterTab.jsx';
 import { cn } from '../lib/cn.js';
 
+/* Ikon mewakili isi tab: Tags untuk daftar jenis, Printer untuk daftar printer. */
 const TAB = [
   { key: 'jenis', label: 'Jenis', icon: Tags },
   { key: 'printer', label: 'Printer', icon: Printer },
@@ -21,12 +22,13 @@ export default function MasterDataPage() {
   return (
     <>
       <PageHeader
+        kicker="Data induk"
         title="Master Data"
-        description="Kelola jenis printer dan daftar printer yang digunakan sebagai sumber data permintaan bahan."
+        description="Kelola jenis printer dan daftar printer yang menjadi sumber data permintaan bahan."
       />
 
       <Card>
-        <div className="flex items-center gap-1 border-b border-slate-200 bg-slate-50/60 px-2 py-2 sm:px-3">
+        <div className="flex items-stretch gap-1 overflow-x-auto border-b border-line px-2">
           {TAB.map((item) => {
             const Icon = item.icon;
             const aktif = item.key === tab;
@@ -34,14 +36,15 @@ export default function MasterDataPage() {
               <NavLink
                 key={item.key}
                 to={`/master-data/${item.key}`}
+                aria-current={aktif ? 'page' : undefined}
                 className={cn(
-                  'inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition',
+                  'inline-flex h-11 shrink-0 items-center gap-2 border-b-2 px-3 text-sm font-medium transition-colors',
                   aktif
-                    ? 'bg-white text-blue-700 shadow-sm ring-1 ring-slate-200'
-                    : 'text-slate-600 hover:bg-white/70 hover:text-slate-900',
+                    ? 'border-accent text-accent-strong'
+                    : 'border-transparent text-muted hover:text-ink',
                 )}
               >
-                <Icon className="h-4 w-4" />
+                <Icon className="h-4 w-4" aria-hidden="true" />
                 {item.label}
               </NavLink>
             );

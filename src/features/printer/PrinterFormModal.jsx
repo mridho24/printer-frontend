@@ -168,7 +168,7 @@ export default function PrinterFormModal({
         />
 
         {!form.jenis_id ? (
-          <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-500">
+          <div className="rounded-md border border-dashed border-line-strong bg-paper px-4 py-3 text-sm text-faint">
             Pilih jenis printer terlebih dahulu. Jenis menentukan apakah printer memerlukan kode
             bahan atau menggunakan pilihan warna.
           </div>
@@ -192,7 +192,7 @@ export default function PrinterFormModal({
         )}
 
         {item && (
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-faint">
             Mengubah tipe hanya diizinkan jika printer belum pernah dipakai pada permintaan. Mengubah
             kode tidak mengubah bahan pada riwayat lama.
           </p>

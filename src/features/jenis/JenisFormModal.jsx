@@ -111,7 +111,7 @@ export default function JenisFormModal({ item, onClose, onSaved }) {
         />
 
         <Field label="Perilaku Bahan">
-          <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+          <div className="rounded-md border border-line bg-paper px-4 py-3">
             <Toggle
               checked={form.pakai_warna}
               onChange={(value) => ubah('pakai_warna', value)}
