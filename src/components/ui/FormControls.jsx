@@ -5,16 +5,20 @@ export function Field({ label, htmlFor, error, hint, required = false, children,
   return (
     <div className={cn('space-y-1.5', className)}>
       {label && (
-        <label htmlFor={htmlFor} className="block text-sm font-medium text-slate-700">
+        <label htmlFor={htmlFor} className="block text-sm font-medium text-ink">
           {label}
-          {required && <span className="ml-0.5 text-rose-500">*</span>}
+          {required && (
+            <span className="ml-0.5 text-danger" aria-hidden="true">
+              *
+            </span>
+          )}
         </label>
       )}
       {children}
       {error ? (
-        <p className="text-xs font-medium text-rose-600">{error}</p>
+        <p className="text-xs font-medium text-danger">{error}</p>
       ) : (
-        hint && <p className="text-xs text-slate-500">{hint}</p>
+        hint && <p className="text-xs text-faint">{hint}</p>
       )}
     </div>
   );
@@ -22,10 +26,8 @@ export function Field({ label, htmlFor, error, hint, required = false, children,
 
 function gayaDasar(error) {
   return cn(
-    'block w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:outline-none focus:ring-4 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500',
-    error
-      ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/15'
-      : 'border-slate-300 focus:border-blue-500 focus:ring-blue-500/15',
+    'block w-full rounded-md border bg-surface px-3 py-2 text-sm text-ink transition-colors placeholder:text-faint disabled:bg-paper disabled:text-faint',
+    error ? 'border-danger' : 'border-line-strong',
   );
 }
 
@@ -76,7 +78,7 @@ export const Select = forwardRef(function Select(
         ref={ref}
         id={selectId}
         aria-invalid={error ? 'true' : undefined}
-        className={cn(gayaDasar(error), 'h-10 cursor-pointer')}
+        className={cn(gayaDasar(error), 'h-10')}
         {...props}
       >
         {children}
@@ -92,23 +94,24 @@ export function Toggle({ checked, onChange, label, description, disabled = false
         type="button"
         role="switch"
         aria-checked={checked}
+        aria-label={label}
         disabled={disabled}
         onClick={() => onChange(!checked)}
         className={cn(
-          'relative mt-0.5 inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-50',
-          checked ? 'bg-blue-600' : 'bg-slate-300',
+          'relative mt-0.5 inline-flex h-6 w-11 shrink-0 rounded-full border transition-colors disabled:opacity-50',
+          checked ? 'border-accent bg-accent' : 'border-line-strong bg-paper',
         )}
       >
         <span
           className={cn(
-            'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow transition',
-            checked ? 'translate-x-5' : 'translate-x-0',
+            'pointer-events-none absolute top-0.5 left-0.5 inline-block h-4.5 w-4.5 rounded-full transition-transform',
+            checked ? 'translate-x-5 bg-surface' : 'translate-x-0 bg-line-strong',
           )}
         />
       </button>
       <div className="min-w-0">
-        <p className="text-sm font-medium text-slate-700">{label}</p>
-        {description && <p className="mt-0.5 text-xs text-slate-500">{description}</p>}
+        <p className="text-sm font-medium text-ink">{label}</p>
+        {description && <p className="mt-0.5 text-xs text-faint">{description}</p>}
       </div>
     </div>
   );
@@ -118,22 +121,27 @@ export function CheckboxCard({ checked, onChange, label, description, swatch }) 
   return (
     <label
       className={cn(
-        'flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition',
+        'flex items-center gap-3 rounded-md border px-3 py-2.5 transition-colors',
         checked
-          ? 'border-blue-300 bg-blue-50/70 ring-1 ring-blue-200'
-          : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50',
+          ? 'border-accent bg-accent-soft'
+          : 'border-line bg-surface hover:border-line-strong hover:bg-paper',
       )}
     >
       <input
         type="checkbox"
         checked={checked}
         onChange={(event) => onChange(event.target.checked)}
-        className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+        className="h-4 w-4 accent-accent"
       />
-      {swatch && <span className={cn('h-4 w-4 rounded-full border border-black/10', swatch)} />}
+      {swatch && (
+        <span
+          className={cn('h-3.5 w-3.5 rounded-sm border border-line-strong', swatch)}
+          aria-hidden="true"
+        />
+      )}
       <span className="min-w-0">
-        <span className="block text-sm font-medium text-slate-800">{label}</span>
-        {description && <span className="block text-xs text-slate-500">{description}</span>}
+        <span className="block text-sm font-medium text-ink">{label}</span>
+        {description && <span className="block text-xs text-faint">{description}</span>}
       </span>
     </label>
   );
@@ -142,11 +150,11 @@ export function CheckboxCard({ checked, onChange, label, description, swatch }) 
 export function ReadOnlyValue({ label, value, hint, placeholder = '-' }) {
   return (
     <div className="space-y-1.5">
-      {label && <p className="text-sm font-medium text-slate-700">{label}</p>}
-      <div className="flex h-10 items-center rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm font-medium text-slate-700">
-        {value || <span className="font-normal text-slate-400">{placeholder}</span>}
+      {label && <p className="text-sm font-medium text-ink">{label}</p>}
+      <div className="flex h-10 items-center rounded-md border border-line bg-paper px-3 text-sm font-medium text-ink">
+        {value || <span className="font-normal text-faint">{placeholder}</span>}
       </div>
-      {hint && <p className="text-xs text-slate-500">{hint}</p>}
+      {hint && <p className="text-xs text-faint">{hint}</p>}
     </div>
   );
 }
