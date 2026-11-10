@@ -6,21 +6,18 @@ import { ToastContext } from './toastContext.js';
 const GAYA = {
   success: {
     icon: CheckCircle2,
-    panel: 'border-emerald-200 bg-white',
-    iconClass: 'text-emerald-600',
-    bar: 'bg-emerald-500',
+    iconClass: 'text-accent',
+    bar: 'bg-accent',
   },
   error: {
     icon: AlertCircle,
-    panel: 'border-rose-200 bg-white',
-    iconClass: 'text-rose-600',
-    bar: 'bg-rose-500',
+    iconClass: 'text-danger',
+    bar: 'bg-danger',
   },
   info: {
     icon: Info,
-    panel: 'border-blue-200 bg-white',
-    iconClass: 'text-blue-600',
-    bar: 'bg-blue-500',
+    iconClass: 'text-muted',
+    bar: 'bg-line-strong',
   },
 };
 
@@ -62,22 +59,22 @@ export function ToastProvider({ children }) {
           return (
             <div
               key={toast.id}
-              className={cn(
-                'animate-toast-in pointer-events-auto flex w-full max-w-sm items-start gap-3 overflow-hidden rounded-xl border shadow-lg shadow-slate-900/5 sm:w-96',
-                gaya.panel,
-              )}
+              className="animate-toast-in pointer-events-auto flex w-full max-w-sm items-start gap-3 overflow-hidden rounded-md border border-line bg-surface shadow-[0_16px_40px_-24px_rgba(27,26,23,0.45)] sm:w-96"
               role="status"
             >
-              <div className={cn('h-full w-1 shrink-0 self-stretch', gaya.bar)} />
-              <Icon className={cn('mt-3.5 h-5 w-5 shrink-0', gaya.iconClass)} aria-hidden="true" />
-              <p className="flex-1 py-3 text-sm leading-6 text-slate-700">{toast.message}</p>
+              <div className={cn('w-[3px] shrink-0 self-stretch', gaya.bar)} aria-hidden="true" />
+              <Icon
+                className={cn('mt-3.5 h-4.5 w-4.5 shrink-0', gaya.iconClass)}
+                aria-hidden="true"
+              />
+              <p className="flex-1 py-3 text-sm leading-6 text-ink">{toast.message}</p>
               <button
                 type="button"
                 onClick={() => remove(toast.id)}
-                className="mr-1 mt-2 rounded-md p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+                className="mt-1.5 mr-1.5 flex h-9 w-9 items-center justify-center rounded-md text-faint transition-colors hover:bg-paper hover:text-ink max-lg:h-11 max-lg:w-11"
                 aria-label="Tutup notifikasi"
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
           );

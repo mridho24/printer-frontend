@@ -9,10 +9,10 @@ function TombolHalaman({ children, onClick, disabled, label }) {
       disabled={disabled}
       aria-label={label}
       className={cn(
-        'inline-flex h-8 w-8 items-center justify-center rounded-lg border text-slate-600 transition',
+        'inline-flex h-9 w-9 items-center justify-center rounded-md border transition-colors max-lg:h-11 max-lg:w-11',
         disabled
-          ? 'cursor-not-allowed border-slate-200 bg-slate-50 text-slate-300'
-          : 'border-slate-300 bg-white hover:bg-slate-50 hover:text-slate-900',
+          ? 'border-line bg-paper text-faint'
+          : 'border-line-strong bg-surface text-ink hover:bg-paper',
       )}
     >
       {children}
@@ -33,21 +33,20 @@ export default function Pagination({
   const akhir = Math.min(page * limit, total);
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 px-4 py-3">
-      <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
-        <span>
-          Menampilkan <span className="font-semibold text-slate-700">{awal}</span>–
-          <span className="font-semibold text-slate-700">{akhir}</span> dari{' '}
-          <span className="font-semibold text-slate-700">{total}</span> data
+    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-4 py-3 text-xs text-muted">
+      <div className="flex flex-wrap items-center gap-3">
+        <span className="tabular-nums">
+          Menampilkan <span className="font-mono font-medium text-ink">{awal}</span> sampai{' '}
+          <span className="font-mono font-medium text-ink">{akhir}</span> dari{' '}
+          <span className="font-mono font-medium text-ink">{total}</span> catatan
         </span>
         {onLimitChange && (
-          <label className="flex items-center gap-1.5">
-            <span className="text-slate-400">|</span>
+          <label className="flex items-center gap-1.5 border-l border-line pl-3">
             <span>Baris</span>
             <select
               value={limit}
               onChange={(event) => onLimitChange(Number(event.target.value))}
-              className="h-7 rounded-md border border-slate-300 bg-white px-1.5 text-xs text-slate-700 focus:border-blue-500 focus:outline-none"
+              className="h-9 rounded-sm border border-line-strong bg-surface px-1.5 font-mono text-xs text-ink max-lg:h-11"
             >
               {[10, 25, 50].map((nilai) => (
                 <option key={nilai} value={nilai}>
@@ -60,23 +59,23 @@ export default function Pagination({
       </div>
 
       <div className="flex items-center gap-2">
-        <span className="text-xs text-slate-500">
-          Halaman <span className="font-semibold text-slate-700">{page}</span> dari{' '}
-          <span className="font-semibold text-slate-700">{halamanAman}</span>
+        <span className="tabular-nums">
+          Halaman <span className="font-mono font-medium text-ink">{page}</span> dari{' '}
+          <span className="font-mono font-medium text-ink">{halamanAman}</span>
         </span>
         <TombolHalaman
           label="Halaman sebelumnya"
           onClick={() => onPageChange(page - 1)}
           disabled={page <= 1}
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
         </TombolHalaman>
         <TombolHalaman
           label="Halaman berikutnya"
           onClick={() => onPageChange(page + 1)}
           disabled={page >= halamanAman || total === 0}
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-4 w-4" aria-hidden="true" />
         </TombolHalaman>
       </div>
     </div>
