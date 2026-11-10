@@ -264,8 +264,8 @@ export default function PermintaanFormModal({ open, item, onClose, onSaved }) {
       footer={footer}
     >
       {memuatReferensi ? (
-        <div className="flex items-center justify-center gap-2 py-16 text-sm text-slate-500">
-          <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+        <div className="flex items-center justify-center gap-2 py-16 text-sm text-faint">
+          <Loader2 className="h-5 w-5 animate-spin text-accent" />
           Memuat data referensi...
         </div>
       ) : errorReferensi ? (
@@ -283,10 +283,10 @@ export default function PermintaanFormModal({ open, item, onClose, onSaved }) {
 
           <section className="space-y-4">
             <div className="flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700">
-                1
-              </span>
-              <h3 className="text-sm font-semibold text-slate-800">Printer yang Diminta</h3>
+              <span className="font-mono text-[11px] font-medium text-accent">01</span>
+              <h3 className="text-sm font-semibold tracking-tight text-ink">
+                Printer yang Diminta
+              </h3>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
@@ -324,7 +324,7 @@ export default function PermintaanFormModal({ open, item, onClose, onSaved }) {
                 </option>
                 {printers.map((printer) => (
                   <option key={printer.tipe} value={printer.tipe}>
-                    {printer.merek} — {printer.tipe}
+                    {printer.merek} · {printer.tipe}
                     {printer.printer_dihapus ? ' (printer sudah dihapus)' : ''}
                   </option>
                 ))}
@@ -369,17 +369,15 @@ export default function PermintaanFormModal({ open, item, onClose, onSaved }) {
             )}
           </section>
 
-          <section className="space-y-3 border-t border-slate-200 pt-5">
+          <section className="space-y-3 border-t border-line pt-5">
             <div className="flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700">
-                2
-              </span>
-              <h3 className="text-sm font-semibold text-slate-800">Bahan yang Diminta</h3>
-              {modeWarna && <Badge tone="violet">Pilihan warna</Badge>}
+              <span className="font-mono text-[11px] font-medium text-accent">02</span>
+              <h3 className="text-sm font-semibold tracking-tight text-ink">Bahan yang Diminta</h3>
+              {modeWarna && <Badge tone="accent">Pilihan warna</Badge>}
             </div>
 
             {!form.printer_tipe ? (
-              <p className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-center text-sm text-slate-500">
+              <p className="rounded-md border border-dashed border-line-strong bg-paper px-4 py-5 text-center text-sm text-faint">
                 Pilih printer terlebih dahulu untuk melihat bahan yang diminta.
               </p>
             ) : modeWarna ? (
@@ -388,7 +386,7 @@ export default function PermintaanFormModal({ open, item, onClose, onSaved }) {
                   {warnaList.map((warna) => {
                     const meta = WARNA_META[warna] || {
                       label: warna,
-                      swatch: 'bg-slate-400',
+                      swatch: 'bg-line-strong',
                     };
                     return (
                       <CheckboxCard
@@ -401,7 +399,7 @@ export default function PermintaanFormModal({ open, item, onClose, onSaved }) {
                     );
                   })}
                 </div>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-faint">
                   Minimal satu warna. Urutan penyimpanan: black, blue, yellow, magenta.
                 </p>
               </Field>
@@ -415,12 +413,10 @@ export default function PermintaanFormModal({ open, item, onClose, onSaved }) {
             )}
           </section>
 
-          <section className="space-y-4 border-t border-slate-200 pt-5">
+          <section className="space-y-4 border-t border-line pt-5">
             <div className="flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700">
-                3
-              </span>
-              <h3 className="text-sm font-semibold text-slate-800">Data Permintaan</h3>
+              <span className="font-mono text-[11px] font-medium text-accent">03</span>
+              <h3 className="text-sm font-semibold tracking-tight text-ink">Data Permintaan</h3>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
@@ -454,7 +450,7 @@ export default function PermintaanFormModal({ open, item, onClose, onSaved }) {
           </section>
 
           {item && (
-            <p className="flex items-start gap-2 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500">
+            <p className="flex items-start gap-2 rounded-md bg-paper px-3 py-2 text-xs text-faint">
               <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
               Bahan pada permintaan lama adalah snapshot. Mengubah kode printer di Master Data tidak
               mengubah bahan pada riwayat ini.

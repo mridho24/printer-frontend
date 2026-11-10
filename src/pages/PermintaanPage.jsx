@@ -4,6 +4,7 @@ import PageHeader from '../components/layout/PageHeader.jsx';
 import Card from '../components/ui/Card.jsx';
 import Button from '../components/ui/Button.jsx';
 import Pagination from '../components/ui/Pagination.jsx';
+import SectionHeader from '../components/ui/SectionHeader.jsx';
 import { ConfirmDialog } from '../components/ui/Modal.jsx';
 import { InlineAlert } from '../components/ui/Feedback.jsx';
 import FilterBar from '../features/permintaan/FilterBar.jsx';
@@ -76,15 +77,16 @@ export default function PermintaanPage() {
     }
   }
 
-  const rows = invalidRange ? [] : data ?? [];
+  const rows = invalidRange ? [] : (data ?? []);
   const total = meta?.total ?? 0;
   const totalPage = meta?.total_page ?? 0;
 
   return (
     <>
       <PageHeader
+        kicker="Buku permintaan"
         title="Permintaan Bahan Printer"
-        description="Catat permintaan toner, ribbon, tinta, dan bahan printer lain yang diterima Admin IT."
+        description="Catat toner, ribbon, tinta, dan bahan printer lain yang diterima Admin IT."
         actions={
           <Button icon={Plus} onClick={() => setModal({ open: true, item: null })}>
             Tambah Permintaan
@@ -93,17 +95,22 @@ export default function PermintaanPage() {
       />
 
       <Card className="mb-4">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 px-4 py-3">
-          <div>
-            <h2 className="text-sm font-semibold text-slate-800">Filter &amp; Pencarian</h2>
-            <p className="mt-0.5 text-xs text-slate-500">
-              Cari berdasarkan nama peminta, ruang, merek, tipe, atau bahan.
+        <SectionHeader
+          index="01"
+          title="Filter dan pencarian"
+          description="Cari berdasarkan nama peminta, ruang, merek, tipe, atau bahan."
+          actions={
+            <p className="text-xs text-muted">
+              {invalidRange ? (
+                'Rentang tidak valid'
+              ) : (
+                <>
+                  <span className="font-mono font-medium text-ink">{total}</span> catatan
+                </>
+              )}
             </p>
-          </div>
-          <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-600">
-            {invalidRange ? 'Rentang tidak valid' : `${total} data`}
-          </span>
-        </div>
+          }
+        />
         <div className="p-4">
           <FilterBar
             dari={dari}
@@ -117,29 +124,32 @@ export default function PermintaanPage() {
       </Card>
 
       <Card>
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 px-4 py-3">
-          <div>
-            <h2 className="text-sm font-semibold text-slate-800">Daftar Permintaan</h2>
-            <p className="mt-0.5 text-xs text-slate-500">
-              {loading ? 'Memuat data...' : `Halaman ${meta?.page ?? page} dari ${Math.max(1, totalPage)}`}
-            </p>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            icon={RotateCw}
-            onClick={reload}
-            disabled={invalidRange || loading}
-          >
-            Muat ulang
-          </Button>
-        </div>
+        <SectionHeader
+          index="02"
+          title="Daftar permintaan"
+          description={
+            loading
+              ? 'Memuat data...'
+              : `Halaman ${meta?.page ?? page} dari ${Math.max(1, totalPage)}`
+          }
+          actions={
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={RotateCw}
+              onClick={reload}
+              disabled={invalidRange || loading}
+            >
+              Muat ulang
+            </Button>
+          }
+        />
 
         {invalidRange ? (
           <div className="p-4">
             <InlineAlert tone="warning" title="Rentang tanggal tidak valid">
-              Tanggal &quot;dari&quot; tidak boleh setelah tanggal &quot;sampai&quot;. Perbaiki filter
-              untuk menampilkan data.
+              Tanggal &quot;dari&quot; tidak boleh setelah tanggal &quot;sampai&quot;. Perbaiki
+              filter untuk menampilkan data.
             </InlineAlert>
           </div>
         ) : (

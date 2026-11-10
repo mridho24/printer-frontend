@@ -2,6 +2,9 @@ import { RotateCcw, Search } from 'lucide-react';
 import Button from '../../components/ui/Button.jsx';
 import { InlineAlert } from '../../components/ui/Feedback.jsx';
 
+const GAYA_INPUT =
+  'h-10 w-full rounded-md border border-line-strong bg-surface px-3 text-sm text-ink placeholder:text-faint';
+
 export default function FilterBar({
   dari,
   sampai,
@@ -13,9 +16,9 @@ export default function FilterBar({
 }) {
   return (
     <div className={className}>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.6fr)_auto]">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[repeat(2,minmax(0,1fr))_minmax(0,1.6fr)_auto]">
         <div className="space-y-1.5">
-          <label htmlFor="filter-dari" className="block text-sm font-medium text-slate-700">
+          <label htmlFor="filter-dari" className="block text-xs font-medium text-muted">
             Dari tanggal
           </label>
           <input
@@ -24,12 +27,12 @@ export default function FilterBar({
             value={dari}
             max={sampai || undefined}
             onChange={(event) => onChange('dari', event.target.value)}
-            className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/15"
+            className={GAYA_INPUT}
           />
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="filter-sampai" className="block text-sm font-medium text-slate-700">
+          <label htmlFor="filter-sampai" className="block text-xs font-medium text-muted">
             Sampai tanggal
           </label>
           <input
@@ -38,23 +41,26 @@ export default function FilterBar({
             value={sampai}
             min={dari || undefined}
             onChange={(event) => onChange('sampai', event.target.value)}
-            className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/15"
+            className={GAYA_INPUT}
           />
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="filter-q" className="block text-sm font-medium text-slate-700">
+          <label htmlFor="filter-q" className="block text-xs font-medium text-muted">
             Pencarian
           </label>
           <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Search
+              className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-faint"
+              aria-hidden="true"
+            />
             <input
               id="filter-q"
               type="search"
               value={q}
               onChange={(event) => onChange('q', event.target.value)}
-              placeholder="Cari peminta, ruang, merek, tipe, atau bahan..."
-              className="h-10 w-full rounded-lg border border-slate-300 bg-white pl-9 pr-3 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/15"
+              placeholder="Cari peminta, ruang, merek, tipe, atau bahan"
+              className={`${GAYA_INPUT} pl-9`}
             />
           </div>
         </div>
