@@ -1,27 +1,103 @@
 @import 'tailwindcss';
 
+/*
+ * Sistem visual "buku catatan lab": kertas hangat, tinta gelap, satu aksen teal.
+ * Alasan tiap keputusan ada di DESIGN.md. Jangan tambah warna baru tanpa
+ * mencatat alasannya di sana (R-01, R-29, R-31).
+ */
 @theme {
   --font-sans:
-    'Inter', 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial,
+    'IBM Plex Sans Variable', 'IBM Plex Sans', 'Segoe UI', system-ui,
     sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', monospace;
+
+  --color-paper: #f4f1ea;
+  --color-surface: #fdfbf6;
+  --color-ink: #1b1a17;
+  --color-muted: #57534a;
+  --color-faint: #736d60;
+  --color-line: #ddd7c9;
+  --color-line-strong: #c4bda9;
+
+  --color-accent: #0f6b5f;
+  --color-accent-strong: #0a4f46;
+  --color-accent-soft: #e7f0ed;
+
+  --color-warn: #8a5a00;
+  --color-warn-soft: #fbf1dd;
+  --color-warn-line: #e3d0a4;
+
+  --color-danger: #a02c2c;
+  --color-danger-strong: #7d2020;
+  --color-danger-soft: #fbeaea;
+  --color-danger-line: #eec8c8;
+
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 6px;
 }
 
-html {
-  -webkit-text-size-adjust: 100%;
-}
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
 
-body {
-  min-width: 320px;
-  background-color: #f1f5f9;
-  color: #0f172a;
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+  body {
+    min-width: 320px;
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Satu indikator fokus untuk seluruh aplikasi (R-32, R-39). */
+  :where(
+    a[href],
+    button,
+    input,
+    select,
+    textarea,
+    summary,
+    [role='button'],
+    [role='tab'],
+    [role='switch'],
+    [role='checkbox']
+  ):focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  /* Afordansi kontrol ditetapkan sekali di lapisan dasar (R-39). */
+  :where(
+    a[href],
+    button:not(:disabled),
+    summary,
+    select:not(:disabled),
+    label[for],
+    label:has(> input:not(:disabled)),
+    input[type='checkbox']:not(:disabled),
+    input[type='radio']:not(:disabled),
+    [role='button'],
+    [role='tab'],
+    [role='switch']
+  ) {
+    cursor: pointer;
+  }
+
+  :where(button:disabled, select:disabled, input:disabled, textarea:disabled) {
+    cursor: not-allowed;
+  }
+
+  ::selection {
+    background-color: var(--color-accent-soft);
+    color: var(--color-accent-strong);
+  }
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-color: var(--color-line-strong) transparent;
 }
 
 ::-webkit-scrollbar {
@@ -30,30 +106,24 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
-  border-radius: 9999px;
-}
-
-::selection {
-  background-color: #bfdbfe;
-  color: #1e3a8a;
+  background-color: var(--color-line-strong);
 }
 
 @keyframes modal-in {
   from {
     opacity: 0;
-    transform: translateY(12px) scale(0.98);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
 @keyframes toast-in {
   from {
     opacity: 0;
-    transform: translateX(16px);
+    transform: translateX(8px);
   }
   to {
     opacity: 1;
@@ -61,23 +131,27 @@ body {
   }
 }
 
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
+/* Gerak hanya untuk umpan balik, 140-160ms, dan berhenti saat reduced motion. */
 .animate-modal-in {
-  animation: modal-in 0.18s ease-out;
+  animation: modal-in 0.14s ease-out;
 }
 
 .animate-toast-in {
-  animation: toast-in 0.2s ease-out;
+  animation: toast-in 0.16s ease-out;
 }
 
-.animate-fade-in {
-  animation: fade-in 0.15s ease-out;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-modal-in,
+  .animate-toast-in {
+    animation: none;
+  }
 }
