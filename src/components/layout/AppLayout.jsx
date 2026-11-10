@@ -1,7 +1,13 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { ClipboardList, Database, Printer, ShieldCheck } from 'lucide-react';
+import { ClipboardList, Database } from 'lucide-react';
+import BrandMark from '../brand/BrandMark.jsx';
 import { cn } from '../../lib/cn.js';
 
+/*
+ * Ikon dipilih karena merujuk langsung ke isi menunya, bukan karena bentuknya:
+ * ClipboardList = daftar permintaan yang dicatat, Database = kumpulan data induk.
+ * Tidak ada ikon hiasan di navigasi.
+ */
 const NAVIGASI = [
   {
     to: '/master-data/jenis',
@@ -22,19 +28,16 @@ export default function AppLayout() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3 sm:px-6">
-          <div className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm shadow-blue-600/30">
-              <Printer className="h-5 w-5" />
-            </span>
-            <div className="leading-tight">
-              <p className="text-sm font-bold tracking-tight text-slate-900">Bahan Printer</p>
-              <p className="text-[11px] font-medium text-slate-500">RSUD Zainal Abidin</p>
-            </div>
-          </div>
+      <div className="h-[3px] bg-accent" aria-hidden="true" />
 
-          <nav className="order-3 -mx-1 flex w-full items-center gap-1 overflow-x-auto pb-0.5 sm:order-2 sm:mx-0 sm:w-auto sm:pb-0">
+      <header className="sticky top-0 z-30 border-b border-line bg-surface">
+        <div className="mx-auto flex max-w-[1200px] flex-wrap items-center gap-x-8 gap-y-1 px-4 py-2.5 sm:px-6 lg:px-8">
+          <BrandMark className="py-1" />
+
+          <nav
+            aria-label="Navigasi utama"
+            className="order-3 -mx-1 flex w-full items-stretch gap-1 overflow-x-auto sm:order-none sm:mx-0 sm:w-auto sm:gap-0"
+          >
             {NAVIGASI.map((item) => {
               const aktif = item.cocok(pathname);
               const Icon = item.icon;
@@ -42,35 +45,35 @@ export default function AppLayout() {
                 <NavLink
                   key={item.to}
                   to={item.to}
+                  aria-current={aktif ? 'page' : undefined}
                   className={cn(
-                    'inline-flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition',
+                    'inline-flex h-11 shrink-0 items-center gap-2 border-b-2 px-3 text-sm font-medium transition-colors',
                     aktif
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+                      ? 'border-accent text-accent-strong'
+                      : 'border-transparent text-muted hover:text-ink',
                   )}
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-4 w-4" aria-hidden="true" />
                   {item.label}
                 </NavLink>
               );
             })}
           </nav>
 
-          <div className="ml-auto flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5">
-            <ShieldCheck className="h-4 w-4 text-emerald-600" />
-            <span className="text-xs font-semibold text-slate-600">Admin IT</span>
-          </div>
+          <p className="ml-auto border-l border-line pl-3 text-xs font-medium text-muted">
+            Admin IT
+          </p>
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 lg:py-8">
+      <main className="mx-auto w-full max-w-[1200px] flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
         <Outlet />
       </main>
 
-      <footer className="border-t border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-4 text-xs text-slate-500 sm:px-6">
-          <p>Aplikasi Pencatatan Permintaan Bahan Printer</p>
-          <p>Admin IT &middot; Internal RSUD</p>
+      <footer className="border-t border-line bg-surface">
+        <div className="mx-auto flex max-w-[1200px] flex-wrap items-center justify-between gap-2 px-4 py-4 text-xs text-faint sm:px-6 lg:px-8">
+          <p>Aplikasi pencatatan permintaan bahan printer</p>
+          <p className="font-mono">Admin IT &middot; Internal RSUD</p>
         </div>
       </footer>
     </div>
