@@ -47,11 +47,20 @@ Buka `http://localhost:5173`.
 - `#/master-data/jenis` — tab master data jenis
 - `#/master-data/printer` — tab master data printer
 
-Dashboard menampilkan jenis printer yang paling sering diminta, bahan (kode)
-per tipe printer non-warna, warna per tipe printer warna, agregat warna per
-jenis warna, dan jumlah permintaan tiap bulan. Semua angka dihitung dari
-permintaan aktif; riwayat printer/jenis yang sudah di-soft-delete tetap
-dihitung dan ditandai arsip.
+Dashboard memakai tombol tampilan supaya satu layar hanya memuat satu metrik:
+jenis printer, bahan per tipe printer, bulan, atau warna. Pilihan disimpan di
+URL (`#/dashboard?tampilan=bahan`), jadi muat ulang dan tombol kembali membuka
+tampilan yang sama.
+
+- Daftar bahan per printer tampil sebagai akordeon. Hanya 6 baris pertama yang
+  terlihat, dengan tombol **Tampilkan semua** untuk membuka seluruhnya.
+  Pencarian tipe/merek dan filter jenis bekerja pada semua printer.
+- Panel bulan dimulai dari 6 bulan tersibuk, lalu **Lihat semua bulan** membuka
+  grafik kronologis lengkap termasuk bulan bernilai nol.
+- Panel warna hanya muncul jika ada jenis yang memakai warna.
+
+Semua angka dihitung dari permintaan aktif; riwayat printer/jenis yang sudah
+di-soft-delete tetap dihitung dan ditandai arsip.
 
 ## Perilaku penting
 
@@ -74,7 +83,7 @@ src/
   components/layout/   Topbar, layout, page header
   components/ui/       Button, form controls, modal, tabel, toast, dll.
   context/             Toast provider
-  features/dashboard/  Batang ringkasan, kartu bahan printer, grafik bulan
+  features/dashboard/  Tab tampilan, akordeon bahan printer, grafik bulan
   features/jenis/      Tab & modal jenis
   features/printer/    Tab & modal printer
   features/permintaan/ Form, tabel, filter permintaan

@@ -113,6 +113,18 @@ gerakan tuas) (R-11).
   warna kategori, sehingga tetap terbaca tanpa membedakan warna (R-39).
 - Semua batang memakai aksen yang sama; nilai tertinggi ditandai kata
   "Terbanyak", bukan warna baru. Ini menjaga palet tetap satu aksen (R-29).
+- Metrik dipecah menjadi satu panel per tombol tampilan. Menumpuk semua grafik
+  dalam satu layar membuat halaman panjang dan tidak punya fokus; dengan satu
+  panel, tiap layar menjawab satu pertanyaan.
+- Angka pada tombol tampilan menunjukkan jumlah data, supaya isi panel sudah
+  terbaca sebelum dibuka.
+- Daftar bahan printer memakai akordeon. Baris tertutup sudah menyebut bahan
+  terbanyak, jadi rincian hanya dibuka saat ingin melihat sisanya. Enam baris
+  pertama cukup untuk pembacaan awal; "Tampilkan semua" membuka seluruh daftar
+  tanpa berpindah halaman.
+- Panel bulan memprioritaskan bulan tersibuk. Grafik kronologis penuh adalah
+  tampilan kedua karena deret panjang tidak langsung menjawab "bulan mana yang
+  ramai".
 - Bulan tanpa permintaan tetap ditampilkan sebagai batang nol agar jarak waktu
   tidak menyembunyikan bulan kosong.
 - Angka ringkasan ditulis mono dan dipisah garis, bukan kartu ikon, karena yang
@@ -123,6 +135,8 @@ gerakan tuas) (R-11).
 - Token warna, font, radius, fokus, dan reduced motion: `src/index.css`.
 - Kepala bagian bernomor: `src/components/ui/SectionHeader.jsx`.
 - Batang dashboard: `src/features/dashboard/BarList.jsx`.
+- Tombol tampilan dashboard: `src/features/dashboard/DashboardTabs.jsx`.
+- Baris akordeon bahan printer: `src/features/dashboard/PrinterRow.jsx`.
 - Placeholder logo: `src/components/brand/BrandMark.jsx`.
 - Font di-host sendiri dari paket `@fontsource` (IBM Plex Sans dan Plex Mono).
 
