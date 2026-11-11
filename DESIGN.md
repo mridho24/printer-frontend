@@ -87,12 +87,12 @@ gerakan tuas) (R-11).
 
 ## Aset
 
-- **Logo**: belum tersedia. `src/components/brand/BrandMark.jsx` memakai
-  monogram `ZA` sebagai **placeholder** yang ditandai `TODO` di kode, bukan
-  logo resmi. Untuk menggantinya, taruh file resmi di
-  `public/logo-rsud.svg`, lalu ganti isi `BrandMark` dengan
-  `<img src="/logo-rsud.svg" alt="RSUD Zainal Abidin" width="36" height="36" />`.
-  Ruang dan perataan header tidak perlu diubah lagi.
+- **Logo**: logo resmi RSUD Zainal Abidin ada di `src/logo/logo_za.jpg`
+  (600x300) dan dipasang di `src/components/brand/BrandMark.jsx` setinggi
+  40px. Berkas diimpor lewat Vite, bukan disalin ke `public`, supaya ikut
+  diproses saat build. Latar putih pada JPG disatukan dengan permukaan header
+  memakai `mix-blend-multiply` tanpa mengubah berkasnya. `alt` dikosongkan
+  karena nama rumah sakit sudah tertulis di sebelah logo.
 - **Favicon**: `public/favicon.svg` memakai mark garis buku catatan, bukan logo
   Vite bawaan.
 - **Ilustrasi**: tidak dipakai. Aplikasi ini bekerja dengan data nyata, bukan
@@ -111,6 +111,16 @@ gerakan tuas) (R-11).
 - Perbandingan memakai batang horizontal karena labelnya panjang dan beragam
   (nama kode, tipe printer, bulan). Panjang batang yang dibandingkan, bukan
   warna kategori, sehingga tetap terbaca tanpa membedakan warna (R-39).
+- Isi dashboard dibatasi kolom 896px dan dipusatkan. Papan pantau tidak perlu
+  selebar jendela; kolom sempit membuat angka mudah dipindai dan bar tidak
+  membentang dari ujung ke ujung.
+- Batang dibatasi 180px dan diletakkan di bawah nama, jadi panjangnya tetap
+  bisa dibandingkan tanpa menutupi seluruh lebar kartu.
+- Angka jumlah ditulis utuh dalam mono tebal sebagai dasar keputusan. Tidak ada
+  persentase karena pembacanya butuh jumlah nyata, bukan rasio.
+- Nomor urut hanya dipakai pada daftar peringkat (jenis, bulan tersibuk,
+  warna, bahan per printer). Grafik bulan kronologis tidak bernomor karena
+  urutannya waktu, bukan peringkat.
 - Semua batang memakai aksen yang sama; nilai tertinggi ditandai kata
   "Terbanyak", bukan warna baru. Ini menjaga palet tetap satu aksen (R-29).
 - Metrik dipecah menjadi satu panel per tombol tampilan. Menumpuk semua grafik
@@ -137,7 +147,8 @@ gerakan tuas) (R-11).
 - Batang dashboard: `src/features/dashboard/BarList.jsx`.
 - Tombol tampilan dashboard: `src/features/dashboard/DashboardTabs.jsx`.
 - Baris akordeon bahan printer: `src/features/dashboard/PrinterRow.jsx`.
-- Placeholder logo: `src/components/brand/BrandMark.jsx`.
+- Identitas header dan logo resmi: `src/components/brand/BrandMark.jsx`.
+- Berkas logo RSUD: `src/logo/logo_za.jpg`.
 - Font di-host sendiri dari paket `@fontsource` (IBM Plex Sans dan Plex Mono).
 
 ## Larangan lokal
