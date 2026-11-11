@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import PrinterRow from './PrinterRow.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
+import Pagination from '../../components/ui/Pagination.jsx';
 import SectionHeader from '../../components/ui/SectionHeader.jsx';
 import { Input, Select } from '../../components/ui/FormControls.jsx';
 
@@ -17,20 +18,20 @@ function cocokCari(printer, kata) {
 /**
  * Daftar bahan per tipe printer dalam bentuk akordeon.
  *
- * Hanya 6 baris pertama yang tampil supaya puluhan printer tidak memenuhi
- * layar. Pencarian, filter jenis, dan urutan bekerja pada seluruh data, bukan
+ * Daftar dibagi 6 printer per halaman supaya puluhan printer tidak memanjangkan
+ * halaman. Pencarian, filter jenis, dan urutan bekerja pada seluruh data, bukan
  * hanya yang sedang terlihat.
  */
 export default function PrinterBahanPanel({ printer }) {
   const [cari, setCari] = useState('');
   const [jenisId, setJenisId] = useState('');
   const [urut, setUrut] = useState('total');
-  const [semua, setSemua] = useState(false);
+  const [halaman, setHalaman] = useState(1);
   const [terbuka, setTerbuka] = useState(null);
 
-  // Filter atau urutan baru berarti daftar kembali ke ringkasan awal.
+  // Filter atau urutan baru berarti daftar kembali ke halaman pertama.
   function resetRingkasan() {
-    setSemua(false);
+    setHalaman(1);
     setTerbuka(null);
   }
 
@@ -59,7 +60,9 @@ export default function PrinterBahanPanel({ printer }) {
     );
   }, [printer, cari, jenisId, urut]);
 
-  const tampil = semua ? hasil : hasil.slice(0, MAKS_AWAL);
+  const totalHalaman = Math.max(1, Math.ceil(hasil.length / MAKS_AWAL));
+  const halamanAman = Math.min(halaman, totalHalaman);
+  const tampil = hasil.slice((halamanAman - 1) * MAKS_AWAL, halamanAman * MAKS_AWAL);
   const adaFilter = cari.trim() !== '' || jenisId !== '' || urut !== 'total';
   const kosong = printer.length === 0;
 
@@ -141,16 +144,23 @@ export default function PrinterBahanPanel({ printer }) {
             ))}
           </ul>
 
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-4 py-3">
-            <p className="text-xs text-faint">
+          {hasil.length > MAKS_AWAL ? (
+            <Pagination
+              page={halamanAman}
+              totalPage={totalHalaman}
+              total={hasil.length}
+              limit={MAKS_AWAL}
+              satuan="printer"
+              onPageChange={(baru) => {
+                setHalaman(baru);
+                setTerbuka(null);
+              }}
+            />
+          ) : (
+            <div className="border-t border-line px-4 py-3 text-xs text-faint">
               Menampilkan {tampil.length} dari {hasil.length} printer.
-            </p>
-            {hasil.length > MAKS_AWAL && (
-              <Button variant="secondary" size="sm" onClick={() => setSemua((nilai) => !nilai)}>
-                {semua ? `Ringkas (${MAKS_AWAL})` : `Tampilkan semua (${hasil.length})`}
-              </Button>
-            )}
-          </div>
+            </div>
+          )}
         </>
       )}
     </Card>

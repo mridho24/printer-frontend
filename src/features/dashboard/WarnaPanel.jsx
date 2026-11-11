@@ -3,6 +3,7 @@ import RankingTable from './RankingTable.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
 import SectionHeader from '../../components/ui/SectionHeader.jsx';
+import { Select } from '../../components/ui/FormControls.jsx';
 import { WARNA_META } from '../../lib/constants.js';
 import { formatDaftar } from '../../lib/format.js';
 import { cn } from '../../lib/cn.js';
@@ -36,12 +37,14 @@ function kesimpulanWarna(warna) {
 /**
  * Warna permintaan.
  *
- * Data bisa dibaca per tipe printer supaya terlihat warna apa yang paling
- * sering diminta pada satu tipe, misalnya L135 di jenis Inkjet. Tampilan per
- * jenis warna tetap tersedia untuk melihat gabungan seluruh tipe.
+ * Mode per tipe printer menampilkan satu tipe pilihan pengguna supaya panel
+ * tidak memanjang saat printer warna bertambah. Daftar seluruh tipe tetap bisa
+ * dibaca di panel bahan per printer. Mode per jenis warna menampilkan gabungan
+ * seluruh tipe dalam satu jenis.
  */
 export default function WarnaPanel({ warna, printer }) {
   const [mode, setMode] = useState('tipe');
+  const [tipeTerpilih, setTipeTerpilih] = useState('');
   const [semua, setSemua] = useState(false);
 
   const perJenis = [...warna]
@@ -74,9 +77,17 @@ export default function WarnaPanel({ warna, printer }) {
     }))
     .sort((a, b) => b.total - a.total || a.judul.localeCompare(b.judul));
 
-  const daftar = mode === 'tipe' ? perPrinter : perJenis;
-  const tampil = semua ? daftar : daftar.slice(0, MAKS_AWAL);
-  const bisaDibuka = daftar.length > MAKS_AWAL;
+  const printerAktif =
+    perPrinter.find((item) => item.judul === tipeTerpilih) ?? perPrinter[0] ?? null;
+  const tampil =
+    mode === 'tipe'
+      ? printerAktif
+        ? [printerAktif]
+        : []
+      : semua
+        ? perJenis
+        : perJenis.slice(0, MAKS_AWAL);
+  const bisaDibuka = mode === 'jenis' && perJenis.length > MAKS_AWAL;
 
   function pilihMode(key) {
     setMode(key);
@@ -85,37 +96,55 @@ export default function WarnaPanel({ warna, printer }) {
 
   const keterangan =
     mode === 'tipe'
-      ? 'Warna dihitung per tipe printer. Satu permintaan bisa memuat lebih dari satu warna.'
+      ? 'Pilih satu tipe printer. Satu permintaan bisa memuat lebih dari satu warna. Semua tipe printer ada di tab Bahan per printer.'
       : 'Warna digabung per jenis. Satu permintaan bisa memuat lebih dari satu warna.';
 
   return (
     <Card>
       <SectionHeader title="Warna paling sering diminta" description={keterangan} />
 
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-line px-4 py-3">
-        <span className="text-xs font-medium text-muted">Kelompokkan</span>
-        <div className="flex flex-wrap gap-1" role="group" aria-label="Kelompokkan data warna">
-          {MODE.map((item) => {
-            const aktif = item.key === mode;
+      <div className="flex flex-wrap items-end gap-3 border-b border-line px-4 py-3">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <span className="text-xs font-medium text-muted">Kelompokkan</span>
+          <div className="flex flex-wrap gap-1" role="group" aria-label="Kelompokkan data warna">
+            {MODE.map((item) => {
+              const aktif = item.key === mode;
 
-            return (
-              <button
-                key={item.key}
-                type="button"
-                aria-pressed={aktif}
-                onClick={() => pilihMode(item.key)}
-                className={cn(
-                  'inline-flex h-9 items-center rounded-md border px-3 text-xs font-medium transition-colors max-lg:h-11',
-                  aktif
-                    ? 'border-accent bg-accent-soft text-accent-strong'
-                    : 'border-line-strong bg-surface text-muted hover:text-ink',
-                )}
-              >
-                {item.label}
-              </button>
-            );
-          })}
+              return (
+                <button
+                  key={item.key}
+                  type="button"
+                  aria-pressed={aktif}
+                  onClick={() => pilihMode(item.key)}
+                  className={cn(
+                    'inline-flex h-9 items-center rounded-md border px-3 text-xs font-medium transition-colors max-lg:h-11',
+                    aktif
+                      ? 'border-accent bg-accent-soft text-accent-strong'
+                      : 'border-line-strong bg-surface text-muted hover:text-ink',
+                  )}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
+
+        {mode === 'tipe' && printerAktif && (
+          <Select
+            label="Tipe printer"
+            value={printerAktif.judul}
+            onChange={(event) => setTipeTerpilih(event.target.value)}
+            className="w-full sm:ml-auto sm:w-72"
+          >
+            {perPrinter.map((item) => (
+              <option key={item.judul} value={item.judul}>
+                {item.judul} ({item.meta}
+                {item.arsip ? ', arsip' : ''})
+              </option>
+            ))}
+          </Select>
+        )}
       </div>
 
       {tampil.length === 0 ? (
@@ -165,7 +194,7 @@ export default function WarnaPanel({ warna, printer }) {
       {bisaDibuka && (
         <div className="flex justify-end border-t border-line px-4 py-3">
           <Button variant="secondary" size="sm" onClick={() => setSemua((nilai) => !nilai)}>
-            {semua ? 'Ringkas' : `Tampilkan semua (${daftar.length})`}
+            {semua ? 'Ringkas' : `Tampilkan semua (${perJenis.length})`}
           </Button>
         </div>
       )}

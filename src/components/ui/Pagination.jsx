@@ -25,6 +25,7 @@ export default function Pagination({
   totalPage = 0,
   total = 0,
   limit = 10,
+  satuan = 'catatan',
   onPageChange,
   onLimitChange,
 }) {
@@ -38,7 +39,7 @@ export default function Pagination({
         <span className="tabular-nums">
           Menampilkan <span className="font-mono font-medium text-ink">{awal}</span> sampai{' '}
           <span className="font-mono font-medium text-ink">{akhir}</span> dari{' '}
-          <span className="font-mono font-medium text-ink">{total}</span> catatan
+          <span className="font-mono font-medium text-ink">{total}</span> {satuan}
         </span>
         {onLimitChange && (
           <label className="flex items-center gap-1.5 border-l border-line pl-3">
