@@ -1,0 +1,78 @@
+import { useRef } from 'react';
+import { cn } from '../../lib/cn.js';
+
+/**
+ * Pemilih tampilan dashboard.
+ *
+ * Tiap metrik punya panelnya sendiri supaya halaman tidak menumpuk semua
+ * grafik. Tombol memakai pola tab: panah kiri/kanan berpindah tab, dan hanya
+ * tab aktif yang masuk urutan Tab.
+ */
+export default function DashboardTabs({ tabs, active, onChange }) {
+  const tombolRef = useRef([]);
+
+  function pilih(key, indeks) {
+    onChange(key);
+    tombolRef.current[indeks]?.focus();
+  }
+
+  function onKeyDown(event, indeks) {
+    const terakhir = tabs.length - 1;
+
+    if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      pilih(tabs[(indeks + 1) % tabs.length].key, (indeks + 1) % tabs.length);
+    } else if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      const sebelumnya = (indeks - 1 + tabs.length) % tabs.length;
+      pilih(tabs[sebelumnya].key, sebelumnya);
+    } else if (event.key === 'Home') {
+      event.preventDefault();
+      pilih(tabs[0].key, 0);
+    } else if (event.key === 'End') {
+      event.preventDefault();
+      pilih(tabs[terakhir].key, terakhir);
+    }
+  }
+
+  return (
+    <div
+      role="tablist"
+      aria-label="Tampilan dashboard"
+      className="flex flex-wrap gap-x-1 px-2"
+    >
+      {tabs.map((tab, indeks) => {
+        const aktif = tab.key === active;
+
+        return (
+          <button
+            key={tab.key}
+            ref={(elemen) => {
+              tombolRef.current[indeks] = elemen;
+            }}
+            type="button"
+            role="tab"
+            id={`tab-${tab.key}`}
+            aria-selected={aktif}
+            aria-controls={`panel-${tab.key}`}
+            tabIndex={aktif ? 0 : -1}
+            onClick={() => onChange(tab.key)}
+            onKeyDown={(event) => onKeyDown(event, indeks)}
+            className={cn(
+              'inline-flex h-11 items-center gap-2 border-b-2 px-3 text-sm font-medium transition-colors',
+              aktif
+                ? 'border-accent text-accent-strong'
+                : 'border-transparent text-muted hover:text-ink',
+            )}
+          >
+            <span className="font-mono text-[11px] font-medium tabular-nums text-accent">
+              {String(indeks + 1).padStart(2, '0')}
+            </span>
+            {tab.label}
+            <span className="font-mono text-[11px] tabular-nums text-faint">({tab.count})</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}

@@ -1,38 +1,33 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Plus, RotateCw } from 'lucide-react';
 import PageHeader from '../components/layout/PageHeader.jsx';
 import Card from '../components/ui/Card.jsx';
 import Button from '../components/ui/Button.jsx';
-import SectionHeader from '../components/ui/SectionHeader.jsx';
 import { EmptyState, ErrorState } from '../components/ui/Feedback.jsx';
-import BarList from '../features/dashboard/BarList.jsx';
-import BahanPrinterCard from '../features/dashboard/BahanPrinterCard.jsx';
-import BulanChart from '../features/dashboard/BulanChart.jsx';
+import BulanPanel from '../features/dashboard/BulanPanel.jsx';
+import DashboardTabs from '../features/dashboard/DashboardTabs.jsx';
+import JenisPanel from '../features/dashboard/JenisPanel.jsx';
+import PrinterBahanPanel from '../features/dashboard/PrinterBahanPanel.jsx';
 import RingkasanStrip from '../features/dashboard/RingkasanStrip.jsx';
-import WarnaCard from '../features/dashboard/WarnaCard.jsx';
+import WarnaPanel from '../features/dashboard/WarnaPanel.jsx';
 import { dashboardApi } from '../api/index.js';
 import { useFetch } from '../hooks/useFetch.js';
-import { formatBulan } from '../lib/format.js';
+
+const TAMPILAN_AWAL = 'jenis';
 
 function DashboardSkeleton() {
   return (
     <div className="space-y-4" role="status" aria-label="Memuat dashboard">
       <div className="h-[76px] animate-pulse rounded-lg border border-line bg-surface" />
-      <div className="grid gap-4 lg:grid-cols-2">
-        <div className="h-72 animate-pulse rounded-lg border border-line bg-surface" />
-        <div className="h-72 animate-pulse rounded-lg border border-line bg-surface" />
-      </div>
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <div className="h-60 animate-pulse rounded-lg border border-line bg-surface" />
-        <div className="h-60 animate-pulse rounded-lg border border-line bg-surface" />
-        <div className="h-60 animate-pulse rounded-lg border border-line bg-surface" />
-      </div>
+      <div className="h-[52px] animate-pulse rounded-lg border border-line bg-surface" />
+      <div className="h-80 animate-pulse rounded-lg border border-line bg-surface" />
     </div>
   );
 }
 
 export default function DashboardPage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { data, loading, error, reload } = useFetch(() => dashboardApi.ringkasan(), []);
 
   const ringkasan = data?.ringkasan;
@@ -42,16 +37,21 @@ export default function DashboardPage() {
   const warna = (data?.warna ?? []).filter((item) => item.warna.length > 0);
   const bulanan = data?.bulanan ?? [];
 
-  const bulanTersibuk = [...bulanan]
-    .sort((a, b) => b.total - a.total || a.bulan.localeCompare(b.bulan))
-    .slice(0, 3)
-    .filter((item) => item.total > 0);
-  const keteranganBulan =
-    bulanTersibuk.length > 0
-      ? `Tiga bulan tersibuk: ${bulanTersibuk
-          .map((item) => `${formatBulan(item.bulan)} (${item.total})`)
-          .join(', ')}.`
-      : 'Belum ada data bulanan.';
+  const tabs = [
+    { key: 'jenis', label: 'Jenis printer', count: jenis.length },
+    { key: 'bahan', label: 'Bahan per printer', count: printer.length },
+    { key: 'bulan', label: 'Bulan', count: bulanan.length },
+    ...(warna.length > 0 ? [{ key: 'warna', label: 'Warna', count: warna.length }] : []),
+  ];
+
+  const diminta = searchParams.get('tampilan');
+  const aktif = tabs.some((tab) => tab.key === diminta) ? diminta : TAMPILAN_AWAL;
+
+  function pilihTampilan(key) {
+    const berikut = new URLSearchParams(searchParams);
+    berikut.set('tampilan', key);
+    setSearchParams(berikut, { replace: true });
+  }
 
   return (
     <>
@@ -94,66 +94,21 @@ export default function DashboardPage() {
         <>
           <RingkasanStrip ringkasan={ringkasan} />
 
-          <div className="grid gap-4 lg:grid-cols-2">
-            <Card>
-              <SectionHeader
-                index="01"
-                title="Jenis printer paling sering diminta"
-                description={`${jenis.length} jenis memiliki permintaan tercatat.`}
-              />
-              <div className="p-4">
-                <BarList
-                  items={jenis.map((item) => ({
-                    nama: item.jenis_dihapus ? `${item.nama} (arsip)` : item.nama,
-                    total: item.total,
-                  }))}
-                  total={total}
-                  tandaiTeratas
-                />
-              </div>
-            </Card>
+          <Card className="mb-4">
+            <DashboardTabs tabs={tabs} active={aktif} onChange={pilihTampilan} />
+          </Card>
 
-            <Card>
-              <SectionHeader
-                index="02"
-                title="Bulan permintaan"
-                description={keteranganBulan}
-              />
-              <div className="p-4">
-                <BulanChart bulanan={bulanan} total={total} />
-              </div>
-            </Card>
+          <div
+            role="tabpanel"
+            id={`panel-${aktif}`}
+            aria-labelledby={`tab-${aktif}`}
+            tabIndex={0}
+          >
+            {aktif === 'jenis' && <JenisPanel jenis={jenis} total={total} />}
+            {aktif === 'bahan' && <PrinterBahanPanel printer={printer} />}
+            {aktif === 'bulan' && <BulanPanel bulanan={bulanan} total={total} />}
+            {aktif === 'warna' && <WarnaPanel warna={warna} />}
           </div>
-
-          <section className="mt-6">
-            <SectionHeader
-              index="03"
-              title="Bahan per tipe printer"
-              description="Kode untuk printer non-warna, warna untuk printer warna. Tiap tipe dihitung terpisah."
-              className="px-0"
-            />
-            <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {printer.map((item) => (
-                <BahanPrinterCard key={item.tipe} printer={item} />
-              ))}
-            </div>
-          </section>
-
-          {warna.length > 0 && (
-            <section className="mt-6">
-              <SectionHeader
-                index="04"
-                title="Warna per jenis warna"
-                description="Jumlah permintaan yang memuat tiap warna. Satu permintaan bisa berisi beberapa warna."
-                className="px-0"
-              />
-              <div className="mt-4 grid gap-4 lg:grid-cols-2">
-                {warna.map((item) => (
-                  <WarnaCard key={item.jenis_id} item={item} />
-                ))}
-              </div>
-            </section>
-          )}
         </>
       )}
     </>
