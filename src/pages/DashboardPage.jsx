@@ -54,7 +54,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <>
+    <div className="mx-auto w-full max-w-4xl">
       <PageHeader
         kicker="Papan pantau"
         title="Dashboard Permintaan"
@@ -104,13 +104,13 @@ export default function DashboardPage() {
             aria-labelledby={`tab-${aktif}`}
             tabIndex={0}
           >
-            {aktif === 'jenis' && <JenisPanel jenis={jenis} total={total} />}
+            {aktif === 'jenis' && <JenisPanel jenis={jenis} />}
             {aktif === 'bahan' && <PrinterBahanPanel printer={printer} />}
-            {aktif === 'bulan' && <BulanPanel bulanan={bulanan} total={total} />}
+            {aktif === 'bulan' && <BulanPanel bulanan={bulanan} />}
             {aktif === 'warna' && <WarnaPanel warna={warna} />}
           </div>
         </>
       )}
-    </>
+    </div>
   );
 }

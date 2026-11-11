@@ -29,11 +29,10 @@ function deretBulan(bulanan) {
   return hasil;
 }
 
-export default function BulanChart({ bulanan, total }) {
+export default function BulanChart({ bulanan }) {
   return (
     <BarList
       items={deretBulan(bulanan)}
-      total={total}
       tandaiTeratas
       kosong="Belum ada permintaan tercatat."
     />

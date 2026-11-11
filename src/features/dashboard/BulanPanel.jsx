@@ -15,7 +15,7 @@ const MAKS_AWAL = 6;
  * "kapan permintaan memuncak". Grafik kronologis lengkap dibuka terpisah agar
  * deret puluhan bulan tidak langsung memenuhi layar.
  */
-export default function BulanPanel({ bulanan, total }) {
+export default function BulanPanel({ bulanan }) {
   const [semua, setSemua] = useState(false);
 
   const berisi = bulanan.filter((item) => item.total > 0);
@@ -38,15 +38,15 @@ export default function BulanPanel({ bulanan, total }) {
 
       <div className="p-4">
         {semua ? (
-          <BulanChart bulanan={bulanan} total={total} />
+          <BulanChart bulanan={bulanan} />
         ) : (
           <BarList
             items={teratas.map((item) => ({
               nama: formatBulan(item.bulan),
               total: item.total,
             }))}
-            total={total}
             tandaiTeratas
+            bernomor
             kosong="Belum ada permintaan tercatat."
           />
         )}

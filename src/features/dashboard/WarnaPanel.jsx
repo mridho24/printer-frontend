@@ -35,8 +35,8 @@ export default function WarnaPanel({ warna }) {
                 nama: WARNA_META[warnaItem.nama]?.label ?? warnaItem.nama,
                 total: warnaItem.total,
               }))}
-              total={item.total}
               tandaiTeratas
+              bernomor
             />
           </section>
         ))}

@@ -87,8 +87,8 @@ export default function PrinterRow({ printer, terbuka, onToggle }) {
           </p>
           <BarList
             items={tampil}
-            total={printer.total}
             tandaiTeratas
+            bernomor
             kosong="Belum ada bahan tercatat."
           />
           {sisa > 0 && (
