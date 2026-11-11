@@ -42,9 +42,16 @@ Buka `http://localhost:5173`.
 
 ## Halaman
 
-- `#/permintaan` — daftar + form tambah/edit permintaan (halaman default)
+- `#/dashboard` — ringkasan pemantauan permintaan (halaman default)
+- `#/permintaan` — daftar + form tambah/edit permintaan
 - `#/master-data/jenis` — tab master data jenis
 - `#/master-data/printer` — tab master data printer
+
+Dashboard menampilkan jenis printer yang paling sering diminta, bahan (kode)
+per tipe printer non-warna, warna per tipe printer warna, agregat warna per
+jenis warna, dan jumlah permintaan tiap bulan. Semua angka dihitung dari
+permintaan aktif; riwayat printer/jenis yang sudah di-soft-delete tetap
+dihitung dan ditandai arsip.
 
 ## Perilaku penting
 
@@ -67,6 +74,7 @@ src/
   components/layout/   Topbar, layout, page header
   components/ui/       Button, form controls, modal, tabel, toast, dll.
   context/             Toast provider
+  features/dashboard/  Batang ringkasan, kartu bahan printer, grafik bulan
   features/jenis/      Tab & modal jenis
   features/printer/    Tab & modal printer
   features/permintaan/ Form, tabel, filter permintaan

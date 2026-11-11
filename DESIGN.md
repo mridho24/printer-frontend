@@ -106,10 +106,23 @@ gerakan tuas) (R-11).
 - Di layar pointer yang lebih lebar, kontrol memakai ukuran padat (36-40px)
   demi kepadatan tabel; ini pilihan sadar, bukan kelalaian.
 
+## Dashboard
+
+- Perbandingan memakai batang horizontal karena labelnya panjang dan beragam
+  (nama kode, tipe printer, bulan). Panjang batang yang dibandingkan, bukan
+  warna kategori, sehingga tetap terbaca tanpa membedakan warna (R-39).
+- Semua batang memakai aksen yang sama; nilai tertinggi ditandai kata
+  "Terbanyak", bukan warna baru. Ini menjaga palet tetap satu aksen (R-29).
+- Bulan tanpa permintaan tetap ditampilkan sebagai batang nol agar jarak waktu
+  tidak menyembunyikan bulan kosong.
+- Angka ringkasan ditulis mono dan dipisah garis, bukan kartu ikon, karena yang
+  dibaca adalah nilainya, bukan ilustrasinya.
+
 ## Implementasi
 
 - Token warna, font, radius, fokus, dan reduced motion: `src/index.css`.
 - Kepala bagian bernomor: `src/components/ui/SectionHeader.jsx`.
+- Batang dashboard: `src/features/dashboard/BarList.jsx`.
 - Placeholder logo: `src/components/brand/BrandMark.jsx`.
 - Font di-host sendiri dari paket `@fontsource` (IBM Plex Sans dan Plex Mono).
 
