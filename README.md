@@ -50,14 +50,17 @@ Buka `http://localhost:5173`.
 Dashboard memakai tombol tampilan supaya satu layar hanya memuat satu metrik:
 jenis printer, bahan per tipe printer, bulan, atau warna. Pilihan disimpan di
 URL (`#/dashboard?tampilan=bahan`), jadi muat ulang dan tombol kembali membuka
-tampilan yang sama.
+tampilan yang sama. Perbandingan ditulis sebagai tabel peringkat dengan satu
+kalimat kesimpulan, bukan batang yang harus ditafsirkan.
 
 - Daftar bahan per printer tampil sebagai akordeon. Hanya 6 baris pertama yang
   terlihat, dengan tombol **Tampilkan semua** untuk membuka seluruhnya.
   Pencarian tipe/merek dan filter jenis bekerja pada semua printer.
 - Panel bulan dimulai dari 6 bulan tersibuk, lalu **Lihat semua bulan** membuka
-  grafik kronologis lengkap termasuk bulan bernilai nol.
-- Panel warna hanya muncul jika ada jenis yang memakai warna.
+  tabel kronologis lengkap termasuk bulan bernilai nol.
+- Panel warna bisa dikelompokkan **per tipe printer** (default) atau **per jenis
+  warna**. Mode per tipe menunjukkan warna yang paling sering diminta pada tiap
+  tipe printer. Panel hanya muncul jika ada printer yang memakai warna.
 
 Semua angka dihitung dari permintaan aktif; riwayat printer/jenis yang sudah
 di-soft-delete tetap dihitung dan ditandai arsip.

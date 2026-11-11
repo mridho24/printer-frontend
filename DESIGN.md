@@ -108,34 +108,42 @@ gerakan tuas) (R-11).
 
 ## Dashboard
 
-- Perbandingan memakai batang horizontal karena labelnya panjang dan beragam
-  (nama kode, tipe printer, bulan). Panjang batang yang dibandingkan, bukan
-  warna kategori, sehingga tetap terbaca tanpa membedakan warna (R-39).
 - Isi dashboard dibatasi kolom 896px dan dipusatkan. Papan pantau tidak perlu
-  selebar jendela; kolom sempit membuat angka mudah dipindai dan bar tidak
-  membentang dari ujung ke ujung.
-- Batang dibatasi 180px dan diletakkan di bawah nama, jadi panjangnya tetap
-  bisa dibandingkan tanpa menutupi seluruh lebar kartu.
-- Angka jumlah ditulis utuh dalam mono tebal sebagai dasar keputusan. Tidak ada
-  persentase karena pembacanya butuh jumlah nyata, bukan rasio.
+  selebar jendela; kolom sempit membuat angka mudah dipindai.
+- Perbandingan memakai tabel peringkat, bukan batang. Batang menuntut pembaca
+  menafsirkan panjang relatif, sedangkan tabel menulis angka dan judul kolom
+  secara langsung: "Jenis printer" dan "Permintaan". Ini menjawab kebutuhan
+  utama dashboard, yaitu data untuk mengambil keputusan.
+- Tabel hanya memakai 2-3 kolom pendek, sehingga tetap terbaca di ponsel tanpa
+  scroll horizontal. Nomor urut memakai kolom sempit 32px.
+- Angka jumlah ditulis utuh dalam mono tebal. Tidak ada persentase karena
+  pembacanya butuh jumlah nyata, bukan rasio.
 - Nomor urut hanya dipakai pada daftar peringkat (jenis, bulan tersibuk,
   warna, bahan per printer). Grafik bulan kronologis tidak bernomor karena
   urutannya waktu, bukan peringkat.
-- Semua batang memakai aksen yang sama; nilai tertinggi ditandai kata
-  "Terbanyak", bukan warna baru. Ini menjaga palet tetap satu aksen (R-29).
-- Metrik dipecah menjadi satu panel per tombol tampilan. Menumpuk semua grafik
-  dalam satu layar membuat halaman panjang dan tidak punya fokus; dengan satu
-  panel, tiap layar menjawab satu pertanyaan.
-- Angka pada tombol tampilan menunjukkan jumlah data, supaya isi panel sudah
-  terbaca sebelum dibuka.
+- Nilai tertinggi ditandai kata "Terbanyak", bukan warna baru. Saat ada seri,
+  tanda itu tidak dipakai dan keterangan panel yang menyebutkan nama-nama yang
+  sama kuat. Ini menjaga palet tetap satu aksen (R-29).
+- Setiap panel dibuka dengan satu kalimat kesimpulan, misalnya "Dot Matrix dan
+  Inkjet sama-sama paling sering diminta". Pembaca tidak perlu membandingkan
+  angka sendiri untuk tahu jawabannya.
+- Metrik dipecah menjadi satu panel per tombol tampilan. Menumpuk semua data
+  dalam satu layar membuat halaman panjang dan tidak punya fokus.
+- Tombol tampilan tidak lagi membawa angka jumlah. Angka itu tidak punya arti
+  yang sama di tiap tab (jenis, printer, bulan, jenis warna) sehingga lebih
+  membingungkan daripada membantu.
 - Daftar bahan printer memakai akordeon. Baris tertutup sudah menyebut bahan
   terbanyak, jadi rincian hanya dibuka saat ingin melihat sisanya. Enam baris
   pertama cukup untuk pembacaan awal; "Tampilkan semua" membuka seluruh daftar
   tanpa berpindah halaman.
-- Panel bulan memprioritaskan bulan tersibuk. Grafik kronologis penuh adalah
+- Panel warna bisa dikelompokkan per tipe printer atau per jenis warna. Mode
+  per tipe menjawab "warna apa yang paling sering diminta pada L135", sedangkan
+  mode per jenis menjawab gabungan seluruh printer dalam satu jenis. Mode per
+  tipe menjadi tampilan awal karena lebih spesifik.
+- Panel bulan memprioritaskan bulan tersibuk. Tabel kronologis penuh adalah
   tampilan kedua karena deret panjang tidak langsung menjawab "bulan mana yang
   ramai".
-- Bulan tanpa permintaan tetap ditampilkan sebagai batang nol agar jarak waktu
+- Bulan tanpa permintaan tetap ditampilkan dengan nilai nol agar jarak waktu
   tidak menyembunyikan bulan kosong.
 - Angka ringkasan ditulis mono dan dipisah garis, bukan kartu ikon, karena yang
   dibaca adalah nilainya, bukan ilustrasinya.
@@ -144,7 +152,8 @@ gerakan tuas) (R-11).
 
 - Token warna, font, radius, fokus, dan reduced motion: `src/index.css`.
 - Kepala bagian bernomor: `src/components/ui/SectionHeader.jsx`.
-- Batang dashboard: `src/features/dashboard/BarList.jsx`.
+- Tabel peringkat dashboard: `src/features/dashboard/RankingTable.jsx`.
+- Pengelompokan warna per tipe/jenis: `src/features/dashboard/WarnaPanel.jsx`.
 - Tombol tampilan dashboard: `src/features/dashboard/DashboardTabs.jsx`.
 - Baris akordeon bahan printer: `src/features/dashboard/PrinterRow.jsx`.
 - Identitas header dan logo resmi: `src/components/brand/BrandMark.jsx`.
