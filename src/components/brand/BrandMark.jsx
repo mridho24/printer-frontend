@@ -1,24 +1,25 @@
 import { Link } from 'react-router-dom';
+import logoZa from '../../logo/logo_za.jpg';
 import { cn } from '../../lib/cn.js';
 
 /**
- * Placeholder identitas, bukan logo resmi (lihat DESIGN.md bagian Aset).
+ * Identitas aplikasi di header: logo resmi RSUD Zainal Abidin.
  *
- * TODO: ganti isi komponen ini dengan logo resmi RSUD Zainal Abidin:
- *   1. taruh file logo di `public/logo-rsud.svg`
- *   2. ganti monogram di bawah dengan
- *      <img src="/logo-rsud.svg" alt="RSUD Zainal Abidin" width="36" height="36" />
- * Ukuran, jarak, dan perataan header tidak perlu diubah.
+ * Logo berukuran 600x300 dan berlatar putih, jadi tinggi 40px menjaga rasio
+ * aslinya. `mix-blend-multiply` membuat latar putih menyatu dengan permukaan
+ * header tanpa mengubah berkas aslinya. `alt` dikosongkan karena nama rumah
+ * sakit sudah tertulis sebagai teks di sebelah logo.
  */
 export default function BrandMark({ className }) {
   return (
-    <Link to="/permintaan" className={cn('flex shrink-0 items-center gap-2.5', className)}>
-      <span
-        aria-hidden="true"
-        className="flex h-9 w-9 items-center justify-center rounded-md bg-ink font-mono text-[13px] font-semibold text-surface"
-      >
-        ZA
-      </span>
+    <Link to="/dashboard" className={cn('flex shrink-0 items-center gap-2.5', className)}>
+      <img
+        src={logoZa}
+        alt=""
+        width={80}
+        height={40}
+        className="h-10 w-auto mix-blend-multiply"
+      />
       <span className="leading-tight">
         <span className="block text-[13px] font-semibold tracking-tight text-ink">
           Bahan Printer
