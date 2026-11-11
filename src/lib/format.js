@@ -36,6 +36,17 @@ export function formatBulan(value) {
 }
 
 /**
+ * Menggabungkan nama menjadi daftar kalimat: "A", "A dan B", atau
+ * "A, B, dan C". Dipakai untuk menyebut beberapa nilai teratas sekaligus.
+ */
+export function formatDaftar(daftar) {
+  if (daftar.length === 0) return '';
+  if (daftar.length === 1) return daftar[0];
+  if (daftar.length === 2) return `${daftar[0]} dan ${daftar[1]}`;
+  return `${daftar.slice(0, -1).join(', ')}, dan ${daftar[daftar.length - 1]}`;
+}
+
+/**
  * Format DATETIME "YYYY-MM-DD HH:mm:ss" menjadi "4 Nov 2026, 10.30".
  */
 export function formatWaktu(value) {

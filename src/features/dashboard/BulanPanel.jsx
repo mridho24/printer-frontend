@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import BarList from './BarList.jsx';
 import BulanChart from './BulanChart.jsx';
+import RankingTable from './RankingTable.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
 import SectionHeader from '../../components/ui/SectionHeader.jsx';
-import { formatBulan } from '../../lib/format.js';
+import { formatBulan, formatDaftar } from '../../lib/format.js';
 
 const MAKS_AWAL = 6;
 
@@ -18,19 +18,34 @@ const MAKS_AWAL = 6;
 export default function BulanPanel({ bulanan }) {
   const [semua, setSemua] = useState(false);
 
-  const berisi = bulanan.filter((item) => item.total > 0);
+  const urut = [...bulanan].sort((a, b) => a.bulan.localeCompare(b.bulan));
+  const berisi = urut.filter((item) => item.total > 0);
   const teratas = [...berisi]
     .sort((a, b) => b.total - a.total || a.bulan.localeCompare(b.bulan))
     .slice(0, MAKS_AWAL);
   const bisaDibuka = berisi.length > MAKS_AWAL;
 
-  const keterangan = semua
-    ? 'Semua bulan berurutan. Bulan tanpa permintaan tetap tampil dengan nilai nol.'
-    : berisi.length > MAKS_AWAL
-      ? `${MAKS_AWAL} bulan dengan permintaan terbanyak.`
-      : berisi.length > 0
-        ? `${berisi.length} bulan memiliki permintaan tercatat.`
-        : 'Belum ada permintaan tercatat.';
+  const puncak = berisi[0]?.total ?? 0;
+  const bulanPuncak = berisi.filter((item) => item.total === puncak);
+  const namaPuncak = formatDaftar(bulanPuncak.map((item) => formatBulan(item.bulan)));
+
+  let keterangan = 'Belum ada permintaan tercatat.';
+  if (semua && urut.length > 0) {
+    const awal = formatBulan(urut[0].bulan);
+    const akhir = formatBulan(urut[urut.length - 1].bulan);
+    keterangan =
+      awal === akhir
+        ? `Semua permintaan tercatat pada ${awal}.`
+        : `Permintaan tercatat dari ${awal} sampai ${akhir}. Bulan tanpa permintaan tetap ditampilkan.`;
+  } else if (berisi.length === 1) {
+    keterangan = `${namaPuncak} satu-satunya bulan dengan ${puncak} permintaan.`;
+  } else if (bulanPuncak.length === 1) {
+    keterangan = `${namaPuncak} paling banyak diminta dengan ${puncak} permintaan.`;
+  } else if (bulanPuncak.length === 2) {
+    keterangan = `${namaPuncak} sama-sama paling banyak diminta, masing-masing ${puncak} permintaan.`;
+  } else if (bulanPuncak.length > 2) {
+    keterangan = `${bulanPuncak.length} bulan sama-sama paling banyak diminta, masing-masing ${puncak} permintaan.`;
+  }
 
   return (
     <Card>
@@ -40,13 +55,15 @@ export default function BulanPanel({ bulanan }) {
         {semua ? (
           <BulanChart bulanan={bulanan} />
         ) : (
-          <BarList
+          <RankingTable
             items={teratas.map((item) => ({
               nama: formatBulan(item.bulan),
               total: item.total,
             }))}
-            tandaiTeratas
+            labelHeader="Bulan"
+            satuanHeader="Permintaan"
             bernomor
+            tandaiTeratas
             kosong="Belum ada permintaan tercatat."
           />
         )}

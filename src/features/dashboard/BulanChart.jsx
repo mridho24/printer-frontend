@@ -1,4 +1,4 @@
-import BarList from './BarList.jsx';
+import RankingTable from './RankingTable.jsx';
 import { formatBulan } from '../../lib/format.js';
 
 /**
@@ -31,8 +31,10 @@ function deretBulan(bulanan) {
 
 export default function BulanChart({ bulanan }) {
   return (
-    <BarList
+    <RankingTable
       items={deretBulan(bulanan)}
+      labelHeader="Bulan"
+      satuanHeader="Permintaan"
       tandaiTeratas
       kosong="Belum ada permintaan tercatat."
     />

@@ -1,51 +1,171 @@
 import { useState } from 'react';
-import BarList from './BarList.jsx';
+import RankingTable from './RankingTable.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
 import SectionHeader from '../../components/ui/SectionHeader.jsx';
 import { WARNA_META } from '../../lib/constants.js';
+import { formatDaftar } from '../../lib/format.js';
+import { cn } from '../../lib/cn.js';
 
 const MAKS_AWAL = 4;
 
+const MODE = [
+  { key: 'tipe', label: 'Per tipe printer' },
+  { key: 'jenis', label: 'Per jenis warna' },
+];
+
+function labelWarna(nama) {
+  return WARNA_META[nama]?.label ?? nama;
+}
+
+function kesimpulanWarna(warna) {
+  if (warna.length === 0) return 'Belum ada warna tercatat.';
+
+  const puncak = Math.max(...warna.map((item) => item.total));
+  const teratas = warna.filter((item) => item.total === puncak).map((item) => item.nama);
+
+  if (warna.length === 1) {
+    return `Hanya ${teratas[0]} yang diminta (${puncak} permintaan).`;
+  }
+  if (teratas.length === 1) {
+    return `${teratas[0]} paling sering diminta (${puncak} permintaan).`;
+  }
+  return `${formatDaftar(teratas)} masing-masing diminta ${puncak} kali.`;
+}
+
 /**
- * Agregat warna per jenis warna (misalnya seluruh printer Inkjet). Angka tiap
- * warna adalah jumlah permintaan yang memuat warna tersebut, jadi totalnya
- * bisa melewati 100% dari total permintaan.
+ * Warna permintaan.
+ *
+ * Data bisa dibaca per tipe printer supaya terlihat warna apa yang paling
+ * sering diminta pada satu tipe, misalnya L135 di jenis Inkjet. Tampilan per
+ * jenis warna tetap tersedia untuk melihat gabungan seluruh tipe.
  */
-export default function WarnaPanel({ warna }) {
+export default function WarnaPanel({ warna, printer }) {
+  const [mode, setMode] = useState('tipe');
   const [semua, setSemua] = useState(false);
-  const tampil = semua ? warna : warna.slice(0, MAKS_AWAL);
+
+  const perJenis = [...warna]
+    .map((item) => ({
+      kunci: `jenis-${item.jenis_id}`,
+      judul: item.nama,
+      meta: null,
+      total: item.total,
+      satuanTotal: 'permintaan warna',
+      warna: item.warna.map((warnaItem) => ({
+        nama: labelWarna(warnaItem.nama),
+        total: warnaItem.total,
+      })),
+    }))
+    .sort((a, b) => b.total - a.total || a.judul.localeCompare(b.judul));
+
+  const perPrinter = printer
+    .filter((item) => item.bahan.length > 0)
+    .map((item) => ({
+      kunci: `printer-${item.tipe}`,
+      judul: item.tipe,
+      meta: `${item.merek} · ${item.jenis_nama ?? 'Jenis tidak diketahui'}`,
+      total: item.total,
+      satuanTotal: 'permintaan',
+      arsip: item.printer_dihapus || item.jenis_dihapus,
+      warna: item.bahan.map((warnaItem) => ({
+        nama: labelWarna(warnaItem.nama),
+        total: warnaItem.total,
+      })),
+    }))
+    .sort((a, b) => b.total - a.total || a.judul.localeCompare(b.judul));
+
+  const daftar = mode === 'tipe' ? perPrinter : perJenis;
+  const tampil = semua ? daftar : daftar.slice(0, MAKS_AWAL);
+  const bisaDibuka = daftar.length > MAKS_AWAL;
+
+  function pilihMode(key) {
+    setMode(key);
+    setSemua(false);
+  }
+
+  const keterangan =
+    mode === 'tipe'
+      ? 'Warna dihitung per tipe printer. Satu permintaan bisa memuat lebih dari satu warna.'
+      : 'Warna digabung per jenis. Satu permintaan bisa memuat lebih dari satu warna.';
 
   return (
     <Card>
-      <SectionHeader
-        title="Warna per jenis warna"
-        description="Jumlah permintaan yang memuat tiap warna. Satu permintaan bisa berisi beberapa warna."
-      />
+      <SectionHeader title="Warna paling sering diminta" description={keterangan} />
 
-      <div className="divide-y divide-line">
-        {tampil.map((item) => (
-          <section key={item.jenis_id} className="p-4">
-            <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-              <h3 className="text-sm font-semibold text-ink">Warna pada {item.nama}</h3>
-              <p className="text-xs text-muted">{item.total} permintaan warna</p>
-            </div>
-            <BarList
-              items={item.warna.map((warnaItem) => ({
-                nama: WARNA_META[warnaItem.nama]?.label ?? warnaItem.nama,
-                total: warnaItem.total,
-              }))}
-              tandaiTeratas
-              bernomor
-            />
-          </section>
-        ))}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-line px-4 py-3">
+        <span className="text-xs font-medium text-muted">Kelompokkan</span>
+        <div className="flex flex-wrap gap-1" role="group" aria-label="Kelompokkan data warna">
+          {MODE.map((item) => {
+            const aktif = item.key === mode;
+
+            return (
+              <button
+                key={item.key}
+                type="button"
+                aria-pressed={aktif}
+                onClick={() => pilihMode(item.key)}
+                className={cn(
+                  'inline-flex h-9 items-center rounded-md border px-3 text-xs font-medium transition-colors max-lg:h-11',
+                  aktif
+                    ? 'border-accent bg-accent-soft text-accent-strong'
+                    : 'border-line-strong bg-surface text-muted hover:text-ink',
+                )}
+              >
+                {item.label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      {warna.length > MAKS_AWAL && (
+      {tampil.length === 0 ? (
+        <p className="px-4 py-8 text-xs text-muted">Belum ada permintaan warna tercatat.</p>
+      ) : (
+        <div className="divide-y divide-line">
+          {tampil.map((item) => (
+            <section key={item.kunci} className="p-4">
+              <div className="mb-1 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                <div className="min-w-0">
+                  <h3
+                    className={cn(
+                      'text-sm font-semibold text-ink',
+                      mode === 'tipe' && 'font-mono',
+                    )}
+                  >
+                    {item.judul}
+                  </h3>
+                  {item.meta && (
+                    <p className="text-xs text-muted">
+                      {item.meta}
+                      {item.arsip && ' · arsip'}
+                    </p>
+                  )}
+                </div>
+                <p className="text-xs text-muted">
+                  {item.total} {item.satuanTotal}
+                </p>
+              </div>
+
+              <p className="mb-2 text-xs text-ink">{kesimpulanWarna(item.warna)}</p>
+
+              <RankingTable
+                items={item.warna}
+                labelHeader="Warna"
+                satuanHeader="Permintaan"
+                bernomor
+                tandaiTeratas
+                padat
+                kosong="Belum ada warna tercatat."
+              />
+            </section>
+          ))}
+        </div>
+      )}
+
+      {bisaDibuka && (
         <div className="flex justify-end border-t border-line px-4 py-3">
           <Button variant="secondary" size="sm" onClick={() => setSemua((nilai) => !nilai)}>
-            {semua ? 'Ringkas' : `Tampilkan semua (${warna.length})`}
+            {semua ? 'Ringkas' : `Tampilkan semua (${daftar.length})`}
           </Button>
         </div>
       )}

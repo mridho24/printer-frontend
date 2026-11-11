@@ -35,13 +35,14 @@ export default function DashboardPage() {
   const jenis = data?.jenis ?? [];
   const printer = data?.printer ?? [];
   const warna = (data?.warna ?? []).filter((item) => item.warna.length > 0);
+  const printerWarna = printer.filter((item) => item.pakai_warna && item.bahan.length > 0);
   const bulanan = data?.bulanan ?? [];
 
   const tabs = [
-    { key: 'jenis', label: 'Jenis printer', count: jenis.length },
-    { key: 'bahan', label: 'Bahan per printer', count: printer.length },
-    { key: 'bulan', label: 'Bulan', count: bulanan.length },
-    ...(warna.length > 0 ? [{ key: 'warna', label: 'Warna', count: warna.length }] : []),
+    { key: 'jenis', label: 'Jenis printer' },
+    { key: 'bahan', label: 'Bahan per printer' },
+    { key: 'bulan', label: 'Bulan' },
+    ...(printerWarna.length > 0 ? [{ key: 'warna', label: 'Warna' }] : []),
   ];
 
   const diminta = searchParams.get('tampilan');
@@ -107,7 +108,7 @@ export default function DashboardPage() {
             {aktif === 'jenis' && <JenisPanel jenis={jenis} />}
             {aktif === 'bahan' && <PrinterBahanPanel printer={printer} />}
             {aktif === 'bulan' && <BulanPanel bulanan={bulanan} />}
-            {aktif === 'warna' && <WarnaPanel warna={warna} />}
+            {aktif === 'warna' && <WarnaPanel warna={warna} printer={printerWarna} />}
           </div>
         </>
       )}

@@ -1,5 +1,5 @@
 import { ChevronDown } from 'lucide-react';
-import BarList from './BarList.jsx';
+import RankingTable from './RankingTable.jsx';
 import { Badge } from '../../components/ui/Feedback.jsx';
 import { WARNA_META } from '../../lib/constants.js';
 import { cn } from '../../lib/cn.js';
@@ -85,10 +85,13 @@ export default function PrinterRow({ printer, terbuka, onToggle }) {
               ? `${MAKS_BAHAN} warna paling sering diminta`
               : `${MAKS_BAHAN} ${printer.label_kode?.toLowerCase() || 'kode'} paling sering diminta`}
           </p>
-          <BarList
+          <RankingTable
             items={tampil}
-            tandaiTeratas
+            labelHeader={printer.pakai_warna ? 'Warna' : printer.label_kode || 'Kode bahan'}
+            satuanHeader="Permintaan"
             bernomor
+            tandaiTeratas
+            padat
             kosong="Belum ada bahan tercatat."
           />
           {sisa > 0 && (

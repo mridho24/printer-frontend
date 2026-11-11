@@ -69,7 +69,6 @@ export default function DashboardTabs({ tabs, active, onChange }) {
               {String(indeks + 1).padStart(2, '0')}
             </span>
             {tab.label}
-            <span className="font-mono text-[11px] tabular-nums text-faint">({tab.count})</span>
           </button>
         );
       })}
