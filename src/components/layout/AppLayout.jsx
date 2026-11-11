@@ -1,14 +1,20 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { ClipboardList, Database } from 'lucide-react';
+import { ClipboardList, Database, Gauge } from 'lucide-react';
 import BrandMark from '../brand/BrandMark.jsx';
 import { cn } from '../../lib/cn.js';
 
 /*
  * Ikon dipilih karena merujuk langsung ke isi menunya, bukan karena bentuknya:
- * ClipboardList = daftar permintaan yang dicatat, Database = kumpulan data induk.
- * Tidak ada ikon hiasan di navigasi.
+ * Gauge = papan pantau angka, ClipboardList = daftar permintaan yang dicatat,
+ * Database = kumpulan data induk. Tidak ada ikon hiasan di navigasi.
  */
 const NAVIGASI = [
+  {
+    to: '/dashboard',
+    label: 'Dashboard',
+    icon: Gauge,
+    cocok: (pathname) => pathname.startsWith('/dashboard'),
+  },
   {
     to: '/master-data/jenis',
     label: 'Master Data',
@@ -36,7 +42,7 @@ export default function AppLayout() {
 
           <nav
             aria-label="Navigasi utama"
-            className="order-3 -mx-1 flex w-full items-stretch gap-1 overflow-x-auto sm:order-none sm:mx-0 sm:w-auto sm:gap-0"
+            className="order-3 -mx-1 flex w-full flex-wrap items-stretch gap-x-1 sm:order-none sm:mx-0 sm:w-auto sm:gap-x-0"
           >
             {NAVIGASI.map((item) => {
               const aktif = item.cocok(pathname);

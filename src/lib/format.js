@@ -26,6 +26,16 @@ export function formatTanggal(value) {
 }
 
 /**
+ * Format kunci bulan "YYYY-MM" menjadi "Nov 2026".
+ */
+export function formatBulan(value) {
+  if (!value) return '-';
+  const [tahun, bulan] = String(value).split('-').map(Number);
+  if (!tahun || !bulan || bulan < 1 || bulan > 12) return String(value);
+  return `${NAMA_BULAN[bulan - 1]} ${tahun}`;
+}
+
+/**
  * Format DATETIME "YYYY-MM-DD HH:mm:ss" menjadi "4 Nov 2026, 10.30".
  */
 export function formatWaktu(value) {
