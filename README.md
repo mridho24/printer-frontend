@@ -42,10 +42,10 @@ Buka `http://localhost:5173`.
 
 ## Halaman
 
-- `#/dashboard` — ringkasan pemantauan permintaan (halaman default)
-- `#/permintaan` — daftar + form tambah/edit permintaan
-- `#/master-data/jenis` — tab master data jenis
-- `#/master-data/printer` — tab master data printer
+- `#/dashboard`: ringkasan pemantauan permintaan (halaman default)
+- `#/permintaan`: daftar + form tambah/edit permintaan
+- `#/master-data/jenis`: tab master data jenis
+- `#/master-data/printer`: tab master data printer
 
 Dashboard memakai tombol tampilan supaya satu layar hanya memuat satu metrik:
 jenis printer, bahan per tipe printer, bulan, atau warna. Pilihan disimpan di
@@ -53,14 +53,19 @@ URL (`#/dashboard?tampilan=bahan`), jadi muat ulang dan tombol kembali membuka
 tampilan yang sama. Perbandingan ditulis sebagai tabel peringkat dengan satu
 kalimat kesimpulan, bukan batang yang harus ditafsirkan.
 
-- Daftar bahan per printer tampil sebagai akordeon. Hanya 6 baris pertama yang
-  terlihat, dengan tombol **Tampilkan semua** untuk membuka seluruhnya.
-  Pencarian tipe/merek dan filter jenis bekerja pada semua printer.
-- Panel bulan dimulai dari 6 bulan tersibuk, lalu **Lihat semua bulan** membuka
-  tabel kronologis lengkap termasuk bulan bernilai nol.
+- Daftar bahan per printer tampil sebagai akordeon dengan pagination 6 printer
+  per halaman, jadi tinggi halaman tetap stabil walaupun printer bertambah.
+  Pencarian tipe/merek, filter jenis, dan urutan bekerja pada semua printer lalu
+  kembali ke halaman 1 saat diubah.
+- Panel bulan punya dropdown **Tampilan bulan** berisi **6 bulan tersibuk**
+  (default), **Semua bulan**, dan tiap bulan. Memilih satu bulan langsung
+  menampilkan bulan itu beserta jumlah dan peringkatnya, termasuk bulan bernilai
+  nol. Pilihan **Semua bulan** menampilkan tabel kronologis lengkap.
 - Panel warna bisa dikelompokkan **per tipe printer** (default) atau **per jenis
-  warna**. Mode per tipe menunjukkan warna yang paling sering diminta pada tiap
-  tipe printer. Panel hanya muncul jika ada printer yang memakai warna.
+  warna**. Mode per tipe menampilkan satu tipe yang dipilih lewat dropdown
+  **Tipe printer**, beserta warna yang paling sering diminta pada tipe itu.
+  Daftar seluruh tipe ada di tab bahan per printer. Panel hanya muncul jika ada
+  printer yang memakai warna.
 
 Semua angka dihitung dari permintaan aktif; riwayat printer/jenis yang sudah
 di-soft-delete tetap dihitung dan ditandai arsip.

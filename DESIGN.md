@@ -119,7 +119,7 @@ gerakan tuas) (R-11).
 - Angka jumlah ditulis utuh dalam mono tebal. Tidak ada persentase karena
   pembacanya butuh jumlah nyata, bukan rasio.
 - Nomor urut hanya dipakai pada daftar peringkat (jenis, bulan tersibuk,
-  warna, bahan per printer). Grafik bulan kronologis tidak bernomor karena
+  warna, bahan per printer). Tabel bulan kronologis tidak bernomor karena
   urutannya waktu, bukan peringkat.
 - Nilai tertinggi ditandai kata "Terbanyak", bukan warna baru. Saat ada seri,
   tanda itu tidak dipakai dan keterangan panel yang menyebutkan nama-nama yang
@@ -133,18 +133,23 @@ gerakan tuas) (R-11).
   yang sama di tiap tab (jenis, printer, bulan, jenis warna) sehingga lebih
   membingungkan daripada membantu.
 - Daftar bahan printer memakai akordeon. Baris tertutup sudah menyebut bahan
-  terbanyak, jadi rincian hanya dibuka saat ingin melihat sisanya. Enam baris
-  pertama cukup untuk pembacaan awal; "Tampilkan semua" membuka seluruh daftar
-  tanpa berpindah halaman.
+  terbanyak, jadi rincian hanya dibuka saat ingin melihat sisanya. Daftar dibagi
+  6 printer per halaman supaya tinggi halaman tetap stabil saat printer
+  bertambah; pindah halaman menutup rincian yang terbuka, dan pencarian, filter,
+  atau urutan baru kembali ke halaman 1.
 - Panel warna bisa dikelompokkan per tipe printer atau per jenis warna. Mode
-  per tipe menjawab "warna apa yang paling sering diminta pada L135", sedangkan
-  mode per jenis menjawab gabungan seluruh printer dalam satu jenis. Mode per
-  tipe menjadi tampilan awal karena lebih spesifik.
-- Panel bulan memprioritaskan bulan tersibuk. Tabel kronologis penuh adalah
-  tampilan kedua karena deret panjang tidak langsung menjawab "bulan mana yang
-  ramai".
-- Bulan tanpa permintaan tetap ditampilkan dengan nilai nol agar jarak waktu
-  tidak menyembunyikan bulan kosong.
+  per tipe menjawab "warna apa yang paling sering diminta pada L135" dengan satu
+  tipe yang dipilih lewat dropdown, bukan seluruh printer sekaligus. Daftar
+  semua tipe tetap tersedia di tab bahan per printer. Mode per jenis menjawab
+  gabungan seluruh printer dalam satu jenis. Mode per tipe menjadi tampilan awal
+  karena lebih spesifik.
+- Panel bulan memakai dropdown "Tampilan bulan" berisi 6 bulan tersibuk, semua
+  bulan, dan tiap bulan. Bulan lama bisa dibuka langsung tanpa menggulir, dan
+  keterangan menyebut jumlah serta peringkat bulan itu. Tabel kronologis penuh
+  tetap menjadi pilihan kedua karena deret panjang tidak langsung menjawab
+  "bulan mana yang ramai".
+- Bulan tanpa permintaan tetap bisa dipilih dan ditampilkan dengan nilai nol
+  agar jarak waktu tidak menyembunyikan bulan kosong.
 - Angka ringkasan ditulis mono dan dipisah garis, bukan kartu ikon, karena yang
   dibaca adalah nilainya, bukan ilustrasinya.
 
@@ -154,6 +159,7 @@ gerakan tuas) (R-11).
 - Kepala bagian bernomor: `src/components/ui/SectionHeader.jsx`.
 - Tabel peringkat dashboard: `src/features/dashboard/RankingTable.jsx`.
 - Pengelompokan warna per tipe/jenis: `src/features/dashboard/WarnaPanel.jsx`.
+- Deret bulan berurutan termasuk bulan kosong: `src/features/dashboard/deretBulan.js`.
 - Tombol tampilan dashboard: `src/features/dashboard/DashboardTabs.jsx`.
 - Baris akordeon bahan printer: `src/features/dashboard/PrinterRow.jsx`.
 - Identitas header dan logo resmi: `src/components/brand/BrandMark.jsx`.
