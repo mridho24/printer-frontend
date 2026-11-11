@@ -51,7 +51,7 @@ export const Input = forwardRef(function Input(
         ref={ref}
         id={inputId}
         aria-invalid={error ? 'true' : undefined}
-        className={cn(gayaDasar(error), 'h-10')}
+        className={cn(gayaDasar(error), 'h-10 max-lg:h-11')}
         {...props}
       />
     </Field>
@@ -78,7 +78,7 @@ export const Select = forwardRef(function Select(
         ref={ref}
         id={selectId}
         aria-invalid={error ? 'true' : undefined}
-        className={cn(gayaDasar(error), 'h-10')}
+        className={cn(gayaDasar(error), 'h-10 max-lg:h-11')}
         {...props}
       >
         {children}
