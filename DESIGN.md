@@ -119,23 +119,29 @@ gerakan tuas) (R-11).
 - Waktu pembaruan terakhir ditulis di samping tombol muat ulang. Saat memuat,
   tombol memakai spinner dan nonaktif; setelah selesai muncul toast singkat
   "Data diperbarui" melalui `aria-live="polite"`.
-- Perbandingan memakai tabel peringkat, bukan batang. Batang menuntut pembaca
-  menafsirkan panjang relatif, sedangkan tabel menulis angka dan judul kolom
-  secara langsung: "Jenis printer" dan "Permintaan". Ini menjawab kebutuhan
-  utama dashboard, yaitu data untuk mengambil keputusan.
-- Tabel hanya memakai 2-3 kolom pendek, sehingga tetap terbaca di ponsel tanpa
-  scroll horizontal. Nomor urut memakai kolom sempit 32px.
-- Angka jumlah ditulis utuh dalam mono tebal. Tidak ada persentase karena
-  pembacanya butuh jumlah nyata, bukan rasio.
-- Nomor urut hanya dipakai pada daftar peringkat (jenis, bulan tersibuk,
-  warna, bahan per printer). Tabel bulan kronologis tidak bernomor karena
-  urutannya waktu, bukan peringkat.
-- Nilai tertinggi ditandai kata "Terbanyak", bukan warna baru. Saat ada seri,
-  tanda itu tidak dipakai dan keterangan panel yang menyebutkan nama-nama yang
-  sama kuat. Ini menjaga palet tetap satu aksen (R-29).
-- Setiap panel dibuka dengan satu kalimat kesimpulan, misalnya "Dot Matrix dan
-  Inkjet sama-sama paling sering diminta". Pembaca tidak perlu membandingkan
-  angka sendiri untuk tahu jawabannya.
+- Perbandingan memakai grafik batang horizontal dengan angka di ujung batang,
+  bukan tabel sebagai tampilan utama. Sebelumnya tabel dipilih karena batang
+  menuntut pembaca menafsirkan panjang relatif. Keputusan itu diubah karena
+  angkanya tetap tercetak di ujung tiap batang, sehingga panjang batang hanya
+  membantu memindai urutan, bukan satu-satunya sumber nilai.
+- Setiap grafik menyediakan tabel peringkat di balik tombol "Lihat sebagai
+  tabel". Tabel itu cadangan untuk pembaca layar, pencetakan, dan pembacaan
+  angka persis; ia tidak ditampilkan bersamaan agar data tidak digandakan.
+- Grafik memakai satu aksen. Pengecualiannya grafik warna: batang memakai warna
+  asli (hitam, biru, kuning, magenta) karena warna adalah data yang diminta,
+  bukan dekorasi (R-29, R-39).
+- Angka jumlah ditulis utuh dalam mono tebal di kolom kanan, bukan persentase,
+  karena pembacanya butuh jumlah nyata, bukan rasio.
+- Nomor urut hanya dipakai pada peringkat (jenis, warna, bahan per printer,
+  printer teratas). Grafik bulan tidak bernomor karena urutannya waktu, bukan
+  peringkat.
+- Nilai tertinggi ditandai kata "Terbanyak" di tabel cadangan, bukan warna baru.
+  Saat ada seri, tanda itu tidak dipakai. Ini menjaga palet tetap satu aksen
+  (R-29).
+- Setiap panel dibuka dengan penjelasan apa yang dihitung, bukan kalimat
+  kesimpulan yang mengulang angka di grafik. Ringkasan seperti "Laser paling
+  sering diminta dengan 20 dari 27 permintaan" dihapus karena hanya mengulang
+  baris teratas dan cepat basi saat data berubah.
 - Metrik dipecah menjadi satu panel per tombol tampilan. Menumpuk semua data
   dalam satu layar membuat halaman panjang dan tidak punya fokus.
 - Tombol tampilan tidak lagi membawa angka jumlah maupun nomor urut. Angka itu
@@ -149,27 +155,28 @@ gerakan tuas) (R-11).
   terbanyak, jadi rincian hanya dibuka saat ingin melihat sisanya. Daftar dibagi
   6 printer per halaman supaya tinggi halaman tetap stabil saat printer
   bertambah; pindah halaman menutup rincian yang terbuka, dan pencarian, filter,
-  atau urutan baru kembali ke halaman 1.
+  atau urutan baru kembali ke halaman 1. Di atas akordeon, grafik menampilkan 10
+  printer dengan permintaan terbanyak sesuai filter aktif, jadi angka grafik dan
+  daftar tidak pernah berbeda cakupan.
 - Panel warna bisa dikelompokkan per tipe printer atau per jenis warna. Mode
-  per tipe menjawab "warna apa yang paling sering diminta pada L135" dengan satu
-  tipe yang dipilih lewat dropdown, bukan seluruh printer sekaligus. Daftar
-  semua tipe tetap tersedia di tab bahan per printer. Mode per jenis menjawab
-  gabungan seluruh printer dalam satu jenis. Mode per tipe menjadi tampilan awal
-  karena lebih spesifik.
+  per tipe dimulai dari "Semua tipe printer" agar seluruh warna langsung
+  terlihat, lalu dropdown yang sama mempersempit ke satu tipe. Mode per jenis
+  menjawab gabungan seluruh printer dalam satu jenis. Daftar semua tipe tetap
+  tersedia di tab bahan per printer.
 - Kontrol panel diletakkan di kepala panel, bukan di bar filter tersendiri.
   Tombol kelompok dan dropdown memakai label sebaris, sehingga tidak ada satu
   baris penuh yang hanya berisi label di atas kontrol. Di ponsel kontrol turun
   ke baris berikutnya di dalam kepala panel yang sama.
 - Panel bulan memakai dropdown "Tampilan bulan" berisi semua bulan dan tiap
-  bulan, tanpa ringkasan 6 bulan tersibuk. Tampilan awal adalah bulan terbaru
-  yang punya permintaan, jadi panel langsung menampilkan satu angka. Bulan lama
-  bisa dibuka langsung tanpa menggulir, dan keterangan menyebut jumlah serta
-  peringkat bulan itu.
-- Bulan terpilih ditampilkan sebagai satu baris ringkas, bukan tabel satu baris
-  dengan judul kolom. Tabel kronologis penuh hanya muncul saat memilih "Semua
-  bulan" karena deret panjang tidak langsung menjawab "bulan mana yang ramai".
-- Bulan tanpa permintaan tetap bisa dipilih dan ditampilkan dengan nilai nol
-  agar jarak waktu tidak menyembunyikan bulan kosong.
+  bulan. Tampilan awal adalah "Semua bulan" agar grafik langsung terlihat;
+  memilih satu bulan menggantinya dengan satu angka ringkas. Pemilih bulan
+  disembunyikan bila hanya ada satu bulan karena tidak ada yang bisa dipilih.
+- Grafik bulan baru ditampilkan bila data mencakup minimal tiga bulan. Dengan
+  satu atau dua bulan, grafik hanya memperbesar selisih kecil dan menyiratkan
+  tren yang belum ada; panel menampilkan keadaan kosong yang menyebut rentang
+  serta jumlah datanya.
+- Bulan tanpa permintaan tetap muncul di grafik dan tabel dengan nilai nol agar
+  jarak waktu tidak menyembunyikan bulan kosong.
 - Angka ringkasan ditulis mono dan dipisah garis, bukan kartu ikon, karena yang
   dibaca adalah nilainya, bukan ilustrasinya.
 - Form master data printer memberi peringatan lunak, bukan blokir, saat nama

@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import RankingTable from './RankingTable.jsx';
+import BarChart from './BarChart.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
 import SectionHeader from '../../components/ui/SectionHeader.jsx';
 import { Select } from '../../components/ui/FormControls.jsx';
 import { WARNA_META } from '../../lib/constants.js';
-import { formatDaftar } from '../../lib/format.js';
 import { cn } from '../../lib/cn.js';
 
 const MAKS_AWAL = 4;
+const SEMUA_TIPE = 'semua';
 
 const MODE = [
   { key: 'tipe', label: 'Per tipe printer' },
@@ -19,46 +19,41 @@ function labelWarna(nama) {
   return WARNA_META[nama]?.label ?? nama;
 }
 
-function kesimpulanWarna(warna) {
-  if (warna.length === 0) return 'Belum ada warna tercatat.';
-
-  const puncak = Math.max(...warna.map((item) => item.total));
-  const teratas = warna.filter((item) => item.total === puncak).map((item) => item.nama);
-
-  if (warna.length === 1) {
-    return `Hanya ${teratas[0]} yang diminta (${puncak} permintaan).`;
-  }
-  if (teratas.length === 1) {
-    return `${teratas[0]} paling sering diminta (${puncak} permintaan).`;
-  }
-  return `${formatDaftar(teratas)} masing-masing diminta ${puncak} kali.`;
+function isiWarna(daftar) {
+  return daftar
+    .map((item) => ({
+      nama: labelWarna(item.nama),
+      warna: item.nama,
+      total: item.total,
+    }))
+    .sort((a, b) => b.total - a.total || a.nama.localeCompare(b.nama));
 }
 
 /**
  * Warna permintaan.
  *
- * Mode per tipe printer menampilkan satu tipe pilihan pengguna supaya panel
- * tidak memanjang saat printer warna bertambah. Daftar seluruh tipe tetap bisa
- * dibaca di panel bahan per printer. Mode per jenis warna menampilkan gabungan
- * seluruh tipe dalam satu jenis.
+ * Tampilan awal adalah gabungan seluruh tipe printer warna. Pemilih tipe
+ * mempersempit ke satu printer, sedangkan mode per jenis menggabungkan seluruh
+ * tipe dalam satu jenis. Grafik memakai warna asli karena warna di sini adalah
+ * data, bukan dekorasi.
  */
 export default function WarnaPanel({ warna, printer }) {
   const [mode, setMode] = useState('tipe');
-  const [tipeTerpilih, setTipeTerpilih] = useState('');
+  const [tipeTerpilih, setTipeTerpilih] = useState(SEMUA_TIPE);
   const [semua, setSemua] = useState(false);
 
   const perJenis = [...warna]
-    .map((item) => ({
-      kunci: `jenis-${item.jenis_id}`,
-      judul: item.nama,
-      meta: null,
-      total: item.total,
-      satuanTotal: 'permintaan warna',
-      warna: item.warna.map((warnaItem) => ({
-        nama: labelWarna(warnaItem.nama),
-        total: warnaItem.total,
-      })),
-    }))
+    .map((item) => {
+      const isi = isiWarna(item.warna);
+      return {
+        kunci: `jenis-${item.jenis_id}`,
+        judul: item.nama,
+        meta: null,
+        total: isi.reduce((jumlah, warnaItem) => jumlah + warnaItem.total, 0),
+        satuanTotal: 'pilihan warna',
+        warna: isi,
+      };
+    })
     .sort((a, b) => b.total - a.total || a.judul.localeCompare(b.judul));
 
   const perPrinter = printer
@@ -67,23 +62,41 @@ export default function WarnaPanel({ warna, printer }) {
       kunci: `printer-${item.tipe}`,
       judul: item.tipe,
       meta: `${item.merek} · ${item.jenis_nama ?? 'Jenis tidak diketahui'}`,
-      total: item.total,
-      satuanTotal: 'permintaan',
+      total: item.bahan.reduce((jumlah, warnaItem) => jumlah + warnaItem.total, 0),
+      satuanTotal: 'pilihan warna',
       arsip: item.printer_dihapus || item.jenis_dihapus,
-      warna: item.bahan.map((warnaItem) => ({
-        nama: labelWarna(warnaItem.nama),
-        total: warnaItem.total,
-      })),
+      warna: isiWarna(item.bahan),
     }))
     .sort((a, b) => b.total - a.total || a.judul.localeCompare(b.judul));
 
-  const printerAktif =
-    perPrinter.find((item) => item.judul === tipeTerpilih) ?? perPrinter[0] ?? null;
+  const dipilih = perPrinter.find((item) => item.judul === tipeTerpilih) ?? null;
+
+  // Gabungan seluruh tipe printer warna: hitung ulang per warna supaya angka
+  // di grafik selalu menjumlah tepat dari bagian-bagian yang terlihat.
+  const gabungan = (() => {
+    const hitung = new Map();
+    for (const item of perPrinter) {
+      for (const warnaItem of item.warna) {
+        hitung.set(warnaItem.warna, (hitung.get(warnaItem.warna) ?? 0) + warnaItem.total);
+      }
+    }
+    const isi = [...hitung.entries()]
+      .map(([kunci, total]) => ({ nama: labelWarna(kunci), warna: kunci, total }))
+      .sort((a, b) => b.total - a.total || a.nama.localeCompare(b.nama));
+
+    return {
+      kunci: 'semua-tipe',
+      judul: 'Semua tipe printer',
+      meta: `${perPrinter.length} tipe printer warna`,
+      total: isi.reduce((jumlah, warnaItem) => jumlah + warnaItem.total, 0),
+      satuanTotal: 'pilihan warna',
+      warna: isi,
+    };
+  })();
+
   const tampil =
     mode === 'tipe'
-      ? printerAktif
-        ? [printerAktif]
-        : []
+      ? [dipilih ?? gabungan]
       : semua
         ? perJenis
         : perJenis.slice(0, MAKS_AWAL);
@@ -96,7 +109,7 @@ export default function WarnaPanel({ warna, printer }) {
 
   const keterangan =
     mode === 'tipe'
-      ? 'Warna dihitung untuk tipe printer yang dipilih.'
+      ? 'Warna dihitung dari tipe printer yang dipilih, atau dari seluruh tipe bila tidak dipersempit.'
       : 'Warna digabung dari seluruh tipe dalam satu jenis.';
 
   return (
@@ -130,14 +143,15 @@ export default function WarnaPanel({ warna, printer }) {
               })}
             </div>
 
-            {mode === 'tipe' && printerAktif && (
+            {mode === 'tipe' && (
               <Select
                 inline
                 label="Tipe printer"
-                value={printerAktif.judul}
+                value={dipilih ? dipilih.judul : SEMUA_TIPE}
                 onChange={(event) => setTipeTerpilih(event.target.value)}
                 className="w-full sm:w-52"
               >
+                <option value={SEMUA_TIPE}>Semua tipe printer</option>
                 {perPrinter.map((item) => (
                   <option key={item.judul} value={item.judul}>
                     {item.judul}
@@ -150,18 +164,18 @@ export default function WarnaPanel({ warna, printer }) {
         }
       />
 
-      {tampil.length === 0 ? (
+      {tampil.length === 0 || tampil.every((item) => item.warna.length === 0) ? (
         <p className="px-4 py-8 text-xs text-muted">Belum ada permintaan warna tercatat.</p>
       ) : (
         <div className="divide-y divide-line">
           {tampil.map((item) => (
             <section key={item.kunci} className="p-4">
-              <div className="mb-1 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+              <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
                 <div className="min-w-0">
                   <h3
                     className={cn(
                       'text-sm font-semibold text-ink',
-                      mode === 'tipe' && 'font-mono',
+                      mode === 'tipe' && item.kunci !== 'semua-tipe' && 'font-mono',
                     )}
                   >
                     {item.judul}
@@ -178,16 +192,14 @@ export default function WarnaPanel({ warna, printer }) {
                 </p>
               </div>
 
-              <p className="mb-2 text-xs text-ink">{kesimpulanWarna(item.warna)}</p>
-
-              <RankingTable
+              <BarChart
                 items={item.warna}
                 labelHeader="Warna"
                 satuanHeader="Permintaan"
                 bernomor
                 tandaiTeratas
-                padat
-                kosong="Belum ada warna tercatat."
+                warnaAsli
+                labelTabel="Lihat sebagai tabel"
               />
             </section>
           ))}

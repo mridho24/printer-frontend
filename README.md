@@ -50,8 +50,11 @@ Buka `http://localhost:5173`.
 Dashboard memakai tombol tampilan supaya satu layar hanya memuat satu metrik:
 jenis printer, bahan per tipe printer, bulan, atau warna. Pilihan disimpan di
 URL (`#/dashboard?tampilan=bahan`), jadi muat ulang dan tombol kembali membuka
-tampilan yang sama. Perbandingan ditulis sebagai tabel peringkat dengan satu
-kalimat kesimpulan, bukan batang yang harus ditafsirkan.
+tampilan yang sama. Perbandingan ditulis sebagai grafik batang horizontal dengan
+angka di ujung batang; tabel peringkat tersedia di balik tombol **Lihat sebagai
+tabel** sebagai cadangan untuk pembaca layar, pencetakan, atau pembacaan angka
+persis. Batang memakai satu aksen; hanya grafik warna yang memakai warna asli
+karena warnanya sendiri adalah data.
 
 Kartu ringkasan membedakan **jenis** (kelompok teknologi, misalnya Inkjet) dari
 **tipe atau model** (seri printer, misalnya L135). Kartu "Tipe printer diminta"
@@ -64,17 +67,18 @@ tombol menampilkan spinner dan tidak bisa ditekan; setelah selesai muncul toast
 - Daftar bahan per printer tampil sebagai akordeon dengan pagination 6 printer
   per halaman, jadi tinggi halaman tetap stabil walaupun printer bertambah.
   Pencarian tipe/merek, filter jenis, dan urutan bekerja pada semua printer lalu
-  kembali ke halaman 1 saat diubah.
+  kembali ke halaman 1 saat diubah. Di atas daftar, grafik menampilkan 10 printer
+  dengan permintaan terbanyak sesuai filter yang sedang aktif.
 - Panel bulan punya dropdown **Tampilan bulan** berisi **Semua bulan** dan tiap
-  bulan. Tampilan awal adalah bulan terbaru yang punya permintaan, jadi bulan
-  lama bisa dibuka langsung tanpa menggulir. Bulan terpilih tampil sebagai satu
-  baris ringkas beserta jumlah dan peringkatnya, termasuk bulan bernilai nol.
-  Pilihan **Semua bulan** menampilkan tabel kronologis lengkap.
+  bulan. Tampilan awal adalah **Semua bulan** agar grafik langsung terlihat;
+  memilih satu bulan menggantinya dengan satu angka ringkas, termasuk bulan
+  bernilai nol. Grafik baru muncul bila data mencakup minimal tiga bulan; di
+  bawah itu panel menampilkan keadaan kosong yang menyebut rentang dan jumlah
+  datanya. Pemilih bulan disembunyikan bila hanya ada satu bulan.
 - Panel warna bisa dikelompokkan **per tipe printer** (default) atau **per jenis
-  warna**. Mode per tipe menampilkan satu tipe yang dipilih lewat dropdown
-  **Tipe printer**, beserta warna yang paling sering diminta pada tipe itu.
-  Daftar seluruh tipe ada di tab bahan per printer. Panel hanya muncul jika ada
-  printer yang memakai warna.
+  warna**. Mode per tipe memulai dari **Semua tipe printer**, lalu dropdown
+  yang sama bisa mempersempit ke satu tipe. Daftar seluruh tipe ada di tab bahan
+  per printer. Panel hanya muncul jika ada printer yang memakai warna.
 - Dropdown dan tombol kelompok pada panel bulan dan warna berada di kepala
   panel, bukan di bar filter terpisah, supaya tidak memakan tinggi layar.
 

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import BarChart from './BarChart.jsx';
 import PrinterRow from './PrinterRow.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
@@ -66,6 +67,23 @@ export default function PrinterBahanPanel({ printer }) {
   const adaFilter = cari.trim() !== '' || jenisId !== '' || urut !== 'total';
   const kosong = printer.length === 0;
 
+  // Peringkat grafik selalu urut jumlah terbanyak, apa pun urutan tabel yang
+  // dipilih pengguna, dan mengikuti filter yang sedang aktif.
+  const peringkatPrinter = useMemo(
+    () =>
+      [...hasil]
+        .sort((a, b) => b.total - a.total || a.tipe.localeCompare(b.tipe))
+        .slice(0, 10)
+        .map((item) => ({
+          nama:
+            item.printer_dihapus || item.jenis_dihapus
+              ? `${item.tipe} (arsip)`
+              : item.tipe,
+          total: item.total,
+        })),
+    [hasil],
+  );
+
   function bersihkanFilter() {
     setCari('');
     setJenisId('');
@@ -117,6 +135,24 @@ export default function PrinterBahanPanel({ printer }) {
           <option value="tipe">Tipe A-Z</option>
         </Select>
       </div>
+
+      {hasil.length > 0 && (
+        <div className="border-b border-line px-4 py-4">
+          <p className="mb-3 text-xs font-medium text-muted">
+            {hasil.length > 10
+              ? '10 printer dengan permintaan terbanyak'
+              : 'Printer dengan permintaan terbanyak'}
+          </p>
+          <BarChart
+            items={peringkatPrinter}
+            labelHeader="Tipe printer"
+            satuanHeader="Permintaan"
+            bernomor
+            tandaiTeratas
+            labelTabel="Lihat peringkat sebagai tabel"
+          />
+        </div>
+      )}
 
       {hasil.length === 0 ? (
         <div className="px-4 py-10 text-center">

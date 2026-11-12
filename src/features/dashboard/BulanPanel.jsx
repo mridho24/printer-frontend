@@ -1,51 +1,65 @@
 import { useState } from 'react';
-import BulanChart from './BulanChart.jsx';
+import BarChart from './BarChart.jsx';
 import { deretBulan } from './deretBulan.js';
 import Card from '../../components/ui/Card.jsx';
 import SectionHeader from '../../components/ui/SectionHeader.jsx';
+import { EmptyState } from '../../components/ui/Feedback.jsx';
 import { Select } from '../../components/ui/FormControls.jsx';
 
 const SEMUA = 'semua';
+const MIN_BULAN = 3;
 
 /**
  * Bulan permintaan.
  *
- * Pemilih bulan ada di kepala panel supaya tidak perlu satu baris kontrol
- * tersendiri. Tampilan awal memakai bulan terbaru yang punya permintaan, jadi
- * panel langsung menampilkan satu angka. Daftar kronologis lengkap hanya dibuka
- * saat pengguna memilih "Semua bulan".
+ * Grafik bulanan baru berguna saat ada minimal tiga bulan untuk dibandingkan.
+ * Di bawah itu panel menampilkan keadaan kosong yang menyebut rentang dan
+ * jumlah datanya, bukan grafik dua batang yang membesar-besarkan selisih.
+ *
+ * Pemilih bulan ada di kepala panel. Tampilan awal memakai "Semua bulan" agar
+ * grafik langsung terlihat; memilih satu bulan menggantinya dengan satu angka
+ * ringkas. Pemilih disembunyikan bila hanya ada satu bulan.
  */
 export default function BulanPanel({ bulanan }) {
-  const [tampilan, setTampilan] = useState('');
+  const [tampilan, setTampilan] = useState(SEMUA);
 
   const semuaBulan = deretBulan(bulanan);
-  const berisi = semuaBulan.filter((item) => item.total > 0);
   const pilihan = [...semuaBulan].reverse();
-  const bulanTerbaru = [...berisi].sort((a, b) => a.kunci.localeCompare(b.kunci)).at(-1);
-  const nilai = tampilan || bulanTerbaru?.kunci || SEMUA;
+  const nilai =
+    tampilan === SEMUA || !pilihan.some((item) => item.kunci === tampilan) ? SEMUA : tampilan;
   const dipilih = nilai === SEMUA ? null : (pilihan.find((item) => item.kunci === nilai) ?? null);
-
-  let keterangan = 'Belum ada permintaan tercatat.';
-
-  if (dipilih && dipilih.total > 0) {
-    const peringkat = 1 + berisi.filter((item) => item.total > dipilih.total).length;
-    keterangan = `${dipilih.nama} mencatat ${dipilih.total} permintaan, peringkat ${peringkat} dari ${berisi.length} bulan berisi.`;
-  } else if (dipilih) {
-    keterangan = `${dipilih.nama} tidak mencatat permintaan.`;
-  } else if (semuaBulan.length > 0) {
-    const awal = semuaBulan[0].nama;
-    const akhir = semuaBulan[semuaBulan.length - 1].nama;
-    keterangan =
-      awal === akhir
-        ? `Semua permintaan tercatat pada ${awal}.`
-        : `Permintaan dari ${awal} sampai ${akhir}, termasuk bulan tanpa permintaan.`;
-  }
+  const total = semuaBulan.reduce((jumlah, item) => jumlah + item.total, 0);
 
   if (semuaBulan.length === 0) {
     return (
       <Card>
-        <SectionHeader title="Bulan permintaan" description={keterangan} />
-        <p className="px-4 py-8 text-xs text-muted">Belum ada permintaan tercatat.</p>
+        <SectionHeader
+          title="Bulan permintaan"
+          description="Jumlah permintaan per bulan, termasuk bulan tanpa permintaan."
+        />
+        <EmptyState
+          title="Belum ada permintaan tercatat"
+          description="Grafik bulanan akan muncul setelah permintaan pertama dicatat."
+        />
+      </Card>
+    );
+  }
+
+  if (semuaBulan.length < MIN_BULAN) {
+    const awal = semuaBulan[0].nama;
+    const akhir = semuaBulan[semuaBulan.length - 1].nama;
+    const rentang = awal === akhir ? awal : `${awal} sampai ${akhir}`;
+
+    return (
+      <Card>
+        <SectionHeader
+          title="Bulan permintaan"
+          description="Grafik bulanan butuh minimal tiga bulan data agar perbandingan antarbulan bermakna."
+        />
+        <EmptyState
+          title="Belum cukup bulan untuk grafik"
+          description={`Data saat ini mencakup ${semuaBulan.length} bulan (${rentang}) dengan ${total} permintaan. Grafik akan muncul setelah data mencakup minimal tiga bulan.`}
+        />
       </Card>
     );
   }
@@ -54,22 +68,24 @@ export default function BulanPanel({ bulanan }) {
     <Card>
       <SectionHeader
         title="Bulan permintaan"
-        description={keterangan}
+        description="Jumlah permintaan per bulan, termasuk bulan tanpa permintaan."
         actions={
-          <Select
-            inline
-            label="Tampilan bulan"
-            value={nilai}
-            onChange={(event) => setTampilan(event.target.value)}
-            className="w-full sm:w-64"
-          >
-            <option value={SEMUA}>Semua bulan</option>
-            {pilihan.map((item) => (
-              <option key={item.kunci} value={item.kunci}>
-                {item.nama}
-              </option>
-            ))}
-          </Select>
+          pilihan.length > 1 ? (
+            <Select
+              inline
+              label="Tampilan bulan"
+              value={nilai}
+              onChange={(event) => setTampilan(event.target.value)}
+              className="w-full sm:w-64"
+            >
+              <option value={SEMUA}>Semua bulan</option>
+              {pilihan.map((item) => (
+                <option key={item.kunci} value={item.kunci}>
+                  {item.nama}
+                </option>
+              ))}
+            </Select>
+          ) : null
         }
       />
 
@@ -85,7 +101,13 @@ export default function BulanPanel({ bulanan }) {
         </div>
       ) : (
         <div className="p-4">
-          <BulanChart bulanan={bulanan} />
+          <BarChart
+            items={semuaBulan}
+            labelHeader="Bulan"
+            satuanHeader="Permintaan"
+            kosong="Belum ada permintaan tercatat."
+            labelTabel="Lihat sebagai tabel"
+          />
         </div>
       )}
     </Card>
