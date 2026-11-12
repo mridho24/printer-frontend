@@ -151,13 +151,13 @@ gerakan tuas) (R-11).
 - Tab aktif ditandai garis bawah 3px dan tebal font lebih tinggi. Pilihan
   pengelompokan warna memakai segmented control dua tombol menyatu agar terbaca
   sebagai satu pilihan, bukan dua tombol terpisah.
-- Daftar bahan printer memakai akordeon. Baris tertutup sudah menyebut bahan
-  terbanyak, jadi rincian hanya dibuka saat ingin melihat sisanya. Daftar dibagi
-  6 printer per halaman supaya tinggi halaman tetap stabil saat printer
-  bertambah; pindah halaman menutup rincian yang terbuka, dan pencarian, filter,
-  atau urutan baru kembali ke halaman 1. Di atas akordeon, grafik menampilkan 10
-  printer dengan permintaan terbanyak sesuai filter aktif, jadi angka grafik dan
-  daftar tidak pernah berbeda cakupan.
+- Daftar bahan printer menampilkan rincian lima bahan teratas langsung di tiap
+  baris. Rincian selalu terbuka karena tab ini dibuka untuk melihat bahan, dan
+  membuka tiap baris satu per satu hanya menambah langkah; paginasi 6 printer
+  per halaman menjaga tinggi halaman tetap stabil saat printer bertambah.
+  Pencarian, filter, atau urutan baru kembali ke halaman 1. Di atas daftar,
+  grafik menampilkan 10 printer dengan permintaan terbanyak sesuai filter aktif,
+  jadi angka grafik dan daftar tidak pernah berbeda cakupan.
 - Panel warna bisa dikelompokkan per tipe printer atau per jenis warna. Mode
   per tipe dimulai dari "Semua tipe printer" agar seluruh warna langsung
   terlihat, lalu dropdown yang sama mempersempit ke satu tipe. Mode per jenis
@@ -196,20 +196,31 @@ gerakan tuas) (R-11).
   kemungkinan pencatatan ganda. Strip tidak ditampilkan saat tidak ada temuan;
   peringatan yang selalu ada akan kehilangan makna.
 - "Permintaan terbaru" menampilkan lima catatan pada periode terpilih supaya
-  angka ringkasan punya contoh yang bisa ditelusuri. Tautan "Lihat semua"
-  membawa rentang yang sama ke daftar permintaan, bukan membuang filter tanpa
-  penjelasan.
+  angka ringkasan punya contoh yang bisa ditelusuri. Bagian ini hanya muncul di
+  tab jenis printer: tab bahan, bulan, dan warna sudah punya rincian sendiri,
+  sehingga daftar ringkas tambahan hanya memperpanjang gulir tanpa menambah
+  informasi. Tautan "Lihat semua" membawa rentang yang sama ke daftar
+  permintaan, bukan membuang filter tanpa penjelasan.
 - Grafik bisa ditelusuri dengan mengklik seluruh baris batang, bukan hanya
   labelnya. Tujuan drill-down ditulis di query string agar hasil yang sempit
   bisa dimuat ulang dan dibagikan. Halaman permintaan menampilkan chip filter
   aktif karena hasil yang tersaring tanpa penanda mudah disalahartikan sebagai
   seluruh data; melepas chip juga membersihkan URL supaya muat ulang tidak
   memunculkan kembali filter yang sudah dilepas.
-- Ekspor mengikuti tab yang sedang tampil dan memakai data yang terlihat, bukan
-  seluruh isi basis data. CSV memakai titik koma dan BOM agar terbuka langsung
-  di Excel berlokal Indonesia; Excel memakai tabel HTML `.xls` agar tidak
-  menambah dependensi. Nama berkas memuat tab dan tanggal unduh supaya hasil
-  beberapa periode tidak saling menimpa.
+- Ekspor dashboard mengikuti tab yang sedang tampil dan memakai data yang
+  terlihat, bukan seluruh isi basis data. CSV memakai titik koma dan BOM agar
+  terbuka langsung di Excel berlokal Indonesia. Excel ditulis sebagai `.xlsx`
+  asli lewat `write-excel-file`, bukan tabel HTML dengan ekstensi `.xls`, karena
+  berkas itu harus bisa dibuka tanpa peringatan format dan mendukung border,
+  lebar kolom, tanggal, serta penggabungan sel. Pustakanya dimuat dinamis agar
+  bundel awal tidak ikut membesar. Nama berkas memuat tab dan tanggal unduh
+  supaya hasil beberapa periode tidak saling menimpa.
+- "Ekspor semua data" di halaman permintaan sengaja mengabaikan filter dan
+  paginasi: tujuannya menggantikan buku rekap manual, bukan mengekspor tampilan
+  yang sedang disaring. Rekap memakai satu sheet dengan judul, subjudul periode,
+  kolom warna `BLACK`/`MAGENTA`/`BLUE`/`YELLOW`, kolom `KODE BAHAN` untuk printer
+  non-warna, dan kolom tanda tangan kosong. Tanggal ditulis sebagai tanggal
+  Excel, bukan teks, agar bisa diurutkan dan difilter setelah diunduh.
 - Rentang tidak valid, periode kosong, dan kegagalan muat masing-masing punya
   keadaan sendiri. Rentang terbalik tidak boleh menampilkan angka lama seolah
   masih berlaku; dashboard menjelaskan kesalahannya dan menyediakan tombol
@@ -243,7 +254,8 @@ gerakan tuas) (R-11).
 - Pengelompokan warna per tipe/jenis: `src/features/dashboard/WarnaPanel.jsx`.
 - Deret bulan berurutan termasuk bulan kosong: `src/features/dashboard/deretBulan.js`.
 - Tombol tampilan dashboard: `src/features/dashboard/DashboardTabs.jsx`.
-- Baris akordeon bahan printer: `src/features/dashboard/PrinterRow.jsx`.
+- Baris rincian bahan printer: `src/features/dashboard/PrinterRow.jsx`.
+- Penulis CSV dan `.xlsx` dashboard: `src/features/dashboard/ekspor.js`.
 - Identitas header dan logo resmi: `src/components/brand/BrandMark.jsx`.
 - Berkas logo RSUD: `src/logo/logo_za.jpg`.
 - Font di-host sendiri dari paket `@fontsource` (IBM Plex Sans dan Plex Mono).

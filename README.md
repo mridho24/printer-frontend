@@ -64,11 +64,13 @@ Waktu pembaruan terakhir ditulis di samping tombol **Muat ulang**. Saat memuat,
 tombol menampilkan spinner dan tidak bisa ditekan; setelah selesai muncul toast
 "Data diperbarui" lewat `aria-live="polite"`.
 
-- Daftar bahan per printer tampil sebagai akordeon dengan pagination 6 printer
-  per halaman, jadi tinggi halaman tetap stabil walaupun printer bertambah.
-  Pencarian tipe/merek, filter jenis, dan urutan bekerja pada semua printer lalu
-  kembali ke halaman 1 saat diubah. Di atas daftar, grafik menampilkan 10 printer
-  dengan permintaan terbanyak sesuai filter yang sedang aktif.
+- Daftar bahan per printer menampilkan rincian lima bahan teratas langsung di
+  tiap baris, tanpa akordeon, dengan pagination 6 printer per halaman. Rincian
+  yang selalu terbuka menghilangkan satu klik untuk melihat isi baris, sementara
+  pagination menjaga tinggi halaman tetap stabil. Pencarian tipe/merek, filter
+  jenis, dan urutan bekerja pada semua printer lalu kembali ke halaman 1 saat
+  diubah. Di atas daftar, grafik menampilkan 10 printer dengan permintaan
+  terbanyak sesuai filter yang sedang aktif.
 - Panel bulan punya dropdown **Tampilan bulan** berisi **Semua bulan** dan tiap
   bulan. Tampilan awal adalah **Semua bulan** agar grafik langsung terlihat;
   memilih satu bulan menggantinya dengan satu angka ringkas, termasuk bulan
@@ -96,7 +98,10 @@ tombol menampilkan spinner dan tidak bisa ditekan; setelah selesai muncul toast
   temuan menaut ke daftar permintaan dengan filter tipe, pencarian bahan, dan
   rentang 30 hari tersebut.
 - **Permintaan terbaru** menampilkan lima catatan terakhir pada periode
-  terpilih. **Lihat semua** membawa rentang yang sama ke halaman permintaan.
+  terpilih. Bagian ini hanya ada di tab **Jenis printer**; tab bahan, bulan, dan
+  warna sudah punya rincian sendiri sehingga daftar ringkas di bawahnya hanya
+  menambah gulir. **Lihat semua** membawa rentang yang sama ke halaman
+  permintaan.
 - Grafik dan daftar bisa ditelusuri: batang jenis, printer, bulan, dan warna
   menaut ke `#/permintaan` dengan query string (`jenis_id`, `tipe`, `warna`,
   `dari`, `sampai`). Halaman permintaan membaca query itu, mengirimnya ke API,
@@ -105,8 +110,17 @@ tombol menampilkan spinner dan tidak bisa ditekan; setelah selesai muncul toast
   tautan **Lihat semua permintaan tipe ini**.
 - Setiap tab punya tombol ekspor **CSV** dan **Excel** untuk data tab yang
   sedang tampil. CSV memakai pemisah titik koma dan BOM agar langsung terbuka
-  rapi di Excel berlokal Indonesia; Excel memakai tabel HTML berekstensi
-  `.xls` tanpa pustaka tambahan. Nama berkas memuat tab dan tanggal unduh.
+  rapi di Excel berlokal Indonesia. Excel memakai `.xlsx` asli yang ditulis
+  `write-excel-file` di browser; pustakanya dimuat saat tombol ditekan supaya
+  bundel awal tetap kecil. Nama berkas memuat tab dan tanggal unduh.
+- Halaman **Permintaan** punya tombol **Ekspor semua data** di kepala halaman.
+  Tombol ini mengabaikan pencarian, filter, dan paginasi yang sedang aktif, lalu
+  mengunduh satu sheet **Rekap** berisi seluruh permintaan aktif dengan kolom
+  `NO`, `TANGGAL`, `NAMA RUANG`, `MEREK PRINTER`, `BLACK`, `MAGENTA`, `BLUE`,
+  `YELLOW`, `KODE BAHAN`, `PENERIMA`, dan `TANDA TANGAN`. Urutannya kronologis
+  naik, satu judul dan subjudul di atas tabel, orientasi landscape, baris kepala
+  beku, dan kolom tanda tangan sengaja kosong untuk ditandatangani setelah
+  dicetak.
 - **Semua keadaan panel tersimpan di URL**: tab (`tampilan`), periode
   (`periode`, `dari`, `sampai`), bulan (`bulan`), pengelompokan warna
   (`warna_mode`, `warna_tipe`), serta pencarian/filter/urutan/halaman printer
@@ -150,7 +164,7 @@ src/
   components/layout/   Topbar, layout, page header
   components/ui/       Button, form controls, modal, tabel, toast, dll.
   context/             Toast provider
-  features/dashboard/  Tab tampilan, akordeon bahan printer, grafik bulan
+  features/dashboard/  Tab tampilan, rincian bahan printer, grafik bulan, ekspor
   features/jenis/      Tab & modal jenis
   features/printer/    Tab & modal printer
   features/permintaan/ Form, tabel, filter permintaan
