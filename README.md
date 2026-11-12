@@ -57,15 +57,18 @@ kalimat kesimpulan, bukan batang yang harus ditafsirkan.
   per halaman, jadi tinggi halaman tetap stabil walaupun printer bertambah.
   Pencarian tipe/merek, filter jenis, dan urutan bekerja pada semua printer lalu
   kembali ke halaman 1 saat diubah.
-- Panel bulan punya dropdown **Tampilan bulan** berisi **6 bulan tersibuk**
-  (default), **Semua bulan**, dan tiap bulan. Memilih satu bulan langsung
-  menampilkan bulan itu beserta jumlah dan peringkatnya, termasuk bulan bernilai
-  nol. Pilihan **Semua bulan** menampilkan tabel kronologis lengkap.
+- Panel bulan punya dropdown **Tampilan bulan** berisi **Semua bulan** dan tiap
+  bulan. Tampilan awal adalah bulan terbaru yang punya permintaan, jadi bulan
+  lama bisa dibuka langsung tanpa menggulir. Bulan terpilih tampil sebagai satu
+  baris ringkas beserta jumlah dan peringkatnya, termasuk bulan bernilai nol.
+  Pilihan **Semua bulan** menampilkan tabel kronologis lengkap.
 - Panel warna bisa dikelompokkan **per tipe printer** (default) atau **per jenis
   warna**. Mode per tipe menampilkan satu tipe yang dipilih lewat dropdown
   **Tipe printer**, beserta warna yang paling sering diminta pada tipe itu.
   Daftar seluruh tipe ada di tab bahan per printer. Panel hanya muncul jika ada
   printer yang memakai warna.
+- Dropdown dan tombol kelompok pada panel bulan dan warna berada di kepala
+  panel, bukan di bar filter terpisah, supaya tidak memakan tinggi layar.
 
 Semua angka dihitung dari permintaan aktif; riwayat printer/jenis yang sudah
 di-soft-delete tetap dihitung dan ditandai arsip.

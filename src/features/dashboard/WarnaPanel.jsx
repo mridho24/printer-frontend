@@ -96,56 +96,58 @@ export default function WarnaPanel({ warna, printer }) {
 
   const keterangan =
     mode === 'tipe'
-      ? 'Pilih satu tipe printer. Satu permintaan bisa memuat lebih dari satu warna. Semua tipe printer ada di tab Bahan per printer.'
-      : 'Warna digabung per jenis. Satu permintaan bisa memuat lebih dari satu warna.';
+      ? 'Warna dihitung untuk tipe printer yang dipilih.'
+      : 'Warna digabung dari seluruh tipe dalam satu jenis.';
 
   return (
     <Card>
-      <SectionHeader title="Warna paling sering diminta" description={keterangan} />
+      <SectionHeader
+        title="Warna paling sering diminta"
+        description={keterangan}
+        actions={
+          <>
+            <div className="flex flex-wrap gap-1" role="group" aria-label="Kelompokkan data warna">
+              {MODE.map((item) => {
+                const aktif = item.key === mode;
 
-      <div className="flex flex-wrap items-end gap-3 border-b border-line px-4 py-3">
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-          <span className="text-xs font-medium text-muted">Kelompokkan</span>
-          <div className="flex flex-wrap gap-1" role="group" aria-label="Kelompokkan data warna">
-            {MODE.map((item) => {
-              const aktif = item.key === mode;
+                return (
+                  <button
+                    key={item.key}
+                    type="button"
+                    aria-pressed={aktif}
+                    onClick={() => pilihMode(item.key)}
+                    className={cn(
+                      'inline-flex h-9 items-center rounded-md border px-3 text-xs font-medium transition-colors max-lg:h-11',
+                      aktif
+                        ? 'border-accent bg-accent-soft text-accent-strong'
+                        : 'border-line-strong bg-surface text-muted hover:text-ink',
+                    )}
+                  >
+                    {item.label}
+                  </button>
+                );
+              })}
+            </div>
 
-              return (
-                <button
-                  key={item.key}
-                  type="button"
-                  aria-pressed={aktif}
-                  onClick={() => pilihMode(item.key)}
-                  className={cn(
-                    'inline-flex h-9 items-center rounded-md border px-3 text-xs font-medium transition-colors max-lg:h-11',
-                    aktif
-                      ? 'border-accent bg-accent-soft text-accent-strong'
-                      : 'border-line-strong bg-surface text-muted hover:text-ink',
-                  )}
-                >
-                  {item.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {mode === 'tipe' && printerAktif && (
-          <Select
-            label="Tipe printer"
-            value={printerAktif.judul}
-            onChange={(event) => setTipeTerpilih(event.target.value)}
-            className="w-full sm:ml-auto sm:w-72"
-          >
-            {perPrinter.map((item) => (
-              <option key={item.judul} value={item.judul}>
-                {item.judul} ({item.meta}
-                {item.arsip ? ', arsip' : ''})
-              </option>
-            ))}
-          </Select>
-        )}
-      </div>
+            {mode === 'tipe' && printerAktif && (
+              <Select
+                inline
+                label="Tipe printer"
+                value={printerAktif.judul}
+                onChange={(event) => setTipeTerpilih(event.target.value)}
+                className="w-full sm:w-52"
+              >
+                {perPrinter.map((item) => (
+                  <option key={item.judul} value={item.judul}>
+                    {item.judul}
+                    {item.arsip ? ' (arsip)' : ''}
+                  </option>
+                ))}
+              </Select>
+            )}
+          </>
+        }
+      />
 
       {tampil.length === 0 ? (
         <p className="px-4 py-8 text-xs text-muted">Belum ada permintaan warna tercatat.</p>

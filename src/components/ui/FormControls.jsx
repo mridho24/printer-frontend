@@ -24,9 +24,10 @@ export function Field({ label, htmlFor, error, hint, required = false, children,
   );
 }
 
-function gayaDasar(error) {
+function gayaDasar(error, lebar = 'w-full') {
   return cn(
-    'block w-full rounded-md border bg-surface px-3 py-2 text-sm text-ink transition-colors placeholder:text-faint disabled:bg-paper disabled:text-faint',
+    'block rounded-md border bg-surface px-3 py-2 text-sm text-ink transition-colors placeholder:text-faint disabled:bg-paper disabled:text-faint',
+    lebar,
     error ? 'border-danger' : 'border-line-strong',
   );
 }
@@ -59,11 +60,44 @@ export const Input = forwardRef(function Input(
 });
 
 export const Select = forwardRef(function Select(
-  { label, error, hint, required, className, id, children, ...props },
+  { label, error, hint, required, inline = false, className, id, children, ...props },
   ref,
 ) {
   const autoId = useId();
   const selectId = id || autoId;
+
+  if (inline) {
+    return (
+      <div className={cn('space-y-1', className)}>
+        <div className="flex items-center gap-2">
+          {label && (
+            <label htmlFor={selectId} className="shrink-0 text-xs font-medium text-muted">
+              {label}
+              {required && (
+                <span className="ml-0.5 text-danger" aria-hidden="true">
+                  *
+                </span>
+              )}
+            </label>
+          )}
+          <select
+            ref={ref}
+            id={selectId}
+            aria-invalid={error ? 'true' : undefined}
+            className={cn(gayaDasar(error, 'min-w-0 flex-1'), 'h-9 max-lg:h-11')}
+            {...props}
+          >
+            {children}
+          </select>
+        </div>
+        {error ? (
+          <p className="text-xs font-medium text-danger">{error}</p>
+        ) : (
+          hint && <p className="text-xs text-faint">{hint}</p>
+        )}
+      </div>
+    );
+  }
 
   return (
     <Field

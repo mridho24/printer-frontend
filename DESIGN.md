@@ -143,11 +143,18 @@ gerakan tuas) (R-11).
   semua tipe tetap tersedia di tab bahan per printer. Mode per jenis menjawab
   gabungan seluruh printer dalam satu jenis. Mode per tipe menjadi tampilan awal
   karena lebih spesifik.
-- Panel bulan memakai dropdown "Tampilan bulan" berisi 6 bulan tersibuk, semua
-  bulan, dan tiap bulan. Bulan lama bisa dibuka langsung tanpa menggulir, dan
-  keterangan menyebut jumlah serta peringkat bulan itu. Tabel kronologis penuh
-  tetap menjadi pilihan kedua karena deret panjang tidak langsung menjawab
-  "bulan mana yang ramai".
+- Kontrol panel diletakkan di kepala panel, bukan di bar filter tersendiri.
+  Tombol kelompok dan dropdown memakai label sebaris, sehingga tidak ada satu
+  baris penuh yang hanya berisi label di atas kontrol. Di ponsel kontrol turun
+  ke baris berikutnya di dalam kepala panel yang sama.
+- Panel bulan memakai dropdown "Tampilan bulan" berisi semua bulan dan tiap
+  bulan, tanpa ringkasan 6 bulan tersibuk. Tampilan awal adalah bulan terbaru
+  yang punya permintaan, jadi panel langsung menampilkan satu angka. Bulan lama
+  bisa dibuka langsung tanpa menggulir, dan keterangan menyebut jumlah serta
+  peringkat bulan itu.
+- Bulan terpilih ditampilkan sebagai satu baris ringkas, bukan tabel satu baris
+  dengan judul kolom. Tabel kronologis penuh hanya muncul saat memilih "Semua
+  bulan" karena deret panjang tidak langsung menjawab "bulan mana yang ramai".
 - Bulan tanpa permintaan tetap bisa dipilih dan ditampilkan dengan nilai nol
   agar jarak waktu tidak menyembunyikan bulan kosong.
 - Angka ringkasan ditulis mono dan dipisah garis, bukan kartu ikon, karena yang
@@ -157,6 +164,7 @@ gerakan tuas) (R-11).
 
 - Token warna, font, radius, fokus, dan reduced motion: `src/index.css`.
 - Kepala bagian bernomor: `src/components/ui/SectionHeader.jsx`.
+- Kontrol sebaris dan varian `inline` pada `Select`: `src/components/ui/FormControls.jsx`.
 - Tabel peringkat dashboard: `src/features/dashboard/RankingTable.jsx`.
 - Pengelompokan warna per tipe/jenis: `src/features/dashboard/WarnaPanel.jsx`.
 - Deret bulan berurutan termasuk bulan kosong: `src/features/dashboard/deretBulan.js`.
