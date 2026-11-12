@@ -1,7 +1,7 @@
 import { api, queryString } from './client.js';
 
 export const dashboardApi = {
-  ringkasan: () => api.get('/dashboard'),
+  ringkasan: (params) => api.get(`/dashboard${queryString(params)}`),
 };
 
 export const jenisApi = {

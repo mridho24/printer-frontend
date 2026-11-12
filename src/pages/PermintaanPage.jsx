@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Plus, RotateCw } from 'lucide-react';
 import PageHeader from '../components/layout/PageHeader.jsx';
 import Card from '../components/ui/Card.jsx';
@@ -10,16 +11,28 @@ import { InlineAlert } from '../components/ui/Feedback.jsx';
 import FilterBar from '../features/permintaan/FilterBar.jsx';
 import PermintaanFormModal from '../features/permintaan/PermintaanFormModal.jsx';
 import PermintaanTable from '../features/permintaan/PermintaanTable.jsx';
-import { permintaanApi } from '../api/index.js';
+import { labelRentang } from '../features/dashboard/periode.js';
+import { jenisApi, permintaanApi } from '../api/index.js';
 import { useDebounce } from '../hooks/useDebounce.js';
 import { useFetch } from '../hooks/useFetch.js';
 import { useToast } from '../hooks/useToast.js';
+import { WARNA_META } from '../lib/constants.js';
 
+/**
+ * Halaman permintaan juga bisa dibuka dari dashboard lewat query string,
+ * misalnya `?tipe=L135&warna=black`. Nilai awal dibaca sekali dari URL, lalu
+ * chip filter menunjukkan cakupan yang sedang aktif agar hasil yang sempit
+ * tidak disalahartikan sebagai seluruh data.
+ */
 export default function PermintaanPage() {
   const toast = useToast();
-  const [dari, setDari] = useState('');
-  const [sampai, setSampai] = useState('');
-  const [q, setQ] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [dari, setDari] = useState(() => searchParams.get('dari') ?? '');
+  const [sampai, setSampai] = useState(() => searchParams.get('sampai') ?? '');
+  const [q, setQ] = useState(() => searchParams.get('q') ?? '');
+  const [jenisId, setJenisId] = useState(() => searchParams.get('jenis_id') ?? '');
+  const [tipe, setTipe] = useState(() => searchParams.get('tipe') ?? '');
+  const [warna, setWarna] = useState(() => searchParams.get('warna') ?? '');
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
@@ -30,9 +43,21 @@ export default function PermintaanPage() {
   const debouncedQ = useDebounce(q, 400);
   const invalidRange = Boolean(dari && sampai && dari > sampai);
 
+  const { data: daftarJenis } = useFetch(() => jenisApi.list(), []);
+
   const { data, meta, loading, error, reload } = useFetch(
-    () => permintaanApi.list({ dari, sampai, q: debouncedQ, page, limit }),
-    [dari, sampai, debouncedQ, page, limit],
+    () =>
+      permintaanApi.list({
+        dari,
+        sampai,
+        q: debouncedQ,
+        jenis_id: jenisId || undefined,
+        tipe: tipe || undefined,
+        warna: warna || undefined,
+        page,
+        limit,
+      }),
+    [dari, sampai, debouncedQ, jenisId, tipe, warna, page, limit],
     { enabled: !invalidRange },
   );
 
@@ -41,6 +66,9 @@ export default function PermintaanPage() {
     if (field === 'dari') setDari(value);
     if (field === 'sampai') setSampai(value);
     if (field === 'q') setQ(value);
+    if (field === 'jenis_id') setJenisId(value);
+    if (field === 'tipe') setTipe(value);
+    if (field === 'warna') setWarna(value);
   }
 
   function ubahLimit(nilai) {
@@ -52,7 +80,55 @@ export default function PermintaanPage() {
     setDari('');
     setSampai('');
     setQ('');
+    setJenisId('');
+    setTipe('');
+    setWarna('');
     setPage(1);
+    setSearchParams(new URLSearchParams(), { replace: true });
+  }
+
+  /**
+   * Menghapus satu chip sekaligus membersihkan parameternya di URL, supaya
+   * muat ulang tidak memunculkan kembali filter yang sudah dilepas.
+   */
+  function hapusChip(kunci) {
+    setPage(1);
+
+    if (kunci === 'tanggal') {
+      setDari('');
+      setSampai('');
+    }
+    if (kunci === 'jenis') setJenisId('');
+    if (kunci === 'tipe') setTipe('');
+    if (kunci === 'warna') setWarna('');
+
+    setSearchParams(
+      (sebelum) => {
+        const berikut = new URLSearchParams(sebelum);
+        if (kunci === 'tanggal') {
+          berikut.delete('dari');
+          berikut.delete('sampai');
+        }
+        if (kunci === 'jenis') berikut.delete('jenis_id');
+        if (kunci === 'tipe') berikut.delete('tipe');
+        if (kunci === 'warna') berikut.delete('warna');
+        return berikut;
+      },
+      { replace: true },
+    );
+  }
+
+  const chip = [];
+  if (dari || sampai) {
+    chip.push({ key: 'tanggal', label: `Tanggal: ${labelRentang(dari, sampai)}` });
+  }
+  if (jenisId) {
+    const nama = (daftarJenis ?? []).find((item) => String(item.id) === String(jenisId))?.nama;
+    chip.push({ key: 'jenis', label: `Jenis: ${nama ?? `#${jenisId}`}` });
+  }
+  if (tipe) chip.push({ key: 'tipe', label: `Tipe: ${tipe}` });
+  if (warna) {
+    chip.push({ key: 'warna', label: `Warna: ${WARNA_META[warna]?.label ?? warna}` });
   }
 
   async function konfirmasiHapus() {
@@ -116,7 +192,9 @@ export default function PermintaanPage() {
             dari={dari}
             sampai={sampai}
             q={q}
+            chips={chip}
             onChange={ubahFilter}
+            onHapusChip={hapusChip}
             onReset={resetFilter}
             invalidRange={invalidRange}
           />

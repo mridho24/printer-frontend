@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import BarChart from './BarChart.jsx';
 import PrinterRow from './PrinterRow.jsx';
+import TombolEkspor from './TombolEkspor.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
 import Pagination from '../../components/ui/Pagination.jsx';
@@ -80,6 +81,7 @@ export default function PrinterBahanPanel({ printer }) {
               ? `${item.tipe} (arsip)`
               : item.tipe,
           total: item.total,
+          href: `/permintaan?tipe=${encodeURIComponent(item.tipe)}`,
         })),
     [hasil],
   );
@@ -96,6 +98,19 @@ export default function PrinterBahanPanel({ printer }) {
       <SectionHeader
         title="Bahan per tipe printer"
         description="Kode untuk printer non-warna, warna untuk printer warna. Tiap tipe dihitung terpisah."
+        actions={
+          <TombolEkspor
+            nama="bahan-per-printer"
+            label="tabel bahan per printer"
+            kolom={['Tipe printer', 'Merek', 'Jenis', 'Permintaan']}
+            baris={hasil.map((item) => [
+              item.tipe,
+              item.merek,
+              item.jenis_nama ?? '',
+              item.total,
+            ])}
+          />
+        }
       />
 
       <div className="grid gap-3 border-b border-line px-4 py-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)]">

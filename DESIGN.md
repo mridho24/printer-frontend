@@ -179,6 +179,41 @@ gerakan tuas) (R-11).
   jarak waktu tidak menyembunyikan bulan kosong.
 - Angka ringkasan ditulis mono dan dipisah garis, bukan kartu ikon, karena yang
   dibaca adalah nilainya, bukan ilustrasinya.
+- Filter periode global dipakai bersama oleh semua panel, bukan filter per tab.
+  Angka yang tampak berdampingan harus berasal dari cakupan waktu yang sama;
+  filter terpisah per panel membuat pembaca membandingkan dua periode tanpa
+  sadar. Preset dihitung dari tanggal perangkat, bukan dari data terakhir, agar
+  arti "7 hari terakhir" tidak bergeser hanya karena ada data lama. Rentang yang
+  sedang aktif selalu ditulis sebagai label, termasuk "Semua data tercatat".
+- Delta ringkasan hanya muncul bila periode pembanding berisi data. Periode
+  pembanding adalah rentang sepanjang itu tepat sebelum rentang terpilih.
+  Menampilkan "0" atau panah turun dari dasar kosong akan menyiratkan perubahan
+  yang tidak pernah terjadi.
+- "Perlu perhatian" diletakkan di atas tab karena isinya tindak lanjut, bukan
+  metrik. Temuan dikelompokkan per tipe printer dan bahan, bukan per bahan saja:
+  warna yang sama pada printer berbeda adalah pemakaian normal. Jendela 30 hari
+  sengaja tetap dan tidak ikut filter global karena tujuannya menandai
+  kemungkinan pencatatan ganda. Strip tidak ditampilkan saat tidak ada temuan;
+  peringatan yang selalu ada akan kehilangan makna.
+- "Permintaan terbaru" menampilkan lima catatan pada periode terpilih supaya
+  angka ringkasan punya contoh yang bisa ditelusuri. Tautan "Lihat semua"
+  membawa rentang yang sama ke daftar permintaan, bukan membuang filter tanpa
+  penjelasan.
+- Grafik bisa ditelusuri dengan mengklik seluruh baris batang, bukan hanya
+  labelnya. Tujuan drill-down ditulis di query string agar hasil yang sempit
+  bisa dimuat ulang dan dibagikan. Halaman permintaan menampilkan chip filter
+  aktif karena hasil yang tersaring tanpa penanda mudah disalahartikan sebagai
+  seluruh data; melepas chip juga membersihkan URL supaya muat ulang tidak
+  memunculkan kembali filter yang sudah dilepas.
+- Ekspor mengikuti tab yang sedang tampil dan memakai data yang terlihat, bukan
+  seluruh isi basis data. CSV memakai titik koma dan BOM agar terbuka langsung
+  di Excel berlokal Indonesia; Excel memakai tabel HTML `.xls` agar tidak
+  menambah dependensi. Nama berkas memuat tab dan tanggal unduh supaya hasil
+  beberapa periode tidak saling menimpa.
+- Rentang tidak valid, periode kosong, dan kegagalan muat masing-masing punya
+  keadaan sendiri. Rentang terbalik tidak boleh menampilkan angka lama seolah
+  masih berlaku; dashboard menjelaskan kesalahannya dan menyediakan tombol
+  kembali ke semua data.
 - Form master data printer memberi peringatan lunak, bukan blokir, saat nama
   jenis menyebut merek lain atau saat merek yang sama di data aktif paling
   banyak memakai jenis berbeda. Data lama tetap harus bisa diperbaiki, dan

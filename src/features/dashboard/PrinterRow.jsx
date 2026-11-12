@@ -1,4 +1,5 @@
-import { ChevronDown } from 'lucide-react';
+import { ArrowRight, ChevronDown } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import RankingTable from './RankingTable.jsx';
 import { Badge } from '../../components/ui/Feedback.jsx';
 import { WARNA_META } from '../../lib/constants.js';
@@ -99,6 +100,14 @@ export default function PrinterRow({ printer, terbuka, onToggle }) {
               +{sisa} {printer.pakai_warna ? 'warna' : 'kode'} lain
             </p>
           )}
+
+          <Link
+            to={`/permintaan?tipe=${encodeURIComponent(printer.tipe)}`}
+            className="mt-3 inline-flex min-h-9 items-center gap-1.5 text-xs font-medium text-accent-strong transition-colors hover:text-accent max-lg:min-h-11"
+          >
+            Lihat semua permintaan tipe ini
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+          </Link>
         </div>
       )}
     </li>

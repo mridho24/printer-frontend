@@ -81,6 +81,32 @@ tombol menampilkan spinner dan tidak bisa ditekan; setelah selesai muncul toast
   per printer. Panel hanya muncul jika ada printer yang memakai warna.
 - Dropdown dan tombol kelompok pada panel bulan dan warna berada di kepala
   panel, bukan di bar filter terpisah, supaya tidak memakan tinggi layar.
+- **Filter periode** di atas dashboard berlaku untuk semua panel sekaligus:
+  semua data (default), 7 hari terakhir, 30 hari terakhir, bulan ini, atau
+  rentang kustom. Angka ringkasan, grafik, perhatian, dan permintaan terbaru
+  selalu memakai rentang yang sama, sehingga tidak ada angka dari cakupan waktu
+  berbeda. Pilihan disimpan di URL (`periode`, `dari`, `sampai`). Saat rentang
+  terbalik, dashboard menampilkan pesan dan tombol **Tampilkan semua data**,
+  bukan angka yang menyesatkan. Bila periode sebelumnya berisi data, kartu
+  ringkasan menampilkan delta jumlah terhadap periode sepanjang itu.
+- **Perlu perhatian** menandai bahan yang sama diminta minimal dua kali untuk
+  printer yang sama dalam 30 hari terakhir, misalnya kemungkinan pencatatan
+  ganda. Jendela 30 hari sengaja tetap dan tidak ikut filter periode global
+  karena tugasnya meninjau kemungkinan duplikat, bukan membandingkan tren. Tiap
+  temuan menaut ke daftar permintaan dengan filter tipe, pencarian bahan, dan
+  rentang 30 hari tersebut.
+- **Permintaan terbaru** menampilkan lima catatan terakhir pada periode
+  terpilih. **Lihat semua** membawa rentang yang sama ke halaman permintaan.
+- Grafik dan daftar bisa ditelusuri: batang jenis, printer, bulan, dan warna
+  menaut ke `#/permintaan` dengan query string (`jenis_id`, `tipe`, `warna`,
+  `dari`, `sampai`). Halaman permintaan membaca query itu, mengirimnya ke API,
+  dan menampilkan chip filter aktif. Chip bisa dilepas satu per satu; melepas
+  chip juga membersihkan parameternya di URL. Baris printer yang dibuka punya
+  tautan **Lihat semua permintaan tipe ini**.
+- Setiap tab punya tombol ekspor **CSV** dan **Excel** untuk data tab yang
+  sedang tampil. CSV memakai pemisah titik koma dan BOM agar langsung terbuka
+  rapi di Excel berlokal Indonesia; Excel memakai tabel HTML berekstensi
+  `.xls` tanpa pustaka tambahan. Nama berkas memuat tab dan tanggal unduh.
 
 Semua angka dihitung dari permintaan aktif; riwayat printer/jenis yang sudah
 di-soft-delete tetap dihitung dan ditandai arsip.
@@ -97,6 +123,8 @@ di-soft-delete tetap dihitung dan ditandai arsip.
 - Error backend (`error.message` dan `error.details`) ditampilkan sebagai pesan
   umum dan error per field.
 - Filter tanggal, pencarian debounce, dan paginasi mengikuti kontrak API.
+  Filter periode dari dashboard dikirim sebagai `dari`/`sampai`, filter
+  drill-down sebagai `jenis_id`, `tipe`, atau `warna`.
 - Form printer menampilkan peringatan lunak bila nama jenis menyebut merek lain
   atau bila merek yang sama di data aktif paling banyak memakai jenis berbeda.
   Peringatan tidak memblokir penyimpanan karena data lama tetap harus bisa

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import BarChart from './BarChart.jsx';
+import TombolEkspor from './TombolEkspor.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
 import SectionHeader from '../../components/ui/SectionHeader.jsx';
@@ -44,7 +45,10 @@ export default function WarnaPanel({ warna, printer }) {
 
   const perJenis = [...warna]
     .map((item) => {
-      const isi = isiWarna(item.warna);
+      const isi = isiWarna(item.warna).map((warnaItem) => ({
+        ...warnaItem,
+        href: `/permintaan?jenis_id=${item.jenis_id}&warna=${warnaItem.warna}`,
+      }));
       return {
         kunci: `jenis-${item.jenis_id}`,
         judul: item.nama,
@@ -65,7 +69,10 @@ export default function WarnaPanel({ warna, printer }) {
       total: item.bahan.reduce((jumlah, warnaItem) => jumlah + warnaItem.total, 0),
       satuanTotal: 'pilihan warna',
       arsip: item.printer_dihapus || item.jenis_dihapus,
-      warna: isiWarna(item.bahan),
+      warna: isiWarna(item.bahan).map((warnaItem) => ({
+        ...warnaItem,
+        href: `/permintaan?tipe=${encodeURIComponent(item.tipe)}&warna=${warnaItem.warna}`,
+      })),
     }))
     .sort((a, b) => b.total - a.total || a.judul.localeCompare(b.judul));
 
@@ -81,7 +88,12 @@ export default function WarnaPanel({ warna, printer }) {
       }
     }
     const isi = [...hitung.entries()]
-      .map(([kunci, total]) => ({ nama: labelWarna(kunci), warna: kunci, total }))
+      .map(([kunci, total]) => ({
+        nama: labelWarna(kunci),
+        warna: kunci,
+        total,
+        href: `/permintaan?warna=${kunci}`,
+      }))
       .sort((a, b) => b.total - a.total || a.nama.localeCompare(b.nama));
 
     return {
@@ -111,6 +123,10 @@ export default function WarnaPanel({ warna, printer }) {
     mode === 'tipe'
       ? 'Warna dihitung dari tipe printer yang dipilih, atau dari seluruh tipe bila tidak dipersempit.'
       : 'Warna digabung dari seluruh tipe dalam satu jenis.';
+
+  const barisEkspor = tampil.flatMap((item) =>
+    item.warna.map((warnaItem) => [item.judul, warnaItem.nama, warnaItem.total]),
+  );
 
   return (
     <Card>
@@ -160,6 +176,13 @@ export default function WarnaPanel({ warna, printer }) {
                 ))}
               </Select>
             )}
+
+            <TombolEkspor
+              nama="warna-permintaan"
+              label="tabel warna"
+              kolom={['Kelompok', 'Warna', 'Permintaan']}
+              baris={barisEkspor}
+            />
           </>
         }
       />

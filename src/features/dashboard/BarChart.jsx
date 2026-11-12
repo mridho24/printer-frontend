@@ -1,8 +1,12 @@
+import { Link } from 'react-router-dom';
 import RankingTable from './RankingTable.jsx';
 import { WARNA_META } from '../../lib/constants.js';
 import { cn } from '../../lib/cn.js';
 
 const LEBAR_MIN = 1.5;
+
+const BARIS =
+  'grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 rounded-sm px-1 py-1';
 
 /**
  * Grafik batang horizontal dengan angka di ujung batang.
@@ -15,6 +19,10 @@ const LEBAR_MIN = 1.5;
  *
  * Warna batang memakai satu aksen. Pengecualiannya grafik warna, yang memakai
  * warna asli karena warna itu sendiri adalah data yang dibaca.
+ *
+ * Item yang punya `href` menjadi tautan drill-down ke halaman permintaan dengan
+ * filter di query string, sehingga hasil yang dibuka bisa dibagikan dan dimuat
+ * ulang.
  */
 export default function BarChart({
   items = [],
@@ -32,48 +40,56 @@ export default function BarChart({
 
   const puncak = Math.max(...items.map((item) => item.total), 0);
 
+  function isiBaris(item, indeks) {
+    const persen = puncak > 0 ? (item.total / puncak) * 100 : 0;
+    const lebar = item.total > 0 ? Math.max(persen, LEBAR_MIN) : 0;
+    const isi = warnaAsli ? (WARNA_META[item.warna]?.swatch ?? 'bg-accent') : 'bg-accent';
+
+    return (
+      <>
+        <span className="min-w-0 truncate text-[13px] text-ink" title={item.nama}>
+          {bernomor && (
+            <span className="mr-1.5 font-mono text-xs tabular-nums text-faint">
+              {String(indeks + 1).padStart(2, '0')}
+            </span>
+          )}
+          {item.nama}
+          {item.arsip && <span className="ml-1.5 text-xs text-faint">(arsip)</span>}
+        </span>
+
+        <span className="row-span-2 self-center font-mono text-[13px] font-semibold tabular-nums text-ink">
+          {item.total}
+        </span>
+
+        <span className="h-2 overflow-hidden rounded-sm bg-line/60" aria-hidden="true">
+          <span
+            data-bar
+            className={cn('block h-full rounded-sm', isi)}
+            style={{ width: `${lebar}%` }}
+          />
+        </span>
+      </>
+    );
+  }
+
   return (
     <div>
-      <div className="space-y-2.5" data-chart>
-        {items.map((item, indeks) => {
-          const persen = puncak > 0 ? (item.total / puncak) * 100 : 0;
-          const lebar = item.total > 0 ? Math.max(persen, LEBAR_MIN) : 0;
-          const isi = warnaAsli
-            ? (WARNA_META[item.warna]?.swatch ?? 'bg-accent')
-            : 'bg-accent';
-
-          return (
-            <div
+      <div className="space-y-1.5" data-chart>
+        {items.map((item, indeks) =>
+          item.href ? (
+            <Link
               key={`${item.nama}-${indeks}`}
-              className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1"
+              to={item.href}
+              className={cn(BARIS, 'transition-colors hover:bg-paper')}
             >
-              <span className="min-w-0 truncate text-[13px] text-ink" title={item.nama}>
-                {bernomor && (
-                  <span className="mr-1.5 font-mono text-xs tabular-nums text-faint">
-                    {String(indeks + 1).padStart(2, '0')}
-                  </span>
-                )}
-                {item.nama}
-                {item.arsip && <span className="ml-1.5 text-xs text-faint">(arsip)</span>}
-              </span>
-
-              <span className="row-span-2 self-center font-mono text-[13px] font-semibold tabular-nums text-ink">
-                {item.total}
-              </span>
-
-              <span
-                className="h-2 overflow-hidden rounded-sm bg-line/60"
-                aria-hidden="true"
-              >
-                <span
-                  data-bar
-                  className={cn('block h-full rounded-sm', isi)}
-                  style={{ width: `${lebar}%` }}
-                />
-              </span>
+              {isiBaris(item, indeks)}
+            </Link>
+          ) : (
+            <div key={`${item.nama}-${indeks}`} className={BARIS}>
+              {isiBaris(item, indeks)}
             </div>
-          );
-        })}
+          ),
+        )}
       </div>
 
       <details className="mt-4 border-t border-line pt-1">

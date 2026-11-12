@@ -1,4 +1,4 @@
-import { RotateCcw, Search } from 'lucide-react';
+import { RotateCcw, Search, X } from 'lucide-react';
 import Button from '../../components/ui/Button.jsx';
 import { InlineAlert } from '../../components/ui/Feedback.jsx';
 
@@ -9,7 +9,9 @@ export default function FilterBar({
   dari,
   sampai,
   q,
+  chips = [],
   onChange,
+  onHapusChip,
   onReset,
   invalidRange,
   className,
@@ -71,6 +73,24 @@ export default function FilterBar({
           </Button>
         </div>
       </div>
+
+      {chips.length > 0 && (
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <span className="text-xs text-muted">Filter aktif:</span>
+          {chips.map((item) => (
+            <button
+              key={item.key}
+              type="button"
+              onClick={() => onHapusChip(item.key)}
+              aria-label={`Hapus filter ${item.label}`}
+              className="inline-flex min-h-8 items-center gap-1.5 rounded-sm border border-line-strong bg-paper px-2 text-xs font-medium text-ink transition-colors hover:border-accent hover:text-accent-strong max-lg:min-h-11"
+            >
+              {item.label}
+              <X className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+          ))}
+        </div>
+      )}
 
       {invalidRange && (
         <InlineAlert tone="warning" className="mt-3">

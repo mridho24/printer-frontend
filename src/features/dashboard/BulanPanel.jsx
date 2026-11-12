@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import BarChart from './BarChart.jsx';
+import TombolEkspor from './TombolEkspor.jsx';
 import { deretBulan } from './deretBulan.js';
+import { rentangBulan } from './periode.js';
 import Card from '../../components/ui/Card.jsx';
 import SectionHeader from '../../components/ui/SectionHeader.jsx';
 import { EmptyState } from '../../components/ui/Feedback.jsx';
@@ -30,12 +32,22 @@ export default function BulanPanel({ bulanan }) {
   const dipilih = nilai === SEMUA ? null : (pilihan.find((item) => item.kunci === nilai) ?? null);
   const total = semuaBulan.reduce((jumlah, item) => jumlah + item.total, 0);
 
+  const ekspor = (
+    <TombolEkspor
+      nama="bulan-permintaan"
+      label="tabel bulan"
+      kolom={['Bulan', 'Permintaan']}
+      baris={semuaBulan.map((item) => [item.nama, item.total])}
+    />
+  );
+
   if (semuaBulan.length === 0) {
     return (
       <Card>
         <SectionHeader
           title="Bulan permintaan"
           description="Jumlah permintaan per bulan, termasuk bulan tanpa permintaan."
+          actions={ekspor}
         />
         <EmptyState
           title="Belum ada permintaan tercatat"
@@ -55,6 +67,7 @@ export default function BulanPanel({ bulanan }) {
         <SectionHeader
           title="Bulan permintaan"
           description="Grafik bulanan butuh minimal tiga bulan data agar perbandingan antarbulan bermakna."
+          actions={ekspor}
         />
         <EmptyState
           title="Belum cukup bulan untuk grafik"
@@ -64,28 +77,39 @@ export default function BulanPanel({ bulanan }) {
     );
   }
 
+  const itemsBulan = semuaBulan.map((item) => {
+    const rentang = rentangBulan(item.kunci);
+    return {
+      ...item,
+      href: `/permintaan?dari=${rentang.dari}&sampai=${rentang.sampai}`,
+    };
+  });
+
   return (
     <Card>
       <SectionHeader
         title="Bulan permintaan"
         description="Jumlah permintaan per bulan, termasuk bulan tanpa permintaan."
         actions={
-          pilihan.length > 1 ? (
-            <Select
-              inline
-              label="Tampilan bulan"
-              value={nilai}
-              onChange={(event) => setTampilan(event.target.value)}
-              className="w-full sm:w-64"
-            >
-              <option value={SEMUA}>Semua bulan</option>
-              {pilihan.map((item) => (
-                <option key={item.kunci} value={item.kunci}>
-                  {item.nama}
-                </option>
-              ))}
-            </Select>
-          ) : null
+          <>
+            {pilihan.length > 1 && (
+              <Select
+                inline
+                label="Tampilan bulan"
+                value={nilai}
+                onChange={(event) => setTampilan(event.target.value)}
+                className="w-full sm:w-64"
+              >
+                <option value={SEMUA}>Semua bulan</option>
+                {pilihan.map((item) => (
+                  <option key={item.kunci} value={item.kunci}>
+                    {item.nama}
+                  </option>
+                ))}
+              </Select>
+            )}
+            {ekspor}
+          </>
         }
       />
 
@@ -102,7 +126,7 @@ export default function BulanPanel({ bulanan }) {
       ) : (
         <div className="p-4">
           <BarChart
-            items={semuaBulan}
+            items={itemsBulan}
             labelHeader="Bulan"
             satuanHeader="Permintaan"
             kosong="Belum ada permintaan tercatat."
