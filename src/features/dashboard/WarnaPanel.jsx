@@ -182,13 +182,24 @@ export default function WarnaPanel({ warna, printer }) {
               })}
             </div>
 
-            {mode === 'tipe' && (
+            {/*
+              Slot pemilih tipe selalu disediakan agar tombol mode dan tombol
+              ekspor tidak berpindah saat mode berganti. Di layar kecil slot
+              yang tidak terpakai dilipat supaya tidak menyisakan baris kosong.
+            */}
+            <div
+              className={cn(
+                'w-full sm:w-52',
+                mode !== 'tipe' && 'hidden sm:block sm:invisible',
+              )}
+            >
               <Select
                 inline
                 label="Tipe printer"
                 value={dipilih ? dipilih.judul : SEMUA_TIPE}
                 onChange={(event) => pilihTipe(event.target.value)}
-                className="w-full sm:w-52"
+                className="w-full"
+                disabled={mode !== 'tipe'}
               >
                 <option value={SEMUA_TIPE}>Semua tipe printer</option>
                 {perPrinter.map((item) => (
@@ -198,7 +209,7 @@ export default function WarnaPanel({ warna, printer }) {
                   </option>
                 ))}
               </Select>
-            )}
+            </div>
 
             <TombolEkspor
               nama="warna-permintaan"

@@ -305,7 +305,9 @@ export default function DashboardPage() {
             )}
           </div>
 
-          {!error && <PermintaanTerbaru items={data?.terbaru ?? []} tautan={tautanPermintaan} />}
+          {!error && aktif === 'jenis' && (
+            <PermintaanTerbaru items={data?.terbaru ?? []} tautan={tautanPermintaan} />
+          )}
         </>
       )}
     </div>

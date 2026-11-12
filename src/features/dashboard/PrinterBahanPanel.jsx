@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import BarChart from './BarChart.jsx';
 import PrinterRow from './PrinterRow.jsx';
@@ -27,7 +27,6 @@ function cocokCari(printer, kata) {
  */
 export default function PrinterBahanPanel({ printer }) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [terbuka, setTerbuka] = useState(null);
 
   const cari = searchParams.get('printer_q') ?? '';
   const jenisId = searchParams.get('printer_jenis') ?? '';
@@ -51,10 +50,6 @@ export default function PrinterBahanPanel({ printer }) {
       },
       { replace: true },
     );
-  }
-
-  function resetRingkasan() {
-    setTerbuka(null);
   }
 
   const daftarJenis = useMemo(() => {
@@ -113,7 +108,6 @@ export default function PrinterBahanPanel({ printer }) {
       printer_urut: '',
       printer_page: '',
     });
-    resetRingkasan();
   }
 
   return (
@@ -143,7 +137,6 @@ export default function PrinterBahanPanel({ printer }) {
           value={cari}
           onChange={(event) => {
             ubahParam({ printer_q: event.target.value, printer_page: '' });
-            resetRingkasan();
           }}
         />
         <Select
@@ -151,7 +144,6 @@ export default function PrinterBahanPanel({ printer }) {
           value={jenisId}
           onChange={(event) => {
             ubahParam({ printer_jenis: event.target.value, printer_page: '' });
-            resetRingkasan();
           }}
         >
           <option value="">Semua jenis</option>
@@ -166,7 +158,6 @@ export default function PrinterBahanPanel({ printer }) {
           value={urut}
           onChange={(event) => {
             ubahParam({ printer_urut: event.target.value === 'tipe' ? 'tipe' : '', printer_page: '' });
-            resetRingkasan();
           }}
         >
           <option value="total">Terbanyak</option>
@@ -209,12 +200,7 @@ export default function PrinterBahanPanel({ printer }) {
         <>
           <ul className="divide-y divide-line">
             {tampil.map((item) => (
-              <PrinterRow
-                key={item.tipe}
-                printer={item}
-                terbuka={terbuka === item.tipe}
-                onToggle={() => setTerbuka((sekarang) => (sekarang === item.tipe ? null : item.tipe))}
-              />
+              <PrinterRow key={item.tipe} printer={item} />
             ))}
           </ul>
 
@@ -227,7 +213,6 @@ export default function PrinterBahanPanel({ printer }) {
               satuan="printer"
               onPageChange={(baru) => {
                 ubahParam({ printer_page: baru === 1 ? '' : String(baru) });
-                setTerbuka(null);
               }}
             />
           ) : (
