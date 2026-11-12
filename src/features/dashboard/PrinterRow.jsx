@@ -1,17 +1,15 @@
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import RankingTable from './RankingTable.jsx';
 import { Badge } from '../../components/ui/Feedback.jsx';
 import { WARNA_META } from '../../lib/constants.js';
 
-const MAKS_BAHAN = 5;
-
 /**
- * Satu baris printer dengan rincian bahan yang selalu terlihat.
+ * Satu baris printer yang ringkas: tipe, merek dan jenis, bahan terbanyak,
+ * serta jumlah permintaan.
  *
- * Rincian tidak disembunyikan di balik akordeon: panel ini dibuka untuk melihat
- * bahan, dan membuka tiap baris satu per satu hanya menambah langkah. Paginasi
- * menjaga daftar tetap pendek tanpa menyembunyikan isi baris.
+ * Rincian per kode atau warna tidak ditampilkan di sini. Untuk melihatnya,
+ * pengguna membuka daftar permintaan lewat tautan di bawah baris, yang sudah
+ * tersaring ke tipe printer ini.
  */
 export default function PrinterRow({ printer }) {
   const puncak = printer.bahan[0];
@@ -26,12 +24,6 @@ export default function PrinterRow({ printer }) {
   const ringkasBahan = puncak
     ? `${judulBahan}: ${namaPuncak} (${puncak.total})`
     : 'Belum ada bahan tercatat.';
-
-  const tampil = printer.bahan.slice(0, MAKS_BAHAN).map((item) => ({
-    nama: printer.pakai_warna ? (WARNA_META[item.nama]?.label ?? item.nama) : item.nama,
-    total: item.total,
-  }));
-  const sisa = printer.bahan.length - tampil.length;
 
   return (
     <li className="px-4 py-3.5">
@@ -58,35 +50,13 @@ export default function PrinterRow({ printer }) {
         </div>
       </div>
 
-      <div className="mt-3 border-t border-line pt-3">
-        <p className="mb-2.5 text-xs font-medium text-muted">
-          {printer.pakai_warna
-            ? `${MAKS_BAHAN} warna paling sering diminta`
-            : `${MAKS_BAHAN} ${printer.label_kode?.toLowerCase() || 'kode'} paling sering diminta`}
-        </p>
-        <RankingTable
-          items={tampil}
-          labelHeader={printer.pakai_warna ? 'Warna' : printer.label_kode || 'Kode bahan'}
-          satuanHeader="Permintaan"
-          bernomor
-          tandaiTeratas
-          padat
-          kosong="Belum ada bahan tercatat."
-        />
-        {sisa > 0 && (
-          <p className="mt-2.5 text-xs text-faint">
-            +{sisa} {printer.pakai_warna ? 'warna' : 'kode'} lain
-          </p>
-        )}
-
-        <Link
-          to={`/permintaan?tipe=${encodeURIComponent(printer.tipe)}`}
-          className="mt-3 inline-flex min-h-9 items-center gap-1.5 text-xs font-medium text-accent-strong transition-colors hover:text-accent max-lg:min-h-11"
-        >
-          Lihat semua permintaan tipe ini
-          <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-        </Link>
-      </div>
+      <Link
+        to={`/permintaan?tipe=${encodeURIComponent(printer.tipe)}`}
+        className="mt-2 inline-flex min-h-9 items-center gap-1.5 text-xs font-medium text-accent-strong transition-colors hover:text-accent max-lg:min-h-11"
+      >
+        Lihat semua permintaan tipe ini
+        <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+      </Link>
     </li>
   );
 }

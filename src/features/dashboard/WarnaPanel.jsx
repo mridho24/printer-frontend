@@ -38,6 +38,9 @@ function isiWarna(daftar) {
  * mempersempit ke satu printer, sedangkan mode per jenis menggabungkan seluruh
  * tipe dalam satu jenis. Grafik memakai warna asli karena warna di sini adalah
  * data, bukan dekorasi.
+ *
+ * Tombol ekspor berdiri sendiri di pojok kanan kepala panel, sama seperti di
+ * panel Bulan. Pilihan mode dan tipe ada di baris kontrol di bawah kepala.
  */
 export default function WarnaPanel({ warna, printer }) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -157,69 +160,69 @@ export default function WarnaPanel({ warna, printer }) {
         title="Warna paling sering diminta"
         description={keterangan}
         actions={
-          <>
-            <div className="inline-flex" role="group" aria-label="Kelompokkan data warna">
-              {MODE.map((item, indeks) => {
-                const aktif = item.key === mode;
-
-                return (
-                  <button
-                    key={item.key}
-                    type="button"
-                    aria-pressed={aktif}
-                    onClick={() => pilihMode(item.key)}
-                    className={cn(
-                      'inline-flex h-9 items-center border px-3 text-xs font-medium transition-colors max-lg:h-11',
-                      indeks === 0 ? 'rounded-l-md' : '-ml-px rounded-r-md',
-                      aktif
-                        ? 'relative z-10 border-accent bg-accent-soft text-accent-strong'
-                        : 'border-line-strong bg-surface text-muted hover:text-ink',
-                    )}
-                  >
-                    {item.label}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/*
-              Slot pemilih tipe selalu disediakan agar tombol mode dan tombol
-              ekspor tidak berpindah saat mode berganti. Di layar kecil slot
-              yang tidak terpakai dilipat supaya tidak menyisakan baris kosong.
-            */}
-            <div
-              className={cn(
-                'w-full sm:w-52',
-                mode !== 'tipe' && 'hidden sm:block sm:invisible',
-              )}
-            >
-              <Select
-                inline
-                label="Tipe printer"
-                value={dipilih ? dipilih.judul : SEMUA_TIPE}
-                onChange={(event) => pilihTipe(event.target.value)}
-                className="w-full"
-                disabled={mode !== 'tipe'}
-              >
-                <option value={SEMUA_TIPE}>Semua tipe printer</option>
-                {perPrinter.map((item) => (
-                  <option key={item.judul} value={item.judul}>
-                    {item.judul}
-                    {item.arsip ? ' (arsip)' : ''}
-                  </option>
-                ))}
-              </Select>
-            </div>
-
-            <TombolEkspor
-              nama="warna-permintaan"
-              label="tabel warna"
-              kolom={['Kelompok', 'Warna', 'Permintaan']}
-              baris={barisEkspor}
-            />
-          </>
+          <TombolEkspor
+            nama="warna-permintaan"
+            label="tabel warna"
+            kolom={['Kelompok', 'Warna', 'Permintaan']}
+            baris={barisEkspor}
+          />
         }
       />
+
+      <div className="flex flex-wrap items-center gap-3 border-b border-line px-4 py-3">
+        <div className="inline-flex" role="group" aria-label="Kelompokkan data warna">
+          {MODE.map((item, indeks) => {
+            const aktif = item.key === mode;
+
+            return (
+              <button
+                key={item.key}
+                type="button"
+                aria-pressed={aktif}
+                onClick={() => pilihMode(item.key)}
+                className={cn(
+                  'inline-flex h-9 items-center border px-3 text-xs font-medium transition-colors max-lg:h-11',
+                  indeks === 0 ? 'rounded-l-md' : '-ml-px rounded-r-md',
+                  aktif
+                    ? 'relative z-10 border-accent bg-accent-soft text-accent-strong'
+                    : 'border-line-strong bg-surface text-muted hover:text-ink',
+                )}
+              >
+                {item.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/*
+          Slot pemilih tipe selalu disediakan agar susunan baris kontrol tidak
+          berubah saat mode berganti. Di layar kecil slot yang tidak terpakai
+          dilipat supaya tidak menyisakan baris kosong.
+        */}
+        <div
+          className={cn(
+            'w-full sm:w-52',
+            mode !== 'tipe' && 'hidden sm:block sm:invisible',
+          )}
+        >
+          <Select
+            inline
+            label="Tipe printer"
+            value={dipilih ? dipilih.judul : SEMUA_TIPE}
+            onChange={(event) => pilihTipe(event.target.value)}
+            className="w-full"
+            disabled={mode !== 'tipe'}
+          >
+            <option value={SEMUA_TIPE}>Semua tipe printer</option>
+            {perPrinter.map((item) => (
+              <option key={item.judul} value={item.judul}>
+                {item.judul}
+                {item.arsip ? ' (arsip)' : ''}
+              </option>
+            ))}
+          </Select>
+        </div>
+      </div>
 
       {tampil.length === 0 || tampil.every((item) => item.warna.length === 0) ? (
         <p className="px-4 py-8 text-xs text-muted">Belum ada permintaan warna tercatat.</p>

@@ -1,15 +1,14 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import BarChart from './BarChart.jsx';
-import PrinterRow from './PrinterRow.jsx';
 import TombolEkspor from './TombolEkspor.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
-import Pagination from '../../components/ui/Pagination.jsx';
 import SectionHeader from '../../components/ui/SectionHeader.jsx';
 import { Input, Select } from '../../components/ui/FormControls.jsx';
 
-const MAKS_AWAL = 6;
+const MAKS_TAMPIL = 5;
+const ID_GRAFIK = 'grafik-printer-terbanyak';
 
 function cocokCari(printer, kata) {
   if (!kata) return true;
@@ -19,26 +18,28 @@ function cocokCari(printer, kata) {
 }
 
 /**
- * Daftar bahan per tipe printer dalam bentuk akordeon.
+ * Printer dengan permintaan terbanyak.
  *
- * Daftar dibagi 6 printer per halaman supaya puluhan printer tidak memanjangkan
- * halaman. Pencarian, filter jenis, dan urutan bekerja pada seluruh data, bukan
- * hanya yang sedang terlihat.
+ * Grafik batang diurutkan dari jumlah permintaan terbanyak. Secara awal hanya
+ * 5 printer teratas yang tampil supaya halaman tetap pendek; tombol
+ * "Lihat semua" membuka seluruh printer. Pencarian dan filter jenis bekerja
+ * pada seluruh data, bukan hanya yang sedang terlihat. Tiap batang menjadi
+ * tautan ke daftar permintaan tipe printer itu.
  */
 export default function PrinterBahanPanel({ printer }) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [semua, setSemua] = useState(false);
 
   const cari = searchParams.get('printer_q') ?? '';
   const jenisId = searchParams.get('printer_jenis') ?? '';
-  const urut = searchParams.get('printer_urut') === 'tipe' ? 'tipe' : 'total';
-  const halaman = Math.max(1, Number(searchParams.get('printer_page')) || 1);
 
   /**
-   * Pencarian, filter, urutan, dan halaman disimpan di URL agar muat ulang dan
-   * tombol kembali membuka daftar yang sama. Mengubah filter menghapus nomor
-   * halaman supaya daftar kembali ke halaman 1.
+   * Pencarian dan filter disimpan di URL agar muat ulang dan tombol kembali
+   * membuka tampilan yang sama. Mengubah salah satunya melipat grafik kembali
+   * ke 5 teratas.
    */
   function ubahParam(perubahan) {
+    setSemua(false);
     setSearchParams(
       (sebelum) => {
         const berikut = new URLSearchParams(sebelum);
@@ -65,48 +66,45 @@ export default function PrinterBahanPanel({ printer }) {
     );
   }, [printer]);
 
+  // Selalu urut jumlah terbanyak; tipe A-Z hanya memutus keseimbangan.
   const hasil = useMemo(() => {
     const kata = cari.trim().toLowerCase();
-    const saring = printer.filter((item) => {
-      if (jenisId && String(item.jenis_id) !== jenisId) return false;
-      return cocokCari(item, kata);
-    });
+    return printer
+      .filter((item) => {
+        if (jenisId && String(item.jenis_id) !== jenisId) return false;
+        return cocokCari(item, kata);
+      })
+      .sort((a, b) => b.total - a.total || a.tipe.localeCompare(b.tipe));
+  }, [printer, cari, jenisId]);
 
-    return saring.sort((a, b) =>
-      urut === 'tipe' ? a.tipe.localeCompare(b.tipe) : b.total - a.total || a.tipe.localeCompare(b.tipe),
-    );
-  }, [printer, cari, jenisId, urut]);
-
-  const totalHalaman = Math.max(1, Math.ceil(hasil.length / MAKS_AWAL));
-  const halamanAman = Math.min(halaman, totalHalaman);
-  const tampil = hasil.slice((halamanAman - 1) * MAKS_AWAL, halamanAman * MAKS_AWAL);
-  const adaFilter = cari.trim() !== '' || jenisId !== '' || urut !== 'total';
-  const kosong = printer.length === 0;
-
-  // Peringkat grafik selalu urut jumlah terbanyak, apa pun urutan tabel yang
-  // dipilih pengguna, dan mengikuti filter yang sedang aktif.
   const peringkatPrinter = useMemo(
     () =>
-      [...hasil]
-        .sort((a, b) => b.total - a.total || a.tipe.localeCompare(b.tipe))
-        .slice(0, 10)
-        .map((item) => ({
-          nama:
-            item.printer_dihapus || item.jenis_dihapus
-              ? `${item.tipe} (arsip)`
-              : item.tipe,
-          total: item.total,
-          href: `/permintaan?tipe=${encodeURIComponent(item.tipe)}`,
-        })),
+      hasil.map((item) => ({
+        nama:
+          item.printer_dihapus || item.jenis_dihapus
+            ? `${item.tipe} (arsip)`
+            : item.tipe,
+        total: item.total,
+        href: `/permintaan?tipe=${encodeURIComponent(item.tipe)}`,
+      })),
     [hasil],
   );
+
+  const bisaDibuka = peringkatPrinter.length > MAKS_TAMPIL;
+  const tampil = semua ? peringkatPrinter : peringkatPrinter.slice(0, MAKS_TAMPIL);
+  const adaFilter = cari.trim() !== '' || jenisId !== '';
+  const kosong = printer.length === 0;
+
+  const judulGrafik = !bisaDibuka
+    ? 'Printer dengan permintaan terbanyak'
+    : semua
+      ? 'Semua printer, dari permintaan terbanyak'
+      : `${MAKS_TAMPIL} printer dengan permintaan terbanyak`;
 
   function bersihkanFilter() {
     ubahParam({
       printer_q: '',
       printer_jenis: '',
-      printer_urut: '',
-      printer_page: '',
     });
   }
 
@@ -114,7 +112,7 @@ export default function PrinterBahanPanel({ printer }) {
     <Card>
       <SectionHeader
         title="Bahan per tipe printer"
-        description="Kode untuk printer non-warna, warna untuk printer warna. Tiap tipe dihitung terpisah."
+        description="Jumlah permintaan per tipe printer. Pilih satu batang untuk melihat daftar permintaannya."
         actions={
           <TombolEkspor
             nama="bahan-per-printer"
@@ -130,20 +128,20 @@ export default function PrinterBahanPanel({ printer }) {
         }
       />
 
-      <div className="grid gap-3 border-b border-line px-4 py-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)]">
+      <div className="grid gap-3 border-b border-line px-4 py-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <Input
           label="Cari printer"
           placeholder="Tipe atau merek"
           value={cari}
           onChange={(event) => {
-            ubahParam({ printer_q: event.target.value, printer_page: '' });
+            ubahParam({ printer_q: event.target.value });
           }}
         />
         <Select
           label="Jenis"
           value={jenisId}
           onChange={(event) => {
-            ubahParam({ printer_jenis: event.target.value, printer_page: '' });
+            ubahParam({ printer_jenis: event.target.value });
           }}
         >
           <option value="">Semua jenis</option>
@@ -153,35 +151,7 @@ export default function PrinterBahanPanel({ printer }) {
             </option>
           ))}
         </Select>
-        <Select
-          label="Urutkan"
-          value={urut}
-          onChange={(event) => {
-            ubahParam({ printer_urut: event.target.value === 'tipe' ? 'tipe' : '', printer_page: '' });
-          }}
-        >
-          <option value="total">Terbanyak</option>
-          <option value="tipe">Tipe A-Z</option>
-        </Select>
       </div>
-
-      {hasil.length > 0 && (
-        <div className="border-b border-line px-4 py-4">
-          <p className="mb-3 text-xs font-medium text-muted">
-            {hasil.length > 10
-              ? '10 printer dengan permintaan terbanyak'
-              : 'Printer dengan permintaan terbanyak'}
-          </p>
-          <BarChart
-            items={peringkatPrinter}
-            labelHeader="Tipe printer"
-            satuanHeader="Permintaan"
-            bernomor
-            tandaiTeratas
-            labelTabel="Lihat peringkat sebagai tabel"
-          />
-        </div>
-      )}
 
       {hasil.length === 0 ? (
         <div className="px-4 py-10 text-center">
@@ -197,30 +167,37 @@ export default function PrinterBahanPanel({ printer }) {
           )}
         </div>
       ) : (
-        <>
-          <ul className="divide-y divide-line">
-            {tampil.map((item) => (
-              <PrinterRow key={item.tipe} printer={item} />
-            ))}
-          </ul>
+        <div className="px-4 py-4">
+          <p className="mb-3 text-xs font-medium text-muted">{judulGrafik}</p>
 
-          {hasil.length > MAKS_AWAL ? (
-            <Pagination
-              page={halamanAman}
-              totalPage={totalHalaman}
-              total={hasil.length}
-              limit={MAKS_AWAL}
-              satuan="printer"
-              onPageChange={(baru) => {
-                ubahParam({ printer_page: baru === 1 ? '' : String(baru) });
-              }}
+          <div id={ID_GRAFIK}>
+            <BarChart
+              items={tampil}
+              labelHeader="Tipe printer"
+              satuanHeader="Permintaan"
+              bernomor
+              tandaiTeratas
+              tabelCadangan={false}
             />
-          ) : (
-            <div className="border-t border-line px-4 py-3 text-xs text-faint">
-              Menampilkan {tampil.length} dari {hasil.length} printer.
-            </div>
-          )}
-        </>
+          </div>
+
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-line pt-3">
+            <p className="text-xs text-faint">
+              Menampilkan {tampil.length} dari {peringkatPrinter.length} printer.
+            </p>
+            {bisaDibuka && (
+              <Button
+                variant="secondary"
+                size="sm"
+                aria-expanded={semua}
+                aria-controls={ID_GRAFIK}
+                onClick={() => setSemua((nilai) => !nilai)}
+              >
+                {semua ? 'Ringkas' : `Lihat semua (${peringkatPrinter.length})`}
+              </Button>
+            )}
+          </div>
+        </div>
       )}
     </Card>
   );
