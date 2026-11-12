@@ -1,4 +1,35 @@
-import { todayISO } from '../../lib/format.js';
+import { pecahBahan, todayISO } from '../../lib/format.js';
+
+const NAMA_BULAN_PANJANG = [
+  'Januari',
+  'Februari',
+  'Maret',
+  'April',
+  'Mei',
+  'Juni',
+  'Juli',
+  'Agustus',
+  'September',
+  'Oktober',
+  'November',
+  'Desember',
+];
+
+const GARIS_HEADER = {
+  borderColor: '#9a9386',
+  borderStyle: 'thin',
+  backgroundColor: '#f1e3c3',
+  fontWeight: 'bold',
+  align: 'center',
+  verticalAlign: 'center',
+  wrap: true,
+};
+
+const GARIS_SEL = {
+  borderColor: '#c9c4b8',
+  borderStyle: 'thin',
+  verticalAlign: 'center',
+};
 
 function selCsv(nilai) {
   const teks = String(nilai ?? '');
@@ -6,8 +37,7 @@ function selCsv(nilai) {
   return teks;
 }
 
-function unduh(nama, tipe, isi) {
-  const blob = new Blob([isi], { type: tipe });
+function unduhBlob(nama, blob) {
   const url = URL.createObjectURL(blob);
   const tautan = document.createElement('a');
   tautan.href = url;
@@ -28,26 +58,210 @@ function namaBerkas(nama, ekstensi) {
  */
 export function eksporCsv(nama, kolom, baris) {
   const isi = [kolom, ...baris].map((barisSel) => barisSel.map(selCsv).join(';')).join('\r\n');
-  unduh(namaBerkas(nama, 'csv'), 'text/csv;charset=utf-8', `\uFEFF${isi}`);
+  unduhBlob(
+    namaBerkas(nama, 'csv'),
+    new Blob([`\uFEFF${isi}`], { type: 'text/csv;charset=utf-8' }),
+  );
 }
 
-function selHtml(nilai) {
-  return String(nilai ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+let pemuatExcel = null;
+
+/**
+ * Pustaka xlsx dimuat saat tombol ekspor ditekan, bukan saat halaman dibuka,
+ * supaya bundel awal dashboard tidak ikut membawa penulis spreadsheet.
+ */
+async function muatPenulisExcel() {
+  if (!pemuatExcel) {
+    pemuatExcel = import('write-excel-file/browser').then((modul) => modul.default ?? modul);
+  }
+  return pemuatExcel;
+}
+
+function selExcel(nilai) {
+  if (nilai instanceof Date) {
+    return { value: nilai, type: Date, format: 'dd/mm/yyyy', align: 'center', ...GARIS_SEL };
+  }
+  if (typeof nilai === 'number') {
+    return { value: nilai, type: Number, align: 'right', ...GARIS_SEL };
+  }
+  return {
+    value: nilai === null || nilai === undefined ? '' : String(nilai),
+    type: String,
+    ...GARIS_SEL,
+  };
+}
+
+function lebarOtomatis(kolom, baris) {
+  return kolom.map((judul, indeks) => {
+    const panjang = baris.reduce(
+      (maks, barisSel) => Math.max(maks, String(barisSel[indeks] ?? '').length),
+      String(judul).length,
+    );
+    return { width: Math.min(42, Math.max(9, panjang + 2)) };
+  });
 }
 
 /**
- * Excel menerima tabel HTML dengan ekstensi .xls. Cara ini tidak memerlukan
- * pustaka tambahan; angkanya tetap bisa dibuka dan dihitung di Excel.
+ * Menulis tabel Excel asli (.xlsx). Judul dan subjudul opsional dipakai oleh
+ * rekap buku permintaan; ekspor per tab cukup memakai baris kepala kolom.
+ */
+export async function eksporXlsx({
+  nama,
+  sheet = 'Data',
+  judul,
+  subjudul,
+  kolom,
+  baris,
+  lebar,
+  orientasi = 'landscape',
+}) {
+  const tulisExcel = await muatPenulisExcel();
+  const jumlahKolom = kolom.length;
+  const data = [];
+
+  if (judul) {
+    data.push([
+      {
+        value: judul,
+        columnSpan: jumlahKolom,
+        fontWeight: 'bold',
+        fontSize: 14,
+        align: 'center',
+        verticalAlign: 'center',
+      },
+      ...Array(jumlahKolom - 1).fill(null),
+    ]);
+  }
+
+  if (subjudul) {
+    data.push([
+      {
+        value: subjudul,
+        columnSpan: jumlahKolom,
+        align: 'center',
+        verticalAlign: 'center',
+        textColor: '#5b5548',
+      },
+      ...Array(jumlahKolom - 1).fill(null),
+    ]);
+  }
+
+  if (judul || subjudul) {
+    data.push(Array(jumlahKolom).fill(null));
+  }
+
+  data.push(kolom.map((label) => ({ value: label, ...GARIS_HEADER })));
+  for (const barisSel of baris) {
+    data.push(barisSel.map((nilai) => selExcel(nilai)));
+  }
+
+  const kepala = (judul ? 1 : 0) + (subjudul ? 1 : 0) + (judul || subjudul ? 1 : 0);
+
+  const blob = await tulisExcel(data, {
+    sheet,
+    columns: lebar ?? lebarOtomatis(kolom, baris),
+    stickyRowsCount: kepala + 1,
+    orientation: orientasi,
+    showGridLines: false,
+  }).toBlob();
+
+  unduhBlob(nama, blob);
+}
+
+/**
+ * Ekspor tabel tab dashboard. Nama berkas memuat tab dan tanggal unduh.
  */
 export function eksporExcel(nama, kolom, baris) {
-  const kepala = `<tr>${kolom.map((judul) => `<th>${selHtml(judul)}</th>`).join('')}</tr>`;
-  const isi = baris
-    .map((barisSel) => `<tr>${barisSel.map((sel) => `<td>${selHtml(sel)}</td>`).join('')}</tr>`)
-    .join('');
-  const html = `<!doctype html><html><head><meta charset="utf-8"><style>table{border-collapse:collapse}th,td{border:1px solid #999;padding:4px 8px;text-align:left}th{background:#eee}</style></head><body><table>${kepala}${isi}</table></body></html>`;
-  unduh(namaBerkas(nama, 'xls'), 'application/vnd.ms-excel;charset=utf-8', `\uFEFF${html}`);
+  return eksporXlsx({
+    nama: namaBerkas(nama, 'xlsx'),
+    kolom,
+    baris,
+    sheet: 'Data',
+    lebar: lebarOtomatis(kolom, baris),
+  });
+}
+
+function labelBulanPanjang(kunci) {
+  const [tahun, bulan] = String(kunci).split('-').map(Number);
+  if (!tahun || !bulan || bulan < 1 || bulan > 12) return '';
+  return `${NAMA_BULAN_PANJANG[bulan - 1]} ${tahun}`;
+}
+
+function labelPeriode(rows) {
+  const bulan = [...new Set(rows.map((item) => String(item.tanggal ?? '').slice(0, 7)))]
+    .filter((kunci) => /^\d{4}-\d{2}$/.test(kunci))
+    .sort();
+
+  if (bulan.length === 0) return '';
+  const awal = labelBulanPanjang(bulan[0]);
+  const akhir = labelBulanPanjang(bulan[bulan.length - 1]);
+  return awal === akhir ? awal : `${awal} sampai ${akhir}`;
+}
+
+function tanggalExcel(iso) {
+  const teks = String(iso ?? '').slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(teks)) return '';
+  return new Date(`${teks}T12:00:00`);
+}
+
+/**
+ * Rekap seluruh permintaan dengan susunan kolom seperti buku catatan manual:
+ * nomor, tanggal, ruang, merek printer, empat kolom warna, kode bahan, penerima,
+ * dan kolom tanda tangan kosong. Tanggal ditulis sebagai tanggal Excel supaya
+ * bisa diurutkan dan difilter, bukan teks.
+ */
+export function eksporLogbook(rows) {
+  const kolom = [
+    'NO',
+    'TANGGAL',
+    'NAMA RUANG',
+    'MEREK PRINTER',
+    'BLACK',
+    'MAGENTA',
+    'BLUE',
+    'YELLOW',
+    'KODE BAHAN',
+    'PENERIMA',
+    'TANDA TANGAN',
+  ];
+
+  const baris = rows.map((item, indeks) => {
+    const warna = item.pakai_warna ? pecahBahan(item.bahan).map((nilai) => nilai.toLowerCase()) : [];
+
+    return [
+      indeks + 1,
+      tanggalExcel(item.tanggal),
+      item.nama_ruang ?? '',
+      [item.merek, item.tipe].filter(Boolean).join(' '),
+      warna.includes('black') ? '\u2713' : '-',
+      warna.includes('magenta') ? '\u2713' : '-',
+      warna.includes('blue') ? '\u2713' : '-',
+      warna.includes('yellow') ? '\u2713' : '-',
+      item.pakai_warna ? '' : (item.bahan ?? ''),
+      item.nama_peminta ?? '',
+      '',
+    ];
+  });
+
+  return eksporXlsx({
+    nama: namaBerkas('rekap-permintaan', 'xlsx'),
+    sheet: 'Rekap',
+    judul: 'REKAP PERMINTAAN BAHAN PRINTER',
+    subjudul: ['RSUD ZA', labelPeriode(rows)].filter(Boolean).join(' \u00b7 '),
+    kolom,
+    baris,
+    lebar: [
+      { width: 6 },
+      { width: 12 },
+      { width: 22 },
+      { width: 24 },
+      { width: 9 },
+      { width: 10 },
+      { width: 8 },
+      { width: 9 },
+      { width: 15 },
+      { width: 18 },
+      { width: 18 },
+    ],
+  });
 }

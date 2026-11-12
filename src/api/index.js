@@ -20,6 +20,7 @@ export const printerApi = {
 
 export const permintaanApi = {
   list: (params) => api.get(`/permintaan${queryString(params)}`),
+  semua: (params) => api.get(`/permintaan/export${queryString(params)}`),
   create: (data) => api.post('/permintaan', data),
   update: (id, data) => api.put(`/permintaan/${id}`, data),
   remove: (id) => api.delete(`/permintaan/${id}`),

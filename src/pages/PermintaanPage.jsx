@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Plus, RotateCw } from 'lucide-react';
+import { FileSpreadsheet, Plus, RotateCw } from 'lucide-react';
 import PageHeader from '../components/layout/PageHeader.jsx';
 import Card from '../components/ui/Card.jsx';
 import Button from '../components/ui/Button.jsx';
@@ -12,6 +12,7 @@ import FilterBar from '../features/permintaan/FilterBar.jsx';
 import PermintaanFormModal from '../features/permintaan/PermintaanFormModal.jsx';
 import PermintaanTable from '../features/permintaan/PermintaanTable.jsx';
 import { labelRentang } from '../features/dashboard/periode.js';
+import { eksporLogbook } from '../features/dashboard/ekspor.js';
 import { jenisApi, permintaanApi } from '../api/index.js';
 import { useDebounce } from '../hooks/useDebounce.js';
 import { useFetch } from '../hooks/useFetch.js';
@@ -39,6 +40,7 @@ export default function PermintaanPage() {
   const [modal, setModal] = useState({ open: false, item: null });
   const [hapus, setHapus] = useState(null);
   const [menghapus, setMenghapus] = useState(false);
+  const [mengekspor, setMengekspor] = useState(false);
 
   const debouncedQ = useDebounce(q, 400);
   const invalidRange = Boolean(dari && sampai && dari > sampai);
@@ -153,6 +155,36 @@ export default function PermintaanPage() {
     }
   }
 
+  /**
+   * Rekap memakai seluruh data aktif, bukan halaman atau filter yang sedang
+   * terbuka, karena tujuannya menggantikan buku catatan bulanan.
+   */
+  async function eksporSemua() {
+    if (mengekspor) return;
+    setMengekspor(true);
+
+    try {
+      const hasil = await permintaanApi.semua();
+      const rows = hasil.data ?? [];
+
+      if (rows.length === 0) {
+        toast.info('Belum ada permintaan yang bisa diekspor.');
+        return;
+      }
+
+      await eksporLogbook(rows);
+      toast.success(`Rekap ${rows.length} permintaan berhasil diunduh.`);
+    } catch (err) {
+      toast.error(
+        err?.message
+          ? `Gagal membuat rekap Excel: ${err.message}`
+          : 'Gagal membuat rekap Excel. Coba lagi.',
+      );
+    } finally {
+      setMengekspor(false);
+    }
+  }
+
   const rows = invalidRange ? [] : (data ?? []);
   const total = meta?.total ?? 0;
   const totalPage = meta?.total_page ?? 0;
@@ -164,9 +196,20 @@ export default function PermintaanPage() {
         title="Permintaan Bahan Printer"
         description="Catat toner, ribbon, tinta, dan bahan printer lain yang diterima Admin IT."
         actions={
-          <Button icon={Plus} onClick={() => setModal({ open: true, item: null })}>
-            Tambah Permintaan
-          </Button>
+          <>
+            <Button
+              variant="secondary"
+              icon={FileSpreadsheet}
+              onClick={eksporSemua}
+              loading={mengekspor}
+              aria-busy={mengekspor}
+            >
+              Ekspor semua data
+            </Button>
+            <Button icon={Plus} onClick={() => setModal({ open: true, item: null })}>
+              Tambah Permintaan
+            </Button>
+          </>
         }
       />
 
