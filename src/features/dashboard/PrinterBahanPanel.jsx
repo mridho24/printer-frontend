@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import BarChart from './BarChart.jsx';
 import PrinterRow from './PrinterRow.jsx';
 import TombolEkspor from './TombolEkspor.jsx';
@@ -25,15 +26,34 @@ function cocokCari(printer, kata) {
  * hanya yang sedang terlihat.
  */
 export default function PrinterBahanPanel({ printer }) {
-  const [cari, setCari] = useState('');
-  const [jenisId, setJenisId] = useState('');
-  const [urut, setUrut] = useState('total');
-  const [halaman, setHalaman] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [terbuka, setTerbuka] = useState(null);
 
-  // Filter atau urutan baru berarti daftar kembali ke halaman pertama.
+  const cari = searchParams.get('printer_q') ?? '';
+  const jenisId = searchParams.get('printer_jenis') ?? '';
+  const urut = searchParams.get('printer_urut') === 'tipe' ? 'tipe' : 'total';
+  const halaman = Math.max(1, Number(searchParams.get('printer_page')) || 1);
+
+  /**
+   * Pencarian, filter, urutan, dan halaman disimpan di URL agar muat ulang dan
+   * tombol kembali membuka daftar yang sama. Mengubah filter menghapus nomor
+   * halaman supaya daftar kembali ke halaman 1.
+   */
+  function ubahParam(perubahan) {
+    setSearchParams(
+      (sebelum) => {
+        const berikut = new URLSearchParams(sebelum);
+        for (const [kunci, nilai] of Object.entries(perubahan)) {
+          if (nilai) berikut.set(kunci, nilai);
+          else berikut.delete(kunci);
+        }
+        return berikut;
+      },
+      { replace: true },
+    );
+  }
+
   function resetRingkasan() {
-    setHalaman(1);
     setTerbuka(null);
   }
 
@@ -87,9 +107,12 @@ export default function PrinterBahanPanel({ printer }) {
   );
 
   function bersihkanFilter() {
-    setCari('');
-    setJenisId('');
-    setUrut('total');
+    ubahParam({
+      printer_q: '',
+      printer_jenis: '',
+      printer_urut: '',
+      printer_page: '',
+    });
     resetRingkasan();
   }
 
@@ -119,7 +142,7 @@ export default function PrinterBahanPanel({ printer }) {
           placeholder="Tipe atau merek"
           value={cari}
           onChange={(event) => {
-            setCari(event.target.value);
+            ubahParam({ printer_q: event.target.value, printer_page: '' });
             resetRingkasan();
           }}
         />
@@ -127,7 +150,7 @@ export default function PrinterBahanPanel({ printer }) {
           label="Jenis"
           value={jenisId}
           onChange={(event) => {
-            setJenisId(event.target.value);
+            ubahParam({ printer_jenis: event.target.value, printer_page: '' });
             resetRingkasan();
           }}
         >
@@ -142,7 +165,7 @@ export default function PrinterBahanPanel({ printer }) {
           label="Urutkan"
           value={urut}
           onChange={(event) => {
-            setUrut(event.target.value);
+            ubahParam({ printer_urut: event.target.value === 'tipe' ? 'tipe' : '', printer_page: '' });
             resetRingkasan();
           }}
         >
@@ -203,7 +226,7 @@ export default function PrinterBahanPanel({ printer }) {
               limit={MAKS_AWAL}
               satuan="printer"
               onPageChange={(baru) => {
-                setHalaman(baru);
+                ubahParam({ printer_page: baru === 1 ? '' : String(baru) });
                 setTerbuka(null);
               }}
             />

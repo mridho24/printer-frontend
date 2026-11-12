@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import BarChart from './BarChart.jsx';
 import TombolEkspor from './TombolEkspor.jsx';
 import { deretBulan } from './deretBulan.js';
@@ -23,12 +23,25 @@ const MIN_BULAN = 3;
  * ringkas. Pemilih disembunyikan bila hanya ada satu bulan.
  */
 export default function BulanPanel({ bulanan }) {
-  const [tampilan, setTampilan] = useState(SEMUA);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const semuaBulan = deretBulan(bulanan);
   const pilihan = [...semuaBulan].reverse();
+  const param = searchParams.get('bulan') || SEMUA;
   const nilai =
-    tampilan === SEMUA || !pilihan.some((item) => item.kunci === tampilan) ? SEMUA : tampilan;
+    param === SEMUA || !pilihan.some((item) => item.kunci === param) ? SEMUA : param;
+
+  function setTampilan(baru) {
+    setSearchParams(
+      (sebelum) => {
+        const berikut = new URLSearchParams(sebelum);
+        if (baru === SEMUA) berikut.delete('bulan');
+        else berikut.set('bulan', baru);
+        return berikut;
+      },
+      { replace: true },
+    );
+  }
   const dipilih = nilai === SEMUA ? null : (pilihan.find((item) => item.kunci === nilai) ?? null);
   const total = semuaBulan.reduce((jumlah, item) => jumlah + item.total, 0);
 

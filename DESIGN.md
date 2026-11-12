@@ -214,6 +214,21 @@ gerakan tuas) (R-11).
   keadaan sendiri. Rentang terbalik tidak boleh menampilkan angka lama seolah
   masih berlaku; dashboard menjelaskan kesalahannya dan menyediakan tombol
   kembali ke semua data.
+- Tab dan filter panel disimpan di URL, bukan hanya di state komponen. Tampilan
+  hasil saring harus bisa dimuat ulang, dibagikan, dan dibuka kembali dengan
+  tombol kembali; state yang hilang saat muat ulang membuat pengguna mengira
+  data berubah. Nilai bawaan dihilangkan dari URL agar alamat tetap pendek.
+- Saat panel dimuat ulang, isi panel diganti kerangka, bukan seluruh halaman.
+  Ringkasan di atas tetap terlihat dan tab tetap bisa dipilih, sehingga pengguna
+  tidak kehilangan konteks hanya karena satu permintaan data berjalan.
+- Kegagalan muat ulang ditampilkan di dalam tab aktif dengan tombol "Coba lagi".
+  Panel yang gagal tidak menghapus pilihan tab atau filter, karena pengguna
+  biasanya ingin mencoba ulang tampilan yang sama, bukan memulai dari awal.
+- Tombol tab membungkus ke baris berikutnya di ponsel, bukan memakai scroll
+  horizontal. Scroll horizontal pada navigasi mudah tidak terlihat dan membuat
+  tab terakhir tampak tidak ada; membungkus menjaga semua pilihan terjangkau.
+- Label "Admin IT" ditulis sebagai teks biasa karena belum ada menu akun di
+  baliknya. Chevron hanya boleh muncul bila benar-benar membuka sesuatu.
 - Form master data printer memberi peringatan lunak, bukan blokir, saat nama
   jenis menyebut merek lain atau saat merek yang sama di data aktif paling
   banyak memakai jenis berbeda. Data lama tetap harus bisa diperbaiki, dan

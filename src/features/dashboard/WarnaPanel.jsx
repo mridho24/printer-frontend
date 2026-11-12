@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import BarChart from './BarChart.jsx';
 import TombolEkspor from './TombolEkspor.jsx';
 import Button from '../../components/ui/Button.jsx';
@@ -39,9 +40,11 @@ function isiWarna(daftar) {
  * data, bukan dekorasi.
  */
 export default function WarnaPanel({ warna, printer }) {
-  const [mode, setMode] = useState('tipe');
-  const [tipeTerpilih, setTipeTerpilih] = useState(SEMUA_TIPE);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [semua, setSemua] = useState(false);
+
+  const mode = searchParams.get('warna_mode') === 'jenis' ? 'jenis' : 'tipe';
+  const tipeParam = searchParams.get('warna_tipe') || SEMUA_TIPE;
 
   const perJenis = [...warna]
     .map((item) => {
@@ -76,7 +79,7 @@ export default function WarnaPanel({ warna, printer }) {
     }))
     .sort((a, b) => b.total - a.total || a.judul.localeCompare(b.judul));
 
-  const dipilih = perPrinter.find((item) => item.judul === tipeTerpilih) ?? null;
+  const dipilih = perPrinter.find((item) => item.judul === tipeParam) ?? null;
 
   // Gabungan seluruh tipe printer warna: hitung ulang per warna supaya angka
   // di grafik selalu menjumlah tepat dari bagian-bagian yang terlihat.
@@ -115,8 +118,28 @@ export default function WarnaPanel({ warna, printer }) {
   const bisaDibuka = mode === 'jenis' && perJenis.length > MAKS_AWAL;
 
   function pilihMode(key) {
-    setMode(key);
     setSemua(false);
+    setSearchParams(
+      (sebelum) => {
+        const berikut = new URLSearchParams(sebelum);
+        if (key === 'tipe') berikut.delete('warna_mode');
+        else berikut.set('warna_mode', key);
+        return berikut;
+      },
+      { replace: true },
+    );
+  }
+
+  function pilihTipe(nilai) {
+    setSearchParams(
+      (sebelum) => {
+        const berikut = new URLSearchParams(sebelum);
+        if (nilai === SEMUA_TIPE) berikut.delete('warna_tipe');
+        else berikut.set('warna_tipe', nilai);
+        return berikut;
+      },
+      { replace: true },
+    );
   }
 
   const keterangan =
@@ -164,7 +187,7 @@ export default function WarnaPanel({ warna, printer }) {
                 inline
                 label="Tipe printer"
                 value={dipilih ? dipilih.judul : SEMUA_TIPE}
-                onChange={(event) => setTipeTerpilih(event.target.value)}
+                onChange={(event) => pilihTipe(event.target.value)}
                 className="w-full sm:w-52"
               >
                 <option value={SEMUA_TIPE}>Semua tipe printer</option>

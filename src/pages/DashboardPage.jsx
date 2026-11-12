@@ -33,6 +33,27 @@ function DashboardSkeleton() {
   );
 }
 
+/** Kerangka isi panel saat data lama masih dipakai sementara data baru dimuat. */
+function PanelSkeleton() {
+  return (
+    <div
+      role="status"
+      aria-label="Memuat panel dashboard"
+      className="rounded-lg border border-line bg-surface"
+    >
+      <div className="h-[58px] animate-pulse border-b border-line bg-paper/60" />
+      <div className="space-y-3 p-4">
+        {[0, 1, 2, 3].map((baris) => (
+          <div key={baris} className="space-y-1.5">
+            <div className="h-3 w-2/5 animate-pulse rounded-sm bg-line" />
+            <div className="h-2 w-full animate-pulse rounded-sm bg-line/70" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const navigate = useNavigate();
   const toast = useToast();
@@ -217,7 +238,7 @@ export default function DashboardPage() {
         </Card>
       ) : loading && !data ? (
         <DashboardSkeleton />
-      ) : error ? (
+      ) : error && !data ? (
         <Card>
           <ErrorState error={error} onRetry={reload} />
         </Card>
@@ -248,13 +269,15 @@ export default function DashboardPage() {
         </Card>
       ) : (
         <>
-          <RingkasanStrip
-            ringkasan={ringkasan}
-            pembanding={data?.pembanding}
-            periodeAktif={adaPeriode}
-          />
+          {!error && (
+            <RingkasanStrip
+              ringkasan={ringkasan}
+              pembanding={data?.pembanding}
+              periodeAktif={adaPeriode}
+            />
+          )}
 
-          <PerluPerhatian perhatian={data?.perhatian} />
+          {!error && <PerluPerhatian perhatian={data?.perhatian} />}
 
           <Card className="mb-4">
             <DashboardTabs tabs={tabs} active={aktif} onChange={pilihTampilan} />
@@ -266,13 +289,23 @@ export default function DashboardPage() {
             aria-labelledby={`tab-${aktif}`}
             tabIndex={0}
           >
-            {aktif === 'jenis' && <JenisPanel jenis={jenis} />}
-            {aktif === 'bahan' && <PrinterBahanPanel printer={printer} />}
-            {aktif === 'bulan' && <BulanPanel bulanan={bulanan} />}
-            {aktif === 'warna' && <WarnaPanel warna={warna} printer={printerWarna} />}
+            {error ? (
+              <Card>
+                <ErrorState error={error} onRetry={reload} />
+              </Card>
+            ) : loading ? (
+              <PanelSkeleton />
+            ) : (
+              <>
+                {aktif === 'jenis' && <JenisPanel jenis={jenis} />}
+                {aktif === 'bahan' && <PrinterBahanPanel printer={printer} />}
+                {aktif === 'bulan' && <BulanPanel bulanan={bulanan} />}
+                {aktif === 'warna' && <WarnaPanel warna={warna} printer={printerWarna} />}
+              </>
+            )}
           </div>
 
-          <PermintaanTerbaru items={data?.terbaru ?? []} tautan={tautanPermintaan} />
+          {!error && <PermintaanTerbaru items={data?.terbaru ?? []} tautan={tautanPermintaan} />}
         </>
       )}
     </div>

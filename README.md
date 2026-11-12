@@ -107,6 +107,18 @@ tombol menampilkan spinner dan tidak bisa ditekan; setelah selesai muncul toast
   sedang tampil. CSV memakai pemisah titik koma dan BOM agar langsung terbuka
   rapi di Excel berlokal Indonesia; Excel memakai tabel HTML berekstensi
   `.xls` tanpa pustaka tambahan. Nama berkas memuat tab dan tanggal unduh.
+- **Semua keadaan panel tersimpan di URL**: tab (`tampilan`), periode
+  (`periode`, `dari`, `sampai`), bulan (`bulan`), pengelompokan warna
+  (`warna_mode`, `warna_tipe`), serta pencarian/filter/urutan/halaman printer
+  (`printer_q`, `printer_jenis`, `printer_urut`, `printer_page`). Muat ulang,
+  tombol kembali, dan tautan yang dibagikan membuka tampilan yang sama.
+- Saat data lama masih ditampilkan dan panel dimuat ulang, isi panel diganti
+  kerangka (skeleton). Kegagalan muat ulang menampilkan pesan di dalam tab aktif
+  dengan tombol **Coba lagi**, tanpa menghapus pilihan tab. Panel yang tidak
+  punya data menampilkan keadaan kosongnya sendiri, misalnya bulan kurang dari
+  tiga atau belum ada permintaan warna.
+- Di lebar 360px tombol tampilan membungkus ke baris berikutnya, bukan membuat
+  scroll horizontal. Semua halaman diuji tanpa scroll horizontal pada lebar itu.
 
 Semua angka dihitung dari permintaan aktif; riwayat printer/jenis yang sudah
 di-soft-delete tetap dihitung dan ditandai arsip.
