@@ -14,9 +14,80 @@ const FORM_KOSONG = {
   kode: '',
 };
 
+const MEREK_DIKENAL = [
+  'hp',
+  'canon',
+  'epson',
+  'brother',
+  'lenovo',
+  'asus',
+  'acer',
+  'samsung',
+  'xerox',
+  'ricoh',
+  'kyocera',
+  'sharp',
+  'toshiba',
+  'panasonic',
+  'lexmark',
+  'dell',
+];
+
+function merekDalamNamaJenis(nama) {
+  return String(nama ?? '')
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .find((kata) => MEREK_DIKENAL.includes(kata));
+}
+
+/**
+ * Peringatan lunak untuk kombinasi merek dan jenis yang tampak janggal.
+ * Tidak memblokir simpan karena data lama dan printer langka tetap harus bisa
+ * dicatat; tujuannya menangkap salah pilih jenis saat entri.
+ */
+function periksaKombinasi({ form, jenisTerpilih, jenisList, printerList, item }) {
+  const peringatan = [];
+  const merek = form.merek.trim();
+  const jenisNama = jenisTerpilih?.nama ?? '';
+  const merekDiJenis = merekDalamNamaJenis(jenisNama);
+
+  if (merek && merekDiJenis && merekDiJenis !== merek.toLowerCase()) {
+    peringatan.push(
+      `Nama jenis "${jenisNama}" menyebut merek ${merekDiJenis.toUpperCase()}, sedangkan merek printer yang diisi ${merek}.`,
+    );
+  }
+
+  if (merek && form.jenis_id) {
+    const sejenis = printerList.filter(
+      (printer) =>
+        printer.tipe !== item?.tipe &&
+        String(printer.merek ?? '').trim().toLowerCase() === merek.toLowerCase(),
+    );
+
+    if (sejenis.length >= 2) {
+      const hitung = new Map();
+      for (const printer of sejenis) {
+        hitung.set(printer.jenis_id, (hitung.get(printer.jenis_id) ?? 0) + 1);
+      }
+      const [dominanId, dominanJumlah] = [...hitung.entries()].sort((a, b) => b[1] - a[1])[0];
+
+      if (dominanJumlah >= 2 && Number(dominanId) !== Number(form.jenis_id)) {
+        const dominanNama =
+          jenisList.find((jenis) => jenis.id === Number(dominanId))?.nama ?? 'jenis lain';
+        peringatan.push(
+          `Di data aktif, merek ${merek} paling banyak tercatat pada jenis ${dominanNama}. Pastikan pilihan ${jenisNama} sudah benar.`,
+        );
+      }
+    }
+  }
+
+  return peringatan[0] ?? '';
+}
+
 export default function PrinterFormModal({
   item,
   jenisList = [],
+  printerList = [],
   defaultJenisId = '',
   onClose,
   onSaved,
@@ -41,6 +112,13 @@ export default function PrinterFormModal({
 
   const jenisTerpilih = jenisList.find((jenis) => jenis.id === Number(form.jenis_id));
   const pakaiWarna = Boolean(jenisTerpilih?.pakai_warna);
+  const peringatanKombinasi = periksaKombinasi({
+    form,
+    jenisTerpilih,
+    jenisList,
+    printerList,
+    item,
+  });
 
   function ubah(field, value) {
     setForm((sebelumnya) => ({ ...sebelumnya, [field]: value }));
@@ -120,6 +198,12 @@ export default function PrinterFormModal({
     >
       <form id="form-printer" onSubmit={simpan} className="space-y-4">
         {pesanServer && <InlineAlert tone="danger">{pesanServer}</InlineAlert>}
+
+        {peringatanKombinasi && (
+          <InlineAlert tone="warning" title="Periksa kombinasi merek dan jenis">
+            {peringatanKombinasi} Peringatan ini tidak menghalangi penyimpanan.
+          </InlineAlert>
+        )}
 
         {jenisList.length === 0 && (
           <InlineAlert tone="warning">

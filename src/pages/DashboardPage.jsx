@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Plus, RotateCw } from 'lucide-react';
 import PageHeader from '../components/layout/PageHeader.jsx';
@@ -12,6 +13,8 @@ import RingkasanStrip from '../features/dashboard/RingkasanStrip.jsx';
 import WarnaPanel from '../features/dashboard/WarnaPanel.jsx';
 import { dashboardApi } from '../api/index.js';
 import { useFetch } from '../hooks/useFetch.js';
+import { useToast } from '../hooks/useToast.js';
+import { formatWaktuLokal } from '../lib/format.js';
 
 const TAMPILAN_AWAL = 'jenis';
 
@@ -27,8 +30,35 @@ function DashboardSkeleton() {
 
 export default function DashboardPage() {
   const navigate = useNavigate();
+  const toast = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { data, loading, error, reload } = useFetch(() => dashboardApi.ringkasan(), []);
+  const { data, loading, error, reload, updatedAt } = useFetch(() => dashboardApi.ringkasan(), []);
+  const menungguMuatUlangRef = useRef(false);
+  const updatedRef = useRef(updatedAt);
+
+  // Notifikasi hanya muncul setelah tombol Muat ulang ditekan, bukan saat
+  // pemuatan pertama atau saat filter berubah.
+  useEffect(() => {
+    if (!menungguMuatUlangRef.current) {
+      updatedRef.current = updatedAt;
+      return;
+    }
+    if (error) {
+      menungguMuatUlangRef.current = false;
+      toast.error('Gagal memperbarui data.');
+      return;
+    }
+    if (updatedAt && updatedAt !== updatedRef.current) {
+      updatedRef.current = updatedAt;
+      menungguMuatUlangRef.current = false;
+      toast.success('Data diperbarui');
+    }
+  }, [updatedAt, error, toast]);
+
+  function muatUlang() {
+    menungguMuatUlangRef.current = true;
+    reload();
+  }
 
   const ringkasan = data?.ringkasan;
   const total = ringkasan?.total_permintaan ?? 0;
@@ -57,19 +87,26 @@ export default function DashboardPage() {
   return (
     <div className="mx-auto w-full max-w-4xl">
       <PageHeader
-        kicker="Papan pantau"
+        kicker="Ringkasan"
         title="Dashboard Permintaan"
         description="Ringkasan permintaan bahan printer yang tercatat, dihitung dari data aktif."
         actions={
-          <Button
-            variant="ghost"
-            size="sm"
-            icon={RotateCw}
-            onClick={reload}
-            disabled={loading}
-          >
-            Muat ulang
-          </Button>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            {updatedAt && (
+              <p className="text-xs text-muted" role="status">
+                Diperbarui: {formatWaktuLokal(updatedAt)}
+              </p>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={RotateCw}
+              onClick={muatUlang}
+              loading={loading}
+            >
+              Muat ulang
+            </Button>
+          </div>
         }
       />
 

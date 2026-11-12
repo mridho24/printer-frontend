@@ -108,8 +108,16 @@ gerakan tuas) (R-11).
 
 ## Dashboard
 
-- Isi dashboard dibatasi kolom 896px dan dipusatkan. Papan pantau tidak perlu
+- Isi dashboard dibatasi kolom 896px dan dipusatkan. Ringkasan tidak perlu
   selebar jendela; kolom sempit membuat angka mudah dipindai.
+- Istilah dibedakan secara eksplisit: **jenis** adalah kelompok teknologi
+  (Dot Matrix, Inkjet, Laser, Thermal), **tipe atau model** adalah seri printer
+  (L135, PO231). Kartu ringkasan menulis "5 model dari 4 jenis" agar angka model
+  tidak disalahartikan sebagai jumlah jenis. Penjelasan istilah memakai tombol
+  yang bisa dibuka, bukan tooltip hover saja, karena ponsel tidak punya hover.
+- Waktu pembaruan terakhir ditulis di samping tombol muat ulang. Saat memuat,
+  tombol memakai spinner dan nonaktif; setelah selesai muncul toast singkat
+  "Data diperbarui" melalui `aria-live="polite"`.
 - Perbandingan memakai tabel peringkat, bukan batang. Batang menuntut pembaca
   menafsirkan panjang relatif, sedangkan tabel menulis angka dan judul kolom
   secara langsung: "Jenis printer" dan "Permintaan". Ini menjawab kebutuhan
@@ -159,6 +167,10 @@ gerakan tuas) (R-11).
   agar jarak waktu tidak menyembunyikan bulan kosong.
 - Angka ringkasan ditulis mono dan dipisah garis, bukan kartu ikon, karena yang
   dibaca adalah nilainya, bukan ilustrasinya.
+- Form master data printer memberi peringatan lunak, bukan blokir, saat nama
+  jenis menyebut merek lain atau saat merek yang sama di data aktif paling
+  banyak memakai jenis berbeda. Data lama tetap harus bisa diperbaiki, dan
+  kombinasi merek dan jenis tidak bisa divalidasi keras tanpa basis model.
 
 ## Implementasi
 

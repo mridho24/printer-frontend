@@ -62,6 +62,9 @@ export default function PrinterTab() {
     () => printerApi.list({ jenis_id: jenisFilter || undefined }),
     [jenisFilter],
   );
+  // Daftar lengkap hanya dibutuhkan saat modal terbuka, untuk membandingkan
+  // merek dan jenis tanpa terpengaruh filter tabel.
+  const semuaPrinter = useFetch(() => printerApi.list(), [], { enabled: modal.open });
 
   const daftarJenis = useMemo(() => jenis.data ?? [], [jenis.data]);
   const daftarPrinter = printer.data ?? [];
@@ -237,6 +240,7 @@ export default function PrinterTab() {
         <PrinterFormModal
           item={modal.item}
           jenisList={daftarJenis}
+          printerList={semuaPrinter.data ?? daftarPrinter}
           defaultJenisId={jenisFilter}
           onClose={() => setModal({ open: false, item: null })}
           onSaved={printer.reload}

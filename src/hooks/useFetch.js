@@ -12,6 +12,7 @@ export function useFetch(loader, deps = [], { enabled = true, initialData = null
   const [meta, setMeta] = useState(null);
   const [loading, setLoading] = useState(enabled);
   const [error, setError] = useState(null);
+  const [updatedAt, setUpdatedAt] = useState(null);
   const [tick, setTick] = useState(0);
 
   const loaderRef = useRef(loader);
@@ -35,6 +36,7 @@ export function useFetch(loader, deps = [], { enabled = true, initialData = null
         if (!aktif) return;
         setData(hasil?.data ?? null);
         setMeta(hasil?.meta ?? null);
+        setUpdatedAt(new Date());
       })
       .catch((err) => {
         if (!aktif || err?.name === 'AbortError') return;
@@ -50,5 +52,5 @@ export function useFetch(loader, deps = [], { enabled = true, initialData = null
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled, tick, ...deps]);
 
-  return { data, meta, loading, error, reload };
+  return { data, meta, loading, error, reload, updatedAt };
 }

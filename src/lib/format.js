@@ -36,6 +36,19 @@ export function formatBulan(value) {
 }
 
 /**
+ * Format Date menjadi "12 Nov 2026, 14.05" pada zona waktu perangkat.
+ * Dipakai untuk keterangan "Diperbarui" pada dashboard.
+ */
+export function formatWaktuLokal(value) {
+  if (!value) return '-';
+  const tanggal = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(tanggal.getTime())) return '-';
+  const jam = String(tanggal.getHours()).padStart(2, '0');
+  const menit = String(tanggal.getMinutes()).padStart(2, '0');
+  return `${tanggal.getDate()} ${NAMA_BULAN[tanggal.getMonth()]} ${tanggal.getFullYear()}, ${jam}.${menit}`;
+}
+
+/**
  * Menggabungkan nama menjadi daftar kalimat: "A", "A dan B", atau
  * "A, B, dan C". Dipakai untuk menyebut beberapa nilai teratas sekaligus.
  */

@@ -53,6 +53,14 @@ URL (`#/dashboard?tampilan=bahan`), jadi muat ulang dan tombol kembali membuka
 tampilan yang sama. Perbandingan ditulis sebagai tabel peringkat dengan satu
 kalimat kesimpulan, bukan batang yang harus ditafsirkan.
 
+Kartu ringkasan membedakan **jenis** (kelompok teknologi, misalnya Inkjet) dari
+**tipe atau model** (seri printer, misalnya L135). Kartu "Tipe printer diminta"
+menulis "5 model dari 4 jenis" dan menyediakan penjelasan istilah yang bisa
+dibuka dengan tombol, jadi angka kartu tidak terbaca sebagai selisih data.
+Waktu pembaruan terakhir ditulis di samping tombol **Muat ulang**. Saat memuat,
+tombol menampilkan spinner dan tidak bisa ditekan; setelah selesai muncul toast
+"Data diperbarui" lewat `aria-live="polite"`.
+
 - Daftar bahan per printer tampil sebagai akordeon dengan pagination 6 printer
   per halaman, jadi tinggi halaman tetap stabil walaupun printer bertambah.
   Pencarian tipe/merek, filter jenis, dan urutan bekerja pada semua printer lalu
@@ -85,6 +93,10 @@ di-soft-delete tetap dihitung dan ditandai arsip.
 - Error backend (`error.message` dan `error.details`) ditampilkan sebagai pesan
   umum dan error per field.
 - Filter tanggal, pencarian debounce, dan paginasi mengikuti kontrak API.
+- Form printer menampilkan peringatan lunak bila nama jenis menyebut merek lain
+  atau bila merek yang sama di data aktif paling banyak memakai jenis berbeda.
+  Peringatan tidak memblokir penyimpanan karena data lama tetap harus bisa
+  diperbaiki tanpa terhalang.
 
 ## Struktur
 
