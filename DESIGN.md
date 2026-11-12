@@ -27,7 +27,7 @@ dihitung sebagai warna inti.
 | `surface` | `#fdfbf6` | Permukaan dokumen di atas kertas; kontras lembut tanpa perlu bayangan. |
 | `ink` | `#1b1a17` | Tinta hampir hitam dengan sedikit hangat, kontras 16:1 di atas permukaan. |
 | `muted` | `#57534a` | Teks sekunder, 7,4:1 di atas permukaan. |
-| `faint` | `#736d60` | Metadata kecil (jam, kode), tetap 4,9:1 sehingga lolos AA. |
+| `faint` | `#6f685c` | Metadata kecil (jam, kode), 4,9:1 di atas kertas dan 4,7:1 di atas accent-soft sehingga tetap lolos AA. |
 | `line` | `#ddd7c9` | Garis pemisah 1px sebagai pengganti bayangan. |
 | `line-strong` | `#c4bda9` | Batas kontrol (input, tombol sekunder) agar terbaca sebagai elemen yang bisa disentuh. |
 | `accent` | `#0f6b5f` | Satu aksen untuk aksi utama dan state aktif; teal institusional, bukan biru default. |
@@ -46,7 +46,8 @@ Warna status hanya untuk informasi status. Tidak dipakai sebagai dekorasi.
 - **IBM Plex Mono** untuk angka, tanggal, kode tipe printer, dan indeks bagian.
   Alasan: lebar angka seragam membuat kolom tanggal dan jumlah sejajar.
 - Skala: judul halaman 24-28px, judul bagian 14px, isi tabel 13px, metadata
-  11-12px. Tidak ada label huruf kapital dengan letter-spacing lebar.
+  13px. Tidak ada teks fungsional di bawah 13px, dan tidak ada label huruf
+  kapital dengan letter-spacing lebar.
 - Angka di tabel memakai `tabular-nums`.
 
 Font di-host sendiri lewat `@fontsource` supaya aplikasi tetap tampil benar di
@@ -137,9 +138,13 @@ gerakan tuas) (R-11).
   angka sendiri untuk tahu jawabannya.
 - Metrik dipecah menjadi satu panel per tombol tampilan. Menumpuk semua data
   dalam satu layar membuat halaman panjang dan tidak punya fokus.
-- Tombol tampilan tidak lagi membawa angka jumlah. Angka itu tidak punya arti
-  yang sama di tiap tab (jenis, printer, bulan, jenis warna) sehingga lebih
-  membingungkan daripada membantu.
+- Tombol tampilan tidak lagi membawa angka jumlah maupun nomor urut. Angka itu
+  tidak punya arti yang sama di tiap tab (jenis, printer, bulan, jenis warna)
+  sehingga lebih membingungkan daripada membantu, dan nomor urut menyiratkan
+  langkah berurutan padahal tab bisa dibuka dalam urutan apa pun.
+- Tab aktif ditandai garis bawah 3px dan tebal font lebih tinggi. Pilihan
+  pengelompokan warna memakai segmented control dua tombol menyatu agar terbaca
+  sebagai satu pilihan, bukan dua tombol terpisah.
 - Daftar bahan printer memakai akordeon. Baris tertutup sudah menyebut bahan
   terbanyak, jadi rincian hanya dibuka saat ingin melihat sisanya. Daftar dibagi
   6 printer per halaman supaya tinggi halaman tetap stabil saat printer

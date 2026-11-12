@@ -45,13 +45,13 @@ export default function RingkasanStrip({ ringkasan }) {
       <dl className="grid grid-cols-1 divide-y divide-line sm:grid-cols-3 sm:divide-x sm:divide-y-0">
         {butir.map((item) => (
           <div key={item.label} className="px-4 py-3.5">
-            <dt className="text-[11px] font-medium text-muted">{item.label}</dt>
+            <dt className="text-xs font-medium text-muted">{item.label}</dt>
             <dd className="mt-1">
               <span className="flex flex-wrap items-baseline gap-x-2">
                 <span className="font-mono text-xl font-semibold tabular-nums text-ink">
                   {item.nilai}
                 </span>
-                <span className="text-[11px] text-faint">{item.satuan}</span>
+                <span className="text-xs text-faint">{item.satuan}</span>
               </span>
               {item.subteks && <span className="mt-0.5 block text-xs text-muted">{item.subteks}</span>}
             </dd>

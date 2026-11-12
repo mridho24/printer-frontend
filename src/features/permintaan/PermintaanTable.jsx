@@ -18,7 +18,7 @@ function Bahan({ bahan }) {
             <span
               key={warna}
               className={cn(
-                'inline-flex items-center gap-1.5 rounded-sm border px-1.5 py-0.5 text-[11px] font-medium',
+                'inline-flex items-center gap-1.5 rounded-sm border px-1.5 py-0.5 text-xs font-medium',
                 meta.chip,
               )}
             >
@@ -32,7 +32,7 @@ function Bahan({ bahan }) {
   }
 
   return (
-    <span className="inline-flex items-center rounded-sm border border-line bg-paper px-1.5 py-0.5 font-mono text-[11px] font-medium text-ink">
+    <span className="inline-flex items-center rounded-sm border border-line bg-paper px-1.5 py-0.5 font-mono text-xs font-medium text-ink">
       {bahan}
     </span>
   );
@@ -66,7 +66,7 @@ function Aksi({ item, onEdit, onDelete }) {
 function Jam({ value }) {
   const jam = value ? String(value).slice(11, 16).replace(':', '.') : '';
   if (!jam) return null;
-  return <span className="font-mono text-[11px] text-faint">{jam}</span>;
+  return <span className="font-mono text-xs text-faint">{jam}</span>;
 }
 
 export default function PermintaanTable({
@@ -118,7 +118,7 @@ export default function PermintaanTable({
                 <dd className="min-w-0 text-ink">
                   {item.jenis_nama || '-'}
                   {item.label_kode && (
-                    <span className="ml-1.5 font-mono text-[11px] text-faint">
+                    <span className="ml-1.5 font-mono text-xs text-faint">
                       {item.label_kode}
                     </span>
                   )}
@@ -129,7 +129,7 @@ export default function PermintaanTable({
                 <dd className="min-w-0 text-ink">
                   {item.merek || '-'}
                   {item.tipe && (
-                    <span className="ml-1.5 font-mono text-[11px] text-muted">{item.tipe}</span>
+                    <span className="ml-1.5 font-mono text-xs text-muted">{item.tipe}</span>
                   )}
                 </dd>
               </div>
@@ -162,7 +162,7 @@ export default function PermintaanTable({
       <div className="hidden lg:block">
         <table className="w-full text-[13px]">
           <thead>
-            <tr className="border-b border-line bg-paper text-left text-[11px] font-medium text-muted">
+            <tr className="border-b border-line bg-paper text-left text-xs font-medium text-muted">
               <th scope="col" className="px-4 py-2.5">
                 Tanggal
               </th>
@@ -200,12 +200,12 @@ export default function PermintaanTable({
                 <td className="px-4 py-2.5">
                   <p className="text-ink">{item.jenis_nama || '-'}</p>
                   {item.label_kode && (
-                    <p className="font-mono text-[11px] text-faint">{item.label_kode}</p>
+                    <p className="font-mono text-xs text-faint">{item.label_kode}</p>
                   )}
                 </td>
                 <td className="px-4 py-2.5">
                   <p className="text-ink">{item.merek || '-'}</p>
-                  <p className="font-mono text-[11px] text-faint">{item.tipe}</p>
+                  <p className="font-mono text-xs text-faint">{item.tipe}</p>
                   {item.printer_dihapus && (
                     <Badge tone="warn" className="mt-1">
                       Printer sudah dihapus

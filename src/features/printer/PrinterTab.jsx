@@ -19,7 +19,7 @@ import PrinterFormModal from './PrinterFormModal.jsx';
 function KodeBahan({ item }) {
   if (item.pakai_warna) return <Badge tone="accent">Pilih warna</Badge>;
   return (
-    <span className="inline-flex items-center rounded-sm border border-line bg-paper px-1.5 py-0.5 font-mono text-[11px] font-medium text-ink">
+    <span className="inline-flex items-center rounded-sm border border-line bg-paper px-1.5 py-0.5 font-mono text-xs font-medium text-ink">
       {item.kode || '-'}
     </span>
   );
@@ -176,7 +176,7 @@ export default function PrinterTab() {
               <li key={item.tipe} className="flex items-start justify-between gap-3 px-4 py-3">
                 <div className="min-w-0">
                   <p className="text-[13px] font-medium text-ink">{item.merek}</p>
-                  <p className="font-mono text-[11px] text-muted">{item.tipe}</p>
+                  <p className="font-mono text-xs text-muted">{item.tipe}</p>
                   <p className="mt-1 text-xs text-faint">{item.jenis_nama}</p>
                   <div className="mt-1.5">
                     <KodeBahan item={item} />
@@ -194,7 +194,7 @@ export default function PrinterTab() {
           <div className="hidden md:block">
             <table className="w-full text-[13px]">
               <thead>
-                <tr className="border-b border-line bg-paper text-left text-[11px] font-medium text-muted">
+                <tr className="border-b border-line bg-paper text-left text-xs font-medium text-muted">
                   <th scope="col" className="px-4 py-2.5">
                     Merek
                   </th>

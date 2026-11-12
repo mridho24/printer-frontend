@@ -39,6 +39,7 @@ export default function DashboardTabs({ tabs, active, onChange }) {
     <div
       role="tablist"
       aria-label="Tampilan dashboard"
+      aria-orientation="horizontal"
       className="flex flex-wrap gap-x-1 px-2"
     >
       {tabs.map((tab, indeks) => {
@@ -54,20 +55,17 @@ export default function DashboardTabs({ tabs, active, onChange }) {
             role="tab"
             id={`tab-${tab.key}`}
             aria-selected={aktif}
-            aria-controls={`panel-${tab.key}`}
+            aria-controls={aktif ? `panel-${tab.key}` : undefined}
             tabIndex={aktif ? 0 : -1}
             onClick={() => onChange(tab.key)}
             onKeyDown={(event) => onKeyDown(event, indeks)}
             className={cn(
-              'inline-flex h-11 items-center gap-2 border-b-2 px-3 text-sm font-medium transition-colors',
+              'inline-flex h-11 items-center border-b-[3px] px-3 text-sm transition-colors',
               aktif
-                ? 'border-accent text-accent-strong'
-                : 'border-transparent text-muted hover:text-ink',
+                ? 'border-accent font-semibold text-accent-strong'
+                : 'border-transparent font-medium text-muted hover:text-ink',
             )}
           >
-            <span className="font-mono text-[11px] font-medium tabular-nums text-accent">
-              {String(indeks + 1).padStart(2, '0')}
-            </span>
             {tab.label}
           </button>
         );

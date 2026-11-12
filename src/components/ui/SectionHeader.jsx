@@ -15,7 +15,7 @@ export default function SectionHeader({ index, title, description, actions, clas
       <div className="min-w-0">
         <div className="flex items-baseline gap-2">
           {index && (
-            <span className="font-mono text-[11px] font-medium tabular-nums text-accent">
+            <span className="font-mono text-xs font-medium tabular-nums text-accent">
               {index}
             </span>
           )}

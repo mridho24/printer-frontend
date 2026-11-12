@@ -106,8 +106,8 @@ export default function WarnaPanel({ warna, printer }) {
         description={keterangan}
         actions={
           <>
-            <div className="flex flex-wrap gap-1" role="group" aria-label="Kelompokkan data warna">
-              {MODE.map((item) => {
+            <div className="inline-flex" role="group" aria-label="Kelompokkan data warna">
+              {MODE.map((item, indeks) => {
                 const aktif = item.key === mode;
 
                 return (
@@ -117,9 +117,10 @@ export default function WarnaPanel({ warna, printer }) {
                     aria-pressed={aktif}
                     onClick={() => pilihMode(item.key)}
                     className={cn(
-                      'inline-flex h-9 items-center rounded-md border px-3 text-xs font-medium transition-colors max-lg:h-11',
+                      'inline-flex h-9 items-center border px-3 text-xs font-medium transition-colors max-lg:h-11',
+                      indeks === 0 ? 'rounded-l-md' : '-ml-px rounded-r-md',
                       aktif
-                        ? 'border-accent bg-accent-soft text-accent-strong'
+                        ? 'relative z-10 border-accent bg-accent-soft text-accent-strong'
                         : 'border-line-strong bg-surface text-muted hover:text-ink',
                     )}
                   >

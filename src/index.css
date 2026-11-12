@@ -11,11 +11,15 @@
     sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', monospace;
 
+  /* Teks sekunder minimum 13px agar tetap terbaca di layar kerja. */
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.125rem;
+
   --color-paper: #f4f1ea;
   --color-surface: #fdfbf6;
   --color-ink: #1b1a17;
   --color-muted: #57534a;
-  --color-faint: #736d60;
+  --color-faint: #6f685c;
   --color-line: #ddd7c9;
   --color-line-strong: #c4bda9;
 

@@ -93,7 +93,7 @@ export default function JenisTab() {
               <li key={item.id} className="flex items-start justify-between gap-3 px-4 py-3">
                 <div className="min-w-0">
                   <p className="text-[13px] font-medium text-ink">{item.nama}</p>
-                  <p className="font-mono text-[11px] text-faint">{item.label_kode || '-'}</p>
+                  <p className="font-mono text-xs text-faint">{item.label_kode || '-'}</p>
                   <div className="mt-1.5">
                     {item.pakai_warna ? (
                       <Badge tone="accent">Pilih warna</Badge>
@@ -114,7 +114,7 @@ export default function JenisTab() {
           <div className="hidden md:block">
             <table className="w-full text-[13px]">
               <thead>
-                <tr className="border-b border-line bg-paper text-left text-[11px] font-medium text-muted">
+                <tr className="border-b border-line bg-paper text-left text-xs font-medium text-muted">
                   <th scope="col" className="px-4 py-2.5">
                     Nama
                   </th>

@@ -10,7 +10,7 @@ export default function PageHeader({ kicker, title, description, actions, classN
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0">
           {kicker && (
-            <p className="mb-1 font-mono text-[11px] font-medium text-accent">{kicker}</p>
+            <p className="mb-1 font-mono text-xs font-medium text-accent">{kicker}</p>
           )}
           <h1 className="text-2xl font-semibold tracking-tight text-ink sm:text-[28px]">
             {title}

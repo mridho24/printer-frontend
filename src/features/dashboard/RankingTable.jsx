@@ -32,7 +32,7 @@ export default function RankingTable({
   return (
     <table className={cn('w-full text-[13px]', className)}>
       <thead>
-        <tr className="border-b border-line text-left text-[11px] font-medium text-muted">
+        <tr className="border-b border-line text-left text-xs font-medium text-muted">
           {bernomor && (
             <th scope="col" className={cn('w-8 pr-2 font-medium', sel)}>
               No
@@ -51,11 +51,14 @@ export default function RankingTable({
           const teratas = bolehTandai && item.total === puncak;
 
           return (
-            <tr key={`${item.nama}-${indeks}`}>
+            <tr
+              key={`${item.nama}-${indeks}`}
+              className="transition-colors hover:bg-paper/60 active:bg-line/40"
+            >
               {bernomor && (
                 <td
                   className={cn(
-                    'pr-2 align-top font-mono text-[11px] tabular-nums text-faint',
+                    'pr-2 align-top font-mono text-xs tabular-nums text-faint',
                     sel,
                   )}
                 >

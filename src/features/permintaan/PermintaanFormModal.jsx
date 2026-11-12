@@ -283,7 +283,7 @@ export default function PermintaanFormModal({ open, item, onClose, onSaved }) {
 
           <section className="space-y-4">
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[11px] font-medium text-accent">01</span>
+              <span className="font-mono text-xs font-medium text-accent">01</span>
               <h3 className="text-sm font-semibold tracking-tight text-ink">
                 Printer yang Diminta
               </h3>
@@ -371,7 +371,7 @@ export default function PermintaanFormModal({ open, item, onClose, onSaved }) {
 
           <section className="space-y-3 border-t border-line pt-5">
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[11px] font-medium text-accent">02</span>
+              <span className="font-mono text-xs font-medium text-accent">02</span>
               <h3 className="text-sm font-semibold tracking-tight text-ink">Bahan yang Diminta</h3>
               {modeWarna && <Badge tone="accent">Pilihan warna</Badge>}
             </div>
@@ -415,7 +415,7 @@ export default function PermintaanFormModal({ open, item, onClose, onSaved }) {
 
           <section className="space-y-4 border-t border-line pt-5">
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[11px] font-medium text-accent">03</span>
+              <span className="font-mono text-xs font-medium text-accent">03</span>
               <h3 className="text-sm font-semibold tracking-tight text-ink">Data Permintaan</h3>
             </div>
 

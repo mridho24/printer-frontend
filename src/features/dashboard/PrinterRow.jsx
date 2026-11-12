@@ -41,7 +41,7 @@ export default function PrinterRow({ printer, terbuka, onToggle }) {
         aria-expanded={terbuka}
         aria-controls={rincianId}
         onClick={onToggle}
-        className="flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-paper"
+        className="flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-paper active:bg-line/40"
       >
         <ChevronDown
           className={cn(
@@ -65,11 +65,11 @@ export default function PrinterRow({ printer, terbuka, onToggle }) {
           <span className="mt-1 block text-xs text-ink">{ringkasBahan}</span>
         </span>
 
-        <span className="shrink-0 text-right">
-          <span className="block font-mono text-sm font-semibold tabular-nums text-ink">
-            {printer.total}
-          </span>
-          <span className="block text-[11px] text-faint">permintaan</span>
+        <span className="shrink-0 self-center">
+          <Badge tone="neutral">
+            <span className="font-mono font-semibold tabular-nums">{printer.total}</span>
+            <span className="ml-1 font-normal">permintaan</span>
+          </Badge>
         </span>
       </button>
 
@@ -80,7 +80,7 @@ export default function PrinterRow({ printer, terbuka, onToggle }) {
           aria-label={`Rincian bahan ${printer.tipe}`}
           className="border-t border-line bg-paper px-4 py-3.5"
         >
-          <p className="mb-2.5 text-[11px] font-medium text-muted">
+          <p className="mb-2.5 text-xs font-medium text-muted">
             {printer.pakai_warna
               ? `${MAKS_BAHAN} warna paling sering diminta`
               : `${MAKS_BAHAN} ${printer.label_kode?.toLowerCase() || 'kode'} paling sering diminta`}
@@ -95,7 +95,7 @@ export default function PrinterRow({ printer, terbuka, onToggle }) {
             kosong="Belum ada bahan tercatat."
           />
           {sisa > 0 && (
-            <p className="mt-2.5 text-[11px] text-faint">
+            <p className="mt-2.5 text-xs text-faint">
               +{sisa} {printer.pakai_warna ? 'warna' : 'kode'} lain
             </p>
           )}

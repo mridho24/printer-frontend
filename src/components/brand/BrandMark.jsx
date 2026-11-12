@@ -24,7 +24,7 @@ export default function BrandMark({ className }) {
         <span className="block text-[13px] font-semibold tracking-tight text-ink">
           Bahan Printer
         </span>
-        <span className="block text-[11px] font-medium text-faint">RSUD Zainal Abidin</span>
+        <span className="block text-xs font-medium text-faint">RSUD Zainal Abidin</span>
       </span>
     </Link>
   );
