@@ -13,6 +13,21 @@ const NAMA_BULAN = [
   'Des',
 ];
 
+const NAMA_BULAN_PANJANG = [
+  'Januari',
+  'Februari',
+  'Maret',
+  'April',
+  'Mei',
+  'Juni',
+  'Juli',
+  'Agustus',
+  'September',
+  'Oktober',
+  'November',
+  'Desember',
+];
+
 /**
  * Format tanggal ISO (YYYY-MM-DD) menjadi "4 Nov 2026" tanpa pergeseran zona waktu.
  */
@@ -33,6 +48,17 @@ export function formatBulan(value) {
   const [tahun, bulan] = String(value).split('-').map(Number);
   if (!tahun || !bulan || bulan < 1 || bulan > 12) return String(value);
   return `${NAMA_BULAN[bulan - 1]} ${tahun}`;
+}
+
+/**
+ * Format kunci bulan "YYYY-MM" menjadi "November 2026" untuk tempat yang
+ * membutuhkan nama bulan utuh, misalnya tooltip grafik bulan.
+ */
+export function formatBulanPanjang(value) {
+  if (!value) return '-';
+  const [tahun, bulan] = String(value).split('-').map(Number);
+  if (!tahun || !bulan || bulan < 1 || bulan > 12) return String(value);
+  return `${NAMA_BULAN_PANJANG[bulan - 1]} ${tahun}`;
 }
 
 /**

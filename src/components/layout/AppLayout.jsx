@@ -65,10 +65,6 @@ export default function AppLayout() {
               );
             })}
           </nav>
-
-          <p className="ml-auto border-l border-line pl-3 text-xs font-medium text-muted">
-            Admin IT
-          </p>
         </div>
       </header>
 
@@ -79,7 +75,7 @@ export default function AppLayout() {
       <footer className="border-t border-line bg-surface">
         <div className="mx-auto flex max-w-[1200px] flex-wrap items-center justify-between gap-2 px-4 py-4 text-xs text-faint sm:px-6 lg:px-8">
           <p>Aplikasi pencatatan permintaan bahan printer</p>
-          <p className="font-mono">Admin IT &middot; Internal RSUD</p>
+          <p className="font-mono">Internal RSUD</p>
         </div>
       </footer>
     </div>

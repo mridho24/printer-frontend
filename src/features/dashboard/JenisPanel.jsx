@@ -34,12 +34,8 @@ export default function JenisPanel({ jenis }) {
       <div className="p-4">
         <BarChart
           items={items}
-          labelHeader="Jenis printer"
-          satuanHeader="Permintaan"
           bernomor
-          tandaiTeratas
           kosong="Belum ada jenis dengan permintaan tercatat."
-          labelTabel="Lihat sebagai tabel"
         />
       </div>
     </Card>

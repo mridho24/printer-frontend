@@ -7,6 +7,7 @@ import { useToast } from '../../hooks/useToast.js';
 import Button from '../../components/ui/Button.jsx';
 import SectionHeader from '../../components/ui/SectionHeader.jsx';
 import { ConfirmDialog } from '../../components/ui/Modal.jsx';
+import { Select } from '../../components/ui/FormControls.jsx';
 import {
   Badge,
   EmptyState,
@@ -102,11 +103,14 @@ export default function PrinterTab() {
         }
         actions={
           <>
-            <select
+            <Select
+              inline
+              size="md"
+              label="Jenis"
+              ariaLabel="Filter jenis printer"
               value={jenisFilter}
               onChange={(event) => setJenisFilter(event.target.value)}
-              aria-label="Filter jenis printer"
-              className="h-10 min-w-40 rounded-md border border-line-strong bg-surface px-2 text-sm text-ink max-lg:h-11"
+              className="min-w-40"
             >
               <option value="">Semua jenis</option>
               {daftarJenis.map((item) => (
@@ -114,7 +118,7 @@ export default function PrinterTab() {
                   {item.nama}
                 </option>
               ))}
-            </select>
+            </Select>
             <Button
               variant="ghost"
               size="icon"

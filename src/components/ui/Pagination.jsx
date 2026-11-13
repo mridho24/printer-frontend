@@ -1,5 +1,6 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '../../lib/cn.js';
+import { Select } from './FormControls.jsx';
 
 function TombolHalaman({ children, onClick, disabled, label }) {
   return (
@@ -42,20 +43,22 @@ export default function Pagination({
           <span className="font-mono font-medium text-ink">{total}</span> {satuan}
         </span>
         {onLimitChange && (
-          <label className="flex items-center gap-1.5 border-l border-line pl-3">
-            <span>Baris</span>
-            <select
+          <div className="border-l border-line pl-3">
+            <Select
+              inline
+              label="Baris"
+              ariaLabel="Jumlah baris per halaman"
               value={limit}
               onChange={(event) => onLimitChange(Number(event.target.value))}
-              className="h-9 rounded-sm border border-line-strong bg-surface px-1.5 font-mono text-xs text-ink max-lg:h-11"
+              className="w-32"
             >
               {[10, 25, 50].map((nilai) => (
                 <option key={nilai} value={nilai}>
                   {nilai}
                 </option>
               ))}
-            </select>
-          </label>
+            </Select>
+          </div>
         )}
       </div>
 

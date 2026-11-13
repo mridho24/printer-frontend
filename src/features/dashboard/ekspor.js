@@ -1,19 +1,4 @@
-import { pecahBahan, todayISO } from '../../lib/format.js';
-
-const NAMA_BULAN_PANJANG = [
-  'Januari',
-  'Februari',
-  'Maret',
-  'April',
-  'Mei',
-  'Juni',
-  'Juli',
-  'Agustus',
-  'September',
-  'Oktober',
-  'November',
-  'Desember',
-];
+import { formatBulanPanjang, pecahBahan, todayISO } from '../../lib/format.js';
 
 const GARIS_HEADER = {
   borderColor: '#9a9386',
@@ -181,20 +166,14 @@ export function eksporExcel(nama, kolom, baris) {
   });
 }
 
-function labelBulanPanjang(kunci) {
-  const [tahun, bulan] = String(kunci).split('-').map(Number);
-  if (!tahun || !bulan || bulan < 1 || bulan > 12) return '';
-  return `${NAMA_BULAN_PANJANG[bulan - 1]} ${tahun}`;
-}
-
 function labelPeriode(rows) {
   const bulan = [...new Set(rows.map((item) => String(item.tanggal ?? '').slice(0, 7)))]
     .filter((kunci) => /^\d{4}-\d{2}$/.test(kunci))
     .sort();
 
   if (bulan.length === 0) return '';
-  const awal = labelBulanPanjang(bulan[0]);
-  const akhir = labelBulanPanjang(bulan[bulan.length - 1]);
+  const awal = formatBulanPanjang(bulan[0]);
+  const akhir = formatBulanPanjang(bulan[bulan.length - 1]);
   return awal === akhir ? awal : `${awal} sampai ${akhir}`;
 }
 
@@ -206,15 +185,16 @@ function tanggalExcel(iso) {
 
 /**
  * Rekap seluruh permintaan dengan susunan kolom seperti buku catatan manual:
- * nomor, tanggal, ruang, merek printer, empat kolom warna, kode bahan, penerima,
- * dan kolom tanda tangan kosong. Tanggal ditulis sebagai tanggal Excel supaya
- * bisa diurutkan dan difilter, bukan teks.
+ * nomor, tanggal, ruang, jenis printer, merek printer, empat kolom warna, kode
+ * bahan, penerima, dan kolom tanda tangan kosong. Tanggal ditulis sebagai
+ * tanggal Excel supaya bisa diurutkan dan difilter, bukan teks.
  */
 export function eksporLogbook(rows) {
   const kolom = [
     'NO',
     'TANGGAL',
     'NAMA RUANG',
+    'JENIS PRINTER',
     'MEREK PRINTER',
     'BLACK',
     'MAGENTA',
@@ -232,6 +212,7 @@ export function eksporLogbook(rows) {
       indeks + 1,
       tanggalExcel(item.tanggal),
       item.nama_ruang ?? '',
+      item.jenis_nama ?? '',
       [item.merek, item.tipe].filter(Boolean).join(' '),
       warna.includes('black') ? '\u2713' : '-',
       warna.includes('magenta') ? '\u2713' : '-',
@@ -254,6 +235,7 @@ export function eksporLogbook(rows) {
       { width: 6 },
       { width: 12 },
       { width: 22 },
+      { width: 16 },
       { width: 24 },
       { width: 9 },
       { width: 10 },

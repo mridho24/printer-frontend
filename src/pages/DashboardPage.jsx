@@ -171,7 +171,7 @@ export default function DashboardPage() {
 
   const tabs = [
     { key: 'jenis', label: 'Jenis printer' },
-    { key: 'bahan', label: 'Bahan per printer' },
+    { key: 'bahan', label: 'Tipe printer' },
     { key: 'bulan', label: 'Bulan' },
     ...(printerWarna.length > 0 ? [{ key: 'warna', label: 'Warna' }] : []),
   ];

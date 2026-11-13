@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import RankingTable from './RankingTable.jsx';
 import { WARNA_META } from '../../lib/constants.js';
 import { cn } from '../../lib/cn.js';
 
@@ -12,11 +11,7 @@ const BARIS =
  * Grafik batang horizontal dengan angka di ujung batang.
  *
  * Angka ditulis sebagai kolom kanan, bukan di dalam batang, supaya tetap
- * terbaca saat batangnya pendek dan tidak pernah menimpa label. Tabel peringkat
- * tersedia di balik tombol "Lihat sebagai tabel" sebagai cadangan: pembaca
- * layar, pencetakan, atau siapa pun yang butuh angka persis tidak bergantung
- * pada panjang batang. Setel `tabelCadangan={false}` bila angka yang sama sudah
- * tertulis di tempat lain pada halaman.
+ * terbaca saat batangnya pendek dan tidak pernah menimpa label.
  *
  * Warna batang memakai satu aksen. Pengecualiannya grafik warna, yang memakai
  * warna asli karena warna itu sendiri adalah data yang dibaca.
@@ -27,14 +22,9 @@ const BARIS =
  */
 export default function BarChart({
   items = [],
-  labelHeader = 'Nama',
-  satuanHeader = 'Jumlah',
   bernomor = false,
-  tandaiTeratas = false,
   warnaAsli = false,
   kosong = 'Belum ada data',
-  labelTabel = 'Lihat sebagai tabel',
-  tabelCadangan = true,
 }) {
   if (items.length === 0) {
     return <p className="px-4 py-8 text-xs text-muted">{kosong}</p>;
@@ -93,25 +83,6 @@ export default function BarChart({
           ),
         )}
       </div>
-
-      {tabelCadangan && (
-        <details className="mt-4 border-t border-line pt-1">
-          <summary className="inline-flex min-h-9 items-center text-xs font-medium text-accent-strong hover:text-accent max-lg:min-h-11">
-            {labelTabel}
-          </summary>
-          <div className="mt-3">
-            <RankingTable
-              items={items}
-              labelHeader={labelHeader}
-              satuanHeader={satuanHeader}
-              kosong={kosong}
-              bernomor={bernomor}
-              tandaiTeratas={tandaiTeratas}
-              padat
-            />
-          </div>
-        </details>
-      )}
     </div>
   );
 }

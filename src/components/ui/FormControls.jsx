@@ -1,11 +1,12 @@
-import { forwardRef, useId } from 'react';
+import { Children, forwardRef, isValidElement, useId, useMemo } from 'react';
 import { cn } from '../../lib/cn.js';
+import SelectMenu from './SelectMenu.jsx';
 
-export function Field({ label, htmlFor, error, hint, required = false, children, className }) {
+export function Field({ label, htmlFor, labelId, error, hint, required = false, children, className }) {
   return (
     <div className={cn('space-y-1.5', className)}>
       {label && (
-        <label htmlFor={htmlFor} className="block text-sm font-medium text-ink">
+        <label id={labelId} htmlFor={htmlFor} className="block text-sm font-medium text-ink">
           {label}
           {required && (
             <span className="ml-0.5 text-danger" aria-hidden="true">
@@ -23,6 +24,41 @@ export function Field({ label, htmlFor, error, hint, required = false, children,
     </div>
   );
 }
+
+function teksAnak(children) {
+  return Children.toArray(children)
+    .map((anak) => {
+      if (typeof anak === 'string' || typeof anak === 'number') return String(anak);
+      if (isValidElement(anak)) return teksAnak(anak.props.children);
+      return '';
+    })
+    .join('');
+}
+
+function bacaOpsi(children, hasil = []) {
+  Children.forEach(children, (anak, indeks) => {
+    if (!isValidElement(anak)) return;
+
+    if (anak.type === 'option') {
+      const label = teksAnak(anak.props.children).trim();
+      const nilai = anak.props.value !== undefined ? String(anak.props.value) : label;
+      hasil.push({
+        key: anak.key ?? `${nilai}-${indeks}`,
+        value: nilai,
+        label: label || nilai,
+        disabled: Boolean(anak.props.disabled),
+      });
+      return;
+    }
+
+    if (anak.type === 'optgroup') {
+      bacaOpsi(anak.props.children, hasil);
+    }
+  });
+
+  return hasil;
+}
+
 
 function gayaDasar(error, lebar = 'w-full') {
   return cn(
@@ -60,18 +96,41 @@ export const Input = forwardRef(function Input(
 });
 
 export const Select = forwardRef(function Select(
-  { label, error, hint, required, inline = false, className, id, children, ...props },
+  {
+    label,
+    error,
+    hint,
+    required,
+    inline = false,
+    size,
+    ariaLabel,
+    className,
+    id,
+    children,
+    value,
+    disabled = false,
+    onChange,
+    name,
+  },
   ref,
 ) {
   const autoId = useId();
   const selectId = id || autoId;
+  const labelId = `${selectId}-label`;
+  const options = useMemo(() => bacaOpsi(children), [children]);
+  const ukuran = size ?? (inline ? 'sm' : 'md');
+  const labelledBy = label ? labelId : undefined;
 
   if (inline) {
     return (
       <div className={cn('space-y-1', className)}>
         <div className="flex items-center gap-2">
           {label && (
-            <label htmlFor={selectId} className="shrink-0 text-xs font-medium text-muted">
+            <label
+              id={labelId}
+              htmlFor={selectId}
+              className="shrink-0 text-xs font-medium text-muted"
+            >
               {label}
               {required && (
                 <span className="ml-0.5 text-danger" aria-hidden="true">
@@ -80,15 +139,22 @@ export const Select = forwardRef(function Select(
               )}
             </label>
           )}
-          <select
-            ref={ref}
-            id={selectId}
-            aria-invalid={error ? 'true' : undefined}
-            className={cn(gayaDasar(error, 'min-w-0 flex-1'), 'h-9 max-lg:h-11')}
-            {...props}
-          >
-            {children}
-          </select>
+          <div className="min-w-0 flex-1">
+            <SelectMenu
+              ref={ref}
+              id={selectId}
+              labelledBy={labelledBy}
+              ariaLabel={ariaLabel}
+              options={options}
+              value={value}
+              onChange={onChange}
+              name={name}
+              disabled={disabled}
+              invalid={Boolean(error)}
+              required={Boolean(required)}
+              size={ukuran}
+            />
+          </div>
         </div>
         {error ? (
           <p className="text-xs font-medium text-danger">{error}</p>
@@ -103,20 +169,26 @@ export const Select = forwardRef(function Select(
     <Field
       label={label}
       htmlFor={selectId}
+      labelId={labelId}
       error={error}
       hint={hint}
       required={required}
       className={className}
     >
-      <select
+      <SelectMenu
         ref={ref}
         id={selectId}
-        aria-invalid={error ? 'true' : undefined}
-        className={cn(gayaDasar(error), 'h-10 max-lg:h-11')}
-        {...props}
-      >
-        {children}
-      </select>
+        labelledBy={labelledBy}
+        ariaLabel={ariaLabel}
+        options={options}
+        value={value}
+        onChange={onChange}
+        name={name}
+        disabled={disabled}
+        invalid={Boolean(error)}
+        required={Boolean(required)}
+        size={ukuran}
+      />
     </Field>
   );
 });

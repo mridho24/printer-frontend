@@ -1,5 +1,5 @@
 import { useSearchParams } from 'react-router-dom';
-import BarChart from './BarChart.jsx';
+import GrafikBulan from './GrafikBulan.jsx';
 import TombolEkspor from './TombolEkspor.jsx';
 import { deretBulan } from './deretBulan.js';
 import { rentangBulan } from './periode.js';
@@ -9,14 +9,14 @@ import { EmptyState } from '../../components/ui/Feedback.jsx';
 import { Select } from '../../components/ui/FormControls.jsx';
 
 const SEMUA = 'semua';
-const MIN_BULAN = 3;
 
 /**
  * Bulan permintaan.
  *
- * Grafik bulanan baru berguna saat ada minimal tiga bulan untuk dibandingkan.
- * Di bawah itu panel menampilkan keadaan kosong yang menyebut rentang dan
- * jumlah datanya, bukan grafik dua batang yang membesar-besarkan selisih.
+ * Grafik tampil sejak bulan pertama punya data, lalu bertambah sendiri setiap
+ * ada bulan baru karena `deretBulan` melengkapi bulan kosong di antaranya
+ * dengan nilai nol. Tidak ada ambang jumlah bulan: data satu bulan tetap
+ * ditampilkan apa adanya, bukan disembunyikan sampai cukup untuk dibandingkan.
  *
  * Pemilih bulan ada di kepala panel. Tampilan awal memakai "Semua bulan" agar
  * grafik langsung terlihat; memilih satu bulan menggantinya dengan satu angka
@@ -43,7 +43,6 @@ export default function BulanPanel({ bulanan }) {
     );
   }
   const dipilih = nilai === SEMUA ? null : (pilihan.find((item) => item.kunci === nilai) ?? null);
-  const total = semuaBulan.reduce((jumlah, item) => jumlah + item.total, 0);
 
   const ekspor = (
     <TombolEkspor
@@ -65,26 +64,6 @@ export default function BulanPanel({ bulanan }) {
         <EmptyState
           title="Belum ada permintaan tercatat"
           description="Grafik bulanan akan muncul setelah permintaan pertama dicatat."
-        />
-      </Card>
-    );
-  }
-
-  if (semuaBulan.length < MIN_BULAN) {
-    const awal = semuaBulan[0].nama;
-    const akhir = semuaBulan[semuaBulan.length - 1].nama;
-    const rentang = awal === akhir ? awal : `${awal} sampai ${akhir}`;
-
-    return (
-      <Card>
-        <SectionHeader
-          title="Bulan permintaan"
-          description="Grafik bulanan butuh minimal tiga bulan data agar perbandingan antarbulan bermakna."
-          actions={ekspor}
-        />
-        <EmptyState
-          title="Belum cukup bulan untuk grafik"
-          description={`Data saat ini mencakup ${semuaBulan.length} bulan (${rentang}) dengan ${total} permintaan. Grafik akan muncul setelah data mencakup minimal tiga bulan.`}
         />
       </Card>
     );
@@ -138,12 +117,9 @@ export default function BulanPanel({ bulanan }) {
         </div>
       ) : (
         <div className="p-4">
-          <BarChart
+          <GrafikBulan
             items={itemsBulan}
-            labelHeader="Bulan"
-            satuanHeader="Permintaan"
             kosong="Belum ada permintaan tercatat."
-            labelTabel="Lihat sebagai tabel"
           />
         </div>
       )}

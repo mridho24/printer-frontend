@@ -51,9 +51,9 @@ Dashboard memakai tombol tampilan supaya satu layar hanya memuat satu metrik:
 jenis printer, bahan per tipe printer, bulan, atau warna. Pilihan disimpan di
 URL (`#/dashboard?tampilan=bahan`), jadi muat ulang dan tombol kembali membuka
 tampilan yang sama. Perbandingan ditulis sebagai grafik batang horizontal dengan
-angka di ujung batang; tabel peringkat tersedia di balik tombol **Lihat sebagai
-tabel** sebagai cadangan untuk pembaca layar, pencetakan, atau pembacaan angka
-persis. Batang memakai satu aksen; hanya grafik warna yang memakai warna asli
+angka di ujung batang. Tabel cadangan di balik tombol **Lihat sebagai tabel**
+sudah dihapus karena angka yang sama sudah terbaca di batang dan tersedia lewat
+ekspor. Batang memakai satu aksen; hanya grafik warna yang memakai warna asli
 karena warnanya sendiri adalah data.
 
 Kartu ringkasan membedakan **jenis** (kelompok teknologi, misalnya Inkjet) dari
@@ -64,25 +64,37 @@ Waktu pembaruan terakhir ditulis di samping tombol **Muat ulang**. Saat memuat,
 tombol menampilkan spinner dan tidak bisa ditekan; setelah selesai muncul toast
 "Data diperbarui" lewat `aria-live="polite"`.
 
-- Daftar bahan per printer menampilkan rincian lima bahan teratas langsung di
-  tiap baris, tanpa akordeon, dengan pagination 6 printer per halaman. Rincian
-  yang selalu terbuka menghilangkan satu klik untuk melihat isi baris, sementara
-  pagination menjaga tinggi halaman tetap stabil. Pencarian tipe/merek, filter
-  jenis, dan urutan bekerja pada semua printer lalu kembali ke halaman 1 saat
-  diubah. Di atas daftar, grafik menampilkan 10 printer dengan permintaan
-  terbanyak sesuai filter yang sedang aktif.
+- Panel Tipe printer menampilkan lima tipe printer dengan permintaan
+  terbanyak, lalu tombol **Lihat semua** membuka seluruh printer tanpa berpindah
+  halaman (**Ringkas** mengembalikannya). Pencarian tipe/merek dan filter jenis
+  bekerja pada semua printer, bukan hanya lima yang terlihat, sehingga hasil
+  filter tidak tampak kosong hanya karena barisnya terlipat. Rincian bahan per
+  printer tidak lagi ditampilkan di panel ini.
 - Panel bulan punya dropdown **Tampilan bulan** berisi **Semua bulan** dan tiap
   bulan. Tampilan awal adalah **Semua bulan** agar grafik langsung terlihat;
   memilih satu bulan menggantinya dengan satu angka ringkas, termasuk bulan
-  bernilai nol. Grafik baru muncul bila data mencakup minimal tiga bulan; di
-  bawah itu panel menampilkan keadaan kosong yang menyebut rentang dan jumlah
-  datanya. Pemilih bulan disembunyikan bila hanya ada satu bulan.
+  bernilai nol. Pemilih bulan disembunyikan bila hanya ada satu bulan.
+- Grafik bulan berupa kolom vertikal yang tumbuh ke atas dan tampil sejak bulan
+  pertama punya data, tanpa ambang jumlah bulan. Kolom bertambah setiap ada
+  bulan baru saat halaman dimuat atau **Muat ulang** ditekan. Nama bulan ditulis
+  singkat di sumbu; tahun muncul di bawah kolom pertama dan setiap kali tahun
+  berganti. Jumlah permintaan ditulis di atas tiap kolom. Hover memunculkan
+  tooltip yang mengikuti kursor, sedangkan fokus keyboard memunculkannya di
+  atas kolom; keduanya berisi nama bulan lengkap serta jumlahnya. Tiap kolom
+  tetap menaut ke daftar permintaan bulan itu.
 - Panel warna bisa dikelompokkan **per tipe printer** (default) atau **per jenis
-  warna**. Mode per tipe memulai dari **Semua tipe printer**, lalu dropdown
-  yang sama bisa mempersempit ke satu tipe. Daftar seluruh tipe ada di tab bahan
-  per printer. Panel hanya muncul jika ada printer yang memakai warna.
+  warna**. Mode per tipe memulai dari pilihan **Semua** pada dropdown, lalu
+  dropdown yang sama bisa mempersempit ke satu tipe. Daftar seluruh tipe ada di
+  tab Tipe printer. Panel hanya muncul jika ada printer yang memakai warna.
 - Dropdown dan tombol kelompok pada panel bulan dan warna berada di kepala
   panel, bukan di bar filter terpisah, supaya tidak memakan tinggi layar.
+- Semua dropdown memakai satu komponen `SelectMenu`. Tombol pemicu dibuka
+  dengan klik, Enter, atau Space; panah, Home, dan End memindahkan pilihan;
+  Enter memilih; Escape menutup menu saja tanpa menutup modal di belakangnya.
+  Menu dirender di portal sehingga tidak terpotong kartu atau modal. Pemicu dan
+  menu memakai sudut 3px seperti kolom isian, dan opsi terpilih ditandai latar
+  lembut `accent-soft` tanpa ikon centang. Pencarian tetap memakai kolom
+  terpisah di luar dropdown, bukan input di dalam menu.
 - **Filter periode** di atas dashboard berlaku untuk semua panel sekaligus:
   semua data (default), 7 hari terakhir, 30 hari terakhir, bulan ini, atau
   rentang kustom. Angka ringkasan, grafik, perhatian, dan permintaan terbaru
@@ -116,8 +128,9 @@ tombol menampilkan spinner dan tidak bisa ditekan; setelah selesai muncul toast
 - Halaman **Permintaan** punya tombol **Ekspor semua data** di kepala halaman.
   Tombol ini mengabaikan pencarian, filter, dan paginasi yang sedang aktif, lalu
   mengunduh satu sheet **Rekap** berisi seluruh permintaan aktif dengan kolom
-  `NO`, `TANGGAL`, `NAMA RUANG`, `MEREK PRINTER`, `BLACK`, `MAGENTA`, `BLUE`,
-  `YELLOW`, `KODE BAHAN`, `PENERIMA`, dan `TANDA TANGAN`. Urutannya kronologis
+  `NO`, `TANGGAL`, `NAMA RUANG`, `JENIS PRINTER`, `MEREK PRINTER`, `BLACK`,
+  `MAGENTA`, `BLUE`, `YELLOW`, `KODE BAHAN`, `PENERIMA`, dan `TANDA TANGAN`.
+  Urutannya kronologis
   naik, satu judul dan subjudul di atas tabel, orientasi landscape, baris kepala
   beku, dan kolom tanda tangan sengaja kosong untuk ditandatangani setelah
   dicetak.

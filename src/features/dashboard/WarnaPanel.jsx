@@ -213,7 +213,7 @@ export default function WarnaPanel({ warna, printer }) {
             className="w-full"
             disabled={mode !== 'tipe'}
           >
-            <option value={SEMUA_TIPE}>Semua tipe printer</option>
+            <option value={SEMUA_TIPE}>Semua</option>
             {perPrinter.map((item) => (
               <option key={item.judul} value={item.judul}>
                 {item.judul}
@@ -254,12 +254,8 @@ export default function WarnaPanel({ warna, printer }) {
 
               <BarChart
                 items={item.warna}
-                labelHeader="Warna"
-                satuanHeader="Permintaan"
                 bernomor
-                tandaiTeratas
                 warnaAsli
-                labelTabel="Lihat sebagai tabel"
               />
             </section>
           ))}

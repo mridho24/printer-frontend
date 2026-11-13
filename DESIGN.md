@@ -1,12 +1,12 @@
 # Arah desain: Buku catatan lab
 
-Panduan ini berlaku untuk seluruh antarmuka Bahan Printer RSUD Zainal Abidin.
+Panduan ini berlaku untuk seluruh antarmuka Bahan Printer RSUD Zainoel Abidin.
 Setiap keputusan visual wajib punya alasan satu baris di sini (R-31). Kalau
 sebuah teknik tidak bisa dijelaskan alasannya, teknik itu tidak dipakai.
 
 ## Design Read
 
-> Aplikasi pencatatan internal untuk Admin IT RSUD Zainal Abidin, gaya buku
+> Aplikasi pencatatan internal untuk Admin IT RSUD Zainoel Abidin, gaya buku
 > catatan lab (ledger resmi), dial ENERGY 1 / RHYTHM 2 / MOTION 1.
 
 - **ENERGY 1**: ini alat kerja yang dipakai berulang setiap hari, bukan halaman
@@ -61,16 +61,53 @@ jaringan internal yang tidak membuka Google Fonts (R-40).
 | Kartu dan modal | 6px | Cukup lembut untuk wadah besar, tetap satu keluarga dengan kontrol. |
 | Badge dan chip | 2px | Menandai data, bukan tombol. |
 
+Dropdown tidak punya radius sendiri: pemicu dan menu memakai 3px, tiap opsi 2px,
+sama seperti kolom isian. Sudut runcing membuat dropdown duduk sejajar dengan
+kolom isian di sekitarnya, bukan tampak seperti panel terpisah.
+
 Tidak ada elemen berbentuk pil kecuali switch (bentuknya memang mengikuti
 gerakan tuas) (R-11).
 
 ## Elevasi
 
 - Permukaan dipisahkan dengan garis 1px `line`, bukan bayangan (R-12).
-- Hanya dua elemen yang boleh terangkat: modal dan toast, karena keduanya
-  memang berada di atas halaman yang sedang dipakai.
+- Hanya tiga elemen yang boleh terangkat: modal, toast, dan menu dropdown.
+  Modal dan toast memang berada di atas halaman; menu dropdown terangkat
+  sementara supaya batasnya tidak menyatu dengan isi di belakangnya saat
+  menutupi tabel atau grafik. Bayangannya lembut dan hanya hidup selama menu
+  terbuka.
+- Tooltip grafik tidak terangkat: ia memakai garis 1px `line-strong` tanpa
+  bayangan karena menempel pada batang yang sedang dibaca, bukan lapisan yang
+  berdiri sendiri.
 - Tidak ada glassmorphism. Header memakai permukaan solid dan garis bawah
   (R-10).
+
+## Dropdown
+
+- Semua dropdown memakai satu komponen, `src/components/ui/SelectMenu.jsx`.
+  Pemicunya tombol `combobox`, menunya `listbox` yang dirender lewat portal ke
+  `document.body` dengan posisi `fixed`, sehingga tidak terpotong kartu atau
+  modal yang punya `overflow`.
+- Warna mengikuti token aplikasi: permukaan `surface`, batas `line-strong`,
+  fokus dan opsi terpilih `accent` dengan latar `accent-soft`. Tidak ada biru
+  atau turquoise baru, karena aksen tunggal sudah menjadi identitas (R-01,
+  R-29).
+- Pemicu memakai border `line-strong`; saat terbuka atau fokus, border menjadi
+  `accent` dengan ring tipis. Opsi terpilih ditandai latar `accent-soft` dan
+  `aria-selected`, tanpa ikon centang, sehingga penandanya sama dengan saat
+  opsi disorot mouse atau keyboard.
+- Menu dibuka ke bawah, atau ke atas bila ruang bawah tidak cukup, dan lebarnya
+  dibatasi lebar viewport. Tinggi opsi 40px di desktop dan 44px di layar
+  sentuh (R-03).
+- Fokus tetap di pemicu; opsi aktif ditandai `aria-activedescendant`. Panah,
+  Home, End, Enter, Space, Escape, dan ketikan awal huruf bekerja tanpa mouse.
+  Escape hanya menutup menu, bukan modal di belakangnya (R-32).
+- Menu ditutup saat klik di luar, Tab, atau Escape. Saat halaman digulir, menu
+  mengikuti posisi pemicunya, bukan menutup mendadak. Gulir di dalam daftar opsi
+  tidak memindahkan menu.
+- Pencarian tetap memakai kolom terpisah di luar dropdown. Tidak ada input cari
+  di dalam menu karena daftar pilihan di aplikasi ini pendek dan pencarian di
+  dalam menu hanya menggandakan kontrol.
 
 ## Gerak
 
@@ -88,7 +125,7 @@ gerakan tuas) (R-11).
 
 ## Aset
 
-- **Logo**: logo resmi RSUD Zainal Abidin ada di `src/logo/logo_za.jpg`
+- **Logo**: logo resmi RSUD Zainoel Abidin ada di `src/logo/logo_za.jpg`
   (600x300) dan dipasang di `src/components/brand/BrandMark.jsx` setinggi
   40px. Berkas diimpor lewat Vite, bukan disalin ke `public`, supaya ikut
   diproses saat build. Latar putih pada JPG disatukan dengan permukaan header
@@ -124,20 +161,19 @@ gerakan tuas) (R-11).
   menuntut pembaca menafsirkan panjang relatif. Keputusan itu diubah karena
   angkanya tetap tercetak di ujung tiap batang, sehingga panjang batang hanya
   membantu memindai urutan, bukan satu-satunya sumber nilai.
-- Setiap grafik menyediakan tabel peringkat di balik tombol "Lihat sebagai
-  tabel". Tabel itu cadangan untuk pembaca layar, pencetakan, dan pembacaan
-  angka persis; ia tidak ditampilkan bersamaan agar data tidak digandakan.
+- Setiap grafik menampilkan angka di ujung batang. Tabel cadangan di balik
+  tombol "Lihat sebagai tabel" dihapus karena angka yang sama sudah terbaca di
+  batang dan tersedia lewat ekspor; dua tampilan untuk data yang sama hanya
+  menambah kontrol yang harus dipilih.
 - Grafik memakai satu aksen. Pengecualiannya grafik warna: batang memakai warna
   asli (hitam, biru, kuning, magenta) karena warna adalah data yang diminta,
   bukan dekorasi (R-29, R-39).
-- Angka jumlah ditulis utuh dalam mono tebal di kolom kanan, bukan persentase,
-  karena pembacanya butuh jumlah nyata, bukan rasio.
-- Nomor urut hanya dipakai pada peringkat (jenis, warna, bahan per printer,
-  printer teratas). Grafik bulan tidak bernomor karena urutannya waktu, bukan
+- Angka jumlah ditulis utuh dalam mono tebal di kolom kanan (atau di atas kolom
+  pada grafik bulan), bukan persentase, karena pembacanya butuh jumlah nyata,
+  bukan rasio.
+- Nomor urut hanya dipakai pada peringkat (jenis, warna, tipe printer, printer
+  teratas). Grafik bulan tidak bernomor karena urutannya waktu, bukan
   peringkat.
-- Nilai tertinggi ditandai kata "Terbanyak" di tabel cadangan, bukan warna baru.
-  Saat ada seri, tanda itu tidak dipakai. Ini menjaga palet tetap satu aksen
-  (R-29).
 - Setiap panel dibuka dengan penjelasan apa yang dihitung, bukan kalimat
   kesimpulan yang mengulang angka di grafik. Ringkasan seperti "Laser paling
   sering diminta dengan 20 dari 27 permintaan" dihapus karena hanya mengulang
@@ -151,18 +187,16 @@ gerakan tuas) (R-11).
 - Tab aktif ditandai garis bawah 3px dan tebal font lebih tinggi. Pilihan
   pengelompokan warna memakai segmented control dua tombol menyatu agar terbaca
   sebagai satu pilihan, bukan dua tombol terpisah.
-- Daftar bahan printer menampilkan rincian lima bahan teratas langsung di tiap
-  baris. Rincian selalu terbuka karena tab ini dibuka untuk melihat bahan, dan
-  membuka tiap baris satu per satu hanya menambah langkah; paginasi 6 printer
-  per halaman menjaga tinggi halaman tetap stabil saat printer bertambah.
-  Pencarian, filter, atau urutan baru kembali ke halaman 1. Di atas daftar,
-  grafik menampilkan 10 printer dengan permintaan terbanyak sesuai filter aktif,
-  jadi angka grafik dan daftar tidak pernah berbeda cakupan.
+- Panel bahan printer menampilkan lima tipe printer dengan permintaan
+  terbanyak. Tombol "Lihat semua" membuka seluruh printer tanpa berpindah
+  halaman, dan tombol "Ringkas" mengembalikannya. Pencarian dan filter jenis
+  bekerja pada seluruh data, bukan hanya lima yang terlihat, sehingga hasil
+  filter tidak pernah tampak kosong hanya karena barisnya terlipat.
 - Panel warna bisa dikelompokkan per tipe printer atau per jenis warna. Mode
-  per tipe dimulai dari "Semua tipe printer" agar seluruh warna langsung
-  terlihat, lalu dropdown yang sama mempersempit ke satu tipe. Mode per jenis
-  menjawab gabungan seluruh printer dalam satu jenis. Daftar semua tipe tetap
-  tersedia di tab bahan per printer.
+  per tipe dimulai dari kelompok "Semua tipe printer" dengan pilihan dropdown
+  **Semua** agar seluruh warna langsung terlihat, lalu dropdown yang sama
+  mempersempit ke satu tipe. Mode per jenis menjawab gabungan seluruh printer
+  dalam satu jenis. Daftar semua tipe tetap tersedia di tab Tipe printer.
 - Kontrol panel diletakkan di kepala panel, bukan di bar filter tersendiri.
   Tombol kelompok dan dropdown memakai label sebaris, sehingga tidak ada satu
   baris penuh yang hanya berisi label di atas kontrol. Di ponsel kontrol turun
@@ -171,12 +205,32 @@ gerakan tuas) (R-11).
   bulan. Tampilan awal adalah "Semua bulan" agar grafik langsung terlihat;
   memilih satu bulan menggantinya dengan satu angka ringkas. Pemilih bulan
   disembunyikan bila hanya ada satu bulan karena tidak ada yang bisa dipilih.
-- Grafik bulan baru ditampilkan bila data mencakup minimal tiga bulan. Dengan
-  satu atau dua bulan, grafik hanya memperbesar selisih kecil dan menyiratkan
-  tren yang belum ada; panel menampilkan keadaan kosong yang menyebut rentang
-  serta jumlah datanya.
-- Bulan tanpa permintaan tetap muncul di grafik dan tabel dengan nilai nol agar
-  jarak waktu tidak menyembunyikan bulan kosong.
+- Grafik bulan berupa kolom vertikal yang tumbuh ke atas dari satu garis dasar,
+  bukan daftar batang horizontal. Sumbu waktu mendatar terbaca sebagai deret
+  bulan, dan tinggi kolom membandingkan jumlah tanpa perlu membaca angkanya.
+  Tiap kolom tetap menjadi tautan ke daftar permintaan bulan itu.
+- Grafik tampil sejak bulan pertama punya data; tidak ada ambang jumlah bulan.
+  Data satu bulan tetap ditampilkan apa adanya, lalu kolom bertambah setiap ada
+  bulan baru saat halaman dimuat atau tombol "Muat ulang" ditekan. Tidak ada
+  pembaruan berkala.
+- Nama bulan di sumbu ditulis singkat (Jan, Feb, dan seterusnya), sedangkan
+  tahun muncul di bawah kolom pertama dan setiap kali tahun berganti, supaya
+  rentang dua tahun tidak ambigu.
+- Jumlah permintaan ditulis di atas tiap kolom dalam mono, jadi bisa
+  dibandingkan tanpa hover dan tetap terbaca saat dicetak.
+- Tooltip muncul saat pointer berada di atas kolom dan mengikuti kursor dengan
+  jarak 12px di kanan atas, sehingga kolom dan angkanya tidak tertutup. Di tepi
+  layar tooltip membalik ke kiri atau ke bawah kursor dan tetap dijepit 8px dari
+  tepi jendela. Saat kolom difokuskan dengan keyboard tidak ada kursor, jadi
+  tooltip ditambatkan di atas kolom. Isinya nama bulan lengkap dan jumlah
+  permintaan. Tooltip menutup saat pointer keluar kolom, dan saat halaman
+  digulir ia menutup hanya bila kolom yang ditunjuk ikut keluar layar.
+- Bulan tanpa permintaan tetap muncul sebagai label dan angka 0, tanpa kolom
+  dan tanpa tautan karena tidak ada daftar yang bisa dibuka.
+- Di layar 360px, dua belas bulan muat tanpa gulir: lebar kolom minimum 22px,
+  jarak 2px, dan label tetap 13px. Nama bulan lengkap tersedia di tooltip dan
+  `aria-label`. Rentang lebih panjang dari itu digulir mendatar, bukan dipotong
+  tanpa petunjuk.
 - Angka ringkasan ditulis mono dan dipisah garis, bukan kartu ikon, karena yang
   dibaca adalah nilainya, bukan ilustrasinya.
 - Filter periode global dipakai bersama oleh semua panel, bukan filter per tab.
@@ -238,8 +292,9 @@ gerakan tuas) (R-11).
 - Tombol tab membungkus ke baris berikutnya di ponsel, bukan memakai scroll
   horizontal. Scroll horizontal pada navigasi mudah tidak terlihat dan membuat
   tab terakhir tampak tidak ada; membungkus menjaga semua pilihan terjangkau.
-- Label "Admin IT" ditulis sebagai teks biasa karena belum ada menu akun di
-  baliknya. Chevron hanya boleh muncul bila benar-benar membuka sesuatu.
+- Header hanya memuat identitas aplikasi dan navigasi. Label petugas tidak
+  ditampilkan karena belum ada menu akun di baliknya; lingkup internal cukup
+  disebut sekali di footer sebagai "Internal RSUD".
 - Form master data printer memberi peringatan lunak, bukan blokir, saat nama
   jenis menyebut merek lain atau saat merek yang sama di data aktif paling
   banyak memakai jenis berbeda. Data lama tetap harus bisa diperbaiki, dan
@@ -250,11 +305,10 @@ gerakan tuas) (R-11).
 - Token warna, font, radius, fokus, dan reduced motion: `src/index.css`.
 - Kepala bagian bernomor: `src/components/ui/SectionHeader.jsx`.
 - Kontrol sebaris dan varian `inline` pada `Select`: `src/components/ui/FormControls.jsx`.
-- Tabel peringkat dashboard: `src/features/dashboard/RankingTable.jsx`.
+- Dropdown pemicu dan menu: `src/components/ui/SelectMenu.jsx`.
 - Pengelompokan warna per tipe/jenis: `src/features/dashboard/WarnaPanel.jsx`.
 - Deret bulan berurutan termasuk bulan kosong: `src/features/dashboard/deretBulan.js`.
 - Tombol tampilan dashboard: `src/features/dashboard/DashboardTabs.jsx`.
-- Baris rincian bahan printer: `src/features/dashboard/PrinterRow.jsx`.
 - Penulis CSV dan `.xlsx` dashboard: `src/features/dashboard/ekspor.js`.
 - Identitas header dan logo resmi: `src/components/brand/BrandMark.jsx`.
 - Berkas logo RSUD: `src/logo/logo_za.jpg`.

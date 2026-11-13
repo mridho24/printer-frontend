@@ -111,12 +111,12 @@ export default function PrinterBahanPanel({ printer }) {
   return (
     <Card>
       <SectionHeader
-        title="Bahan per tipe printer"
+        title="Tipe printer"
         description="Jumlah permintaan per tipe printer. Pilih satu batang untuk melihat daftar permintaannya."
         actions={
           <TombolEkspor
-            nama="bahan-per-printer"
-            label="tabel bahan per printer"
+            nama="tipe-printer"
+            label="tabel tipe printer"
             kolom={['Tipe printer', 'Merek', 'Jenis', 'Permintaan']}
             baris={hasil.map((item) => [
               item.tipe,
@@ -173,11 +173,7 @@ export default function PrinterBahanPanel({ printer }) {
           <div id={ID_GRAFIK}>
             <BarChart
               items={tampil}
-              labelHeader="Tipe printer"
-              satuanHeader="Permintaan"
               bernomor
-              tandaiTeratas
-              tabelCadangan={false}
             />
           </div>
 
